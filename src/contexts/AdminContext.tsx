@@ -35,6 +35,13 @@ export interface AdminClass {
   createdAt: string;
 }
 
+export interface TestQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
+
 export interface AdminTest {
   id: string;
   code: string;
@@ -45,6 +52,7 @@ export interface AdminTest {
   attempts: number;
   status: TestStatus;
   createdAt: string;
+  questions: TestQuestion[];
 }
 
 export interface AdminTransaction {
@@ -68,26 +76,137 @@ export interface AuditLogEntry {
 export interface SystemSettings {
   platformName: string;
   escrowPercent: number;
+  escrowHoldDays: number;
   enableExams: boolean;
   enableChat: boolean;
   enablePayments: boolean;
   maintenanceMode: boolean;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+  twoFactorAuth: boolean;
+  sessionTimeout: number;
+  maxLoginAttempts: number;
 }
+
+// Question bank for auto-generation
+const questionBanks: Record<string, { q: string; opts: string[]; ans: number }[]> = {
+  "Toán": [
+    { q: "Giải phương trình: 2x + 5 = 15", opts: ["x = 3", "x = 5", "x = 10", "x = 7"], ans: 1 },
+    { q: "Tính đạo hàm của f(x) = 3x² + 2x - 1", opts: ["6x + 2", "3x + 2", "6x - 1", "6x² + 2"], ans: 0 },
+    { q: "Tính tích phân ∫(2x+1)dx", opts: ["x² + x + C", "2x² + x + C", "x² + C", "2x + C"], ans: 0 },
+    { q: "Giá trị của sin(π/6) là?", opts: ["1/2", "√3/2", "√2/2", "1"], ans: 0 },
+    { q: "Số nghiệm của phương trình x² - 4x + 4 = 0?", opts: ["0", "1", "2", "3"], ans: 1 },
+    { q: "log₂(8) = ?", opts: ["2", "3", "4", "8"], ans: 1 },
+    { q: "Diện tích hình tròn bán kính R?", opts: ["2πR", "πR²", "2πR²", "πR"], ans: 1 },
+    { q: "Giới hạn lim(x→0) sin(x)/x = ?", opts: ["0", "1", "∞", "Không tồn tại"], ans: 1 },
+    { q: "Ma trận đơn vị cấp 2 có dạng?", opts: ["[[1,0],[0,1]]", "[[1,1],[1,1]]", "[[0,0],[0,0]]", "[[2,0],[0,2]]"], ans: 0 },
+    { q: "Tổ hợp C(5,2) = ?", opts: ["5", "10", "20", "25"], ans: 1 },
+    { q: "Số phức z = 3 + 4i có module bằng?", opts: ["3", "4", "5", "7"], ans: 2 },
+    { q: "Cấp số cộng: 2, 5, 8, 11. Số hạng thứ 10?", opts: ["26", "29", "32", "35"], ans: 1 },
+  ],
+  "Văn": [
+    { q: "Tác giả 'Truyện Kiều' là ai?", opts: ["Nguyễn Du", "Nguyễn Trãi", "Hồ Xuân Hương", "Xuân Diệu"], ans: 0 },
+    { q: "Bài thơ 'Tây Tiến' của tác giả nào?", opts: ["Quang Dũng", "Tố Hữu", "Huy Cận", "Chế Lan Viên"], ans: 0 },
+    { q: "'Vội vàng' thuộc phong trào văn học nào?", opts: ["Thơ Mới", "Thơ cũ", "Văn học hiện thực", "Thơ cách mạng"], ans: 0 },
+    { q: "Nhân vật Chí Phèo do ai sáng tác?", opts: ["Nam Cao", "Ngô Tất Tố", "Vũ Trọng Phụng", "Nguyễn Công Hoan"], ans: 0 },
+    { q: "Phép tu từ 'mặt trời trong lăng rất đỏ'?", opts: ["So sánh", "Ẩn dụ", "Hoán dụ", "Nhân hóa"], ans: 1 },
+    { q: "Tác phẩm 'Số đỏ' thuộc thể loại?", opts: ["Truyện ngắn", "Tiểu thuyết", "Kịch", "Thơ"], ans: 1 },
+    { q: "'Đây thôn Vĩ Dạ' do ai viết?", opts: ["Hàn Mặc Tử", "Xuân Diệu", "Huy Cận", "Nguyễn Bính"], ans: 0 },
+    { q: "Thể loại của 'Bình Ngô đại cáo'?", opts: ["Cáo", "Hịch", "Chiếu", "Biểu"], ans: 0 },
+    { q: "Nhà văn nào viết 'Tắt đèn'?", opts: ["Ngô Tất Tố", "Nam Cao", "Nguyễn Công Hoan", "Vũ Trọng Phụng"], ans: 0 },
+    { q: "Bài thơ 'Sóng' của Xuân Quỳnh viết năm?", opts: ["1967", "1975", "1960", "1972"], ans: 0 },
+  ],
+  "Anh": [
+    { q: "Choose the correct form: She ___ to school every day.", opts: ["go", "goes", "going", "gone"], ans: 1 },
+    { q: "The past tense of 'buy' is:", opts: ["buyed", "bought", "buied", "buying"], ans: 1 },
+    { q: "Which is correct? 'I have been ___ for 2 hours.'", opts: ["wait", "waited", "waiting", "waits"], ans: 2 },
+    { q: "Synonym of 'beautiful':", opts: ["ugly", "gorgeous", "bad", "terrible"], ans: 1 },
+    { q: "'If I ___ rich, I would travel.'", opts: ["am", "were", "was", "be"], ans: 1 },
+    { q: "The capital of the UK is:", opts: ["Paris", "London", "Berlin", "Madrid"], ans: 1 },
+    { q: "Choose correct preposition: interested ___", opts: ["in", "on", "at", "to"], ans: 0 },
+    { q: "'He suggested ___ the movie.'", opts: ["watch", "to watch", "watching", "watched"], ans: 2 },
+    { q: "Antonym of 'ancient':", opts: ["old", "modern", "traditional", "classic"], ans: 1 },
+    { q: "Which word is a noun?", opts: ["quickly", "beautiful", "happiness", "run"], ans: 2 },
+  ],
+  "Lý": [
+    { q: "Đơn vị của lực là?", opts: ["Joule", "Newton", "Watt", "Pascal"], ans: 1 },
+    { q: "Công thức F = ma là định luật?", opts: ["Định luật I", "Định luật II", "Định luật III", "Định luật Hooke"], ans: 1 },
+    { q: "Vận tốc ánh sáng trong chân không?", opts: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"], ans: 1 },
+    { q: "Đơn vị đo điện trở là?", opts: ["Volt", "Ampere", "Ohm", "Watt"], ans: 2 },
+    { q: "Năng lượng E = mc² do ai đề xuất?", opts: ["Newton", "Einstein", "Bohr", "Faraday"], ans: 1 },
+    { q: "Sóng âm không truyền được trong?", opts: ["Nước", "Không khí", "Chân không", "Kim loại"], ans: 2 },
+    { q: "Đơn vị công suất là?", opts: ["Joule", "Newton", "Watt", "Hertz"], ans: 2 },
+    { q: "Hiện tượng khúc xạ xảy ra khi?", opts: ["Ánh sáng đi thẳng", "Ánh sáng qua 2 môi trường", "Ánh sáng phản xạ", "Ánh sáng tắt"], ans: 1 },
+    { q: "Gia tốc trọng trường g ≈ ?", opts: ["8.9 m/s²", "9.8 m/s²", "10.8 m/s²", "7.8 m/s²"], ans: 1 },
+    { q: "Điện tích electron có giá trị?", opts: ["1.6×10⁻¹⁹ C", "-1.6×10⁻¹⁹ C", "1.6×10⁻¹⁸ C", "-1.6×10⁻²⁰ C"], ans: 1 },
+  ],
+  "Hóa": [
+    { q: "Công thức hóa học của nước?", opts: ["H₂O", "CO₂", "NaCl", "H₂SO₄"], ans: 0 },
+    { q: "Kim loại nào nhẹ nhất?", opts: ["Nhôm", "Sắt", "Lithium", "Natri"], ans: 2 },
+    { q: "pH = 7 là môi trường?", opts: ["Axit", "Bazơ", "Trung tính", "Muối"], ans: 2 },
+    { q: "Nguyên tố nào nhiều nhất trong vỏ Trái Đất?", opts: ["Sắt", "Oxy", "Silicon", "Nhôm"], ans: 1 },
+    { q: "Liên kết ion hình thành giữa?", opts: ["Kim loại - Kim loại", "Phi kim - Phi kim", "Kim loại - Phi kim", "Khí hiếm - Kim loại"], ans: 2 },
+    { q: "Số Avogadro có giá trị?", opts: ["6.022×10²³", "6.022×10²²", "6.022×10²⁴", "3.14×10²³"], ans: 0 },
+    { q: "Axit clohidric có công thức?", opts: ["HCl", "H₂SO₄", "HNO₃", "H₃PO₄"], ans: 0 },
+    { q: "Phản ứng tỏa nhiệt là?", opts: ["ΔH > 0", "ΔH < 0", "ΔH = 0", "Không xác định"], ans: 1 },
+    { q: "Nhóm chức -OH thuộc loại?", opts: ["Andehit", "Xeton", "Ancol", "Axit"], ans: 2 },
+    { q: "Khí CO₂ gây hiệu ứng gì?", opts: ["Tầng ozone", "Nhà kính", "Mưa axit", "Sương mù"], ans: 1 },
+  ],
+  "Sinh": [
+    { q: "DNA là viết tắt của?", opts: ["Deoxyribonucleic Acid", "Dinitrogen Acid", "Dioxin Acid", "Dextrose Acid"], ans: 0 },
+    { q: "Quá trình quang hợp xảy ra ở?", opts: ["Ti thể", "Lục lạp", "Ribosome", "Nhân"], ans: 1 },
+    { q: "Bộ NST của người là?", opts: ["23", "46", "44", "48"], ans: 1 },
+    { q: "Enzym là chất xúc tác có bản chất?", opts: ["Lipid", "Protein", "Carbohydrate", "Nucleic acid"], ans: 1 },
+    { q: "Đơn vị cấu tạo của protein?", opts: ["Nucleotide", "Amino acid", "Glucose", "Fatty acid"], ans: 1 },
+  ],
+};
+
+function generateQuestions(subject: string, count: number = 10): TestQuestion[] {
+  const bank = questionBanks[subject] || questionBanks["Toán"];
+  const shuffled = [...bank].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(count, shuffled.length)).map((item, i) => ({
+    id: `q${Date.now()}_${i}`,
+    question: item.q,
+    options: item.opts,
+    correctAnswer: item.ans,
+  }));
+}
+
+// Asian-style avatar URLs
+const avatarUrls = {
+  men: [
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
+  ],
+  women: [
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face",
+    "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face",
+  ],
+};
 
 // Seed data
 const seedUsers: AdminUser[] = [
-  { id: "u1", name: "Nguyễn Văn An", email: "an.nguyen@edu.vn", phone: "0901234567", role: "tutor", status: "approved", avatar: "https://randomuser.me/api/portraits/men/32.jpg", createdAt: "2025-12-01", subject: "Toán", bio: "Gia sư Toán 5 năm kinh nghiệm" },
-  { id: "u2", name: "Trần Thị Bích", email: "bich.tran@edu.vn", phone: "0912345678", role: "teacher", status: "approved", avatar: "https://randomuser.me/api/portraits/women/44.jpg", createdAt: "2025-11-15", subject: "Văn", bio: "Giáo viên Ngữ Văn trường THPT" },
-  { id: "u3", name: "Lê Minh Châu", email: "chau.le@edu.vn", phone: "0923456789", role: "student", status: "approved", avatar: "https://randomuser.me/api/portraits/men/22.jpg", createdAt: "2026-01-10" },
-  { id: "u4", name: "Phạm Hồng Đào", email: "dao.pham@edu.vn", phone: "0934567890", role: "parent", status: "approved", avatar: "https://randomuser.me/api/portraits/women/55.jpg", createdAt: "2026-01-05" },
-  { id: "u5", name: "Hoàng Đức Em", email: "em.hoang@edu.vn", phone: "0945678901", role: "tutor", status: "pending", avatar: "https://randomuser.me/api/portraits/men/45.jpg", createdAt: "2026-02-20", subject: "Lý", bio: "Thạc sĩ Vật Lý, dạy ôn thi đại học" },
-  { id: "u6", name: "Vũ Thị Phương", email: "phuong.vu@edu.vn", phone: "0956789012", role: "teacher", status: "pending", avatar: "https://randomuser.me/api/portraits/women/33.jpg", createdAt: "2026-02-22", subject: "Hóa", bio: "GV Hóa 10 năm kinh nghiệm" },
-  { id: "u7", name: "Đỗ Quang Minh", email: "minh.do@edu.vn", phone: "0967890123", role: "tutor", status: "pending", avatar: "https://randomuser.me/api/portraits/men/56.jpg", createdAt: "2026-02-25", subject: "Anh", bio: "IELTS 8.5, dạy IELTS/TOEIC" },
-  { id: "u8", name: "Ngô Thị Lan", email: "lan.ngo@edu.vn", phone: "0978901234", role: "student", status: "approved", avatar: "https://randomuser.me/api/portraits/women/22.jpg", createdAt: "2026-01-20" },
-  { id: "u9", name: "Bùi Văn Hùng", email: "hung.bui@edu.vn", phone: "0989012345", role: "tutor", status: "rejected", avatar: "https://randomuser.me/api/portraits/men/67.jpg", createdAt: "2026-01-30", subject: "Sinh", bio: "Sinh viên năm 3" },
-  { id: "u10", name: "Lý Thị Mai", email: "mai.ly@edu.vn", phone: "0990123456", role: "parent", status: "approved", avatar: "https://randomuser.me/api/portraits/women/66.jpg", createdAt: "2026-02-01" },
-  { id: "u11", name: "Trương Văn Kiên", email: "kien.truong@edu.vn", phone: "0901112233", role: "student", status: "approved", avatar: "https://randomuser.me/api/portraits/men/12.jpg", createdAt: "2026-02-10" },
-  { id: "u12", name: "Đinh Thị Hoa", email: "hoa.dinh@edu.vn", phone: "0912223344", role: "teacher", status: "approved", avatar: "https://randomuser.me/api/portraits/women/12.jpg", createdAt: "2025-10-05", subject: "Sử", bio: "Giáo viên Lịch Sử" },
+  { id: "u1", name: "Nguyễn Văn An", email: "an.nguyen@edu.vn", phone: "0901234567", role: "tutor", status: "approved", avatar: avatarUrls.men[0], createdAt: "2025-12-01", subject: "Toán", bio: "Gia sư Toán 5 năm kinh nghiệm, tốt nghiệp ĐH Sư Phạm" },
+  { id: "u2", name: "Trần Thị Bích", email: "bich.tran@edu.vn", phone: "0912345678", role: "teacher", status: "approved", avatar: avatarUrls.women[0], createdAt: "2025-11-15", subject: "Văn", bio: "Giáo viên Ngữ Văn trường THPT chuyên" },
+  { id: "u3", name: "Lê Minh Châu", email: "chau.le@edu.vn", phone: "0923456789", role: "student", status: "approved", avatar: avatarUrls.men[1], createdAt: "2026-01-10" },
+  { id: "u4", name: "Phạm Hồng Đào", email: "dao.pham@edu.vn", phone: "0934567890", role: "parent", status: "approved", avatar: avatarUrls.women[1], createdAt: "2026-01-05" },
+  { id: "u5", name: "Hoàng Đức Em", email: "em.hoang@edu.vn", phone: "0945678901", role: "tutor", status: "pending", avatar: avatarUrls.men[2], createdAt: "2026-02-20", subject: "Lý", bio: "Thạc sĩ Vật Lý, dạy ôn thi đại học" },
+  { id: "u6", name: "Vũ Thị Phương", email: "phuong.vu@edu.vn", phone: "0956789012", role: "teacher", status: "pending", avatar: avatarUrls.women[2], createdAt: "2026-02-22", subject: "Hóa", bio: "GV Hóa 10 năm kinh nghiệm, THPT Lê Quý Đôn" },
+  { id: "u7", name: "Đỗ Quang Minh", email: "minh.do@edu.vn", phone: "0967890123", role: "tutor", status: "pending", avatar: avatarUrls.men[3], createdAt: "2026-02-25", subject: "Anh", bio: "IELTS 8.5, dạy IELTS/TOEIC 3 năm" },
+  { id: "u8", name: "Ngô Thị Lan", email: "lan.ngo@edu.vn", phone: "0978901234", role: "student", status: "approved", avatar: avatarUrls.women[3], createdAt: "2026-01-20" },
+  { id: "u9", name: "Bùi Văn Hùng", email: "hung.bui@edu.vn", phone: "0989012345", role: "tutor", status: "rejected", avatar: avatarUrls.men[4], createdAt: "2026-01-30", subject: "Sinh", bio: "Sinh viên năm 3 ĐH Y" },
+  { id: "u10", name: "Lý Thị Mai", email: "mai.ly@edu.vn", phone: "0990123456", role: "parent", status: "approved", avatar: avatarUrls.women[4], createdAt: "2026-02-01" },
+  { id: "u11", name: "Trương Văn Kiên", email: "kien.truong@edu.vn", phone: "0901112233", role: "student", status: "approved", avatar: avatarUrls.men[5], createdAt: "2026-02-10" },
+  { id: "u12", name: "Đinh Thị Hoa", email: "hoa.dinh@edu.vn", phone: "0912223344", role: "teacher", status: "approved", avatar: avatarUrls.women[5], createdAt: "2025-10-05", subject: "Sử", bio: "Giáo viên Lịch Sử THPT chuyên Hà Nội" },
 ];
 
 const seedClasses: AdminClass[] = [
@@ -98,11 +217,11 @@ const seedClasses: AdminClass[] = [
 ];
 
 const seedTests: AdminTest[] = [
-  { id: "t1", code: "T001", name: "Đề thi thử Toán 12", subject: "Toán", level: "Lớp 12", type: "multiple-choice", attempts: 234, status: "active", createdAt: "2026-01-01" },
-  { id: "t2", code: "T002", name: "Đề thi thử Văn 11", subject: "Văn", level: "Lớp 11", type: "essay", attempts: 156, status: "active", createdAt: "2026-01-15" },
-  { id: "t3", code: "T003", name: "IELTS Mock Test 1", subject: "Anh", level: "IELTS", type: "multiple-choice", attempts: 89, status: "active", createdAt: "2026-02-01" },
-  { id: "t4", code: "T004", name: "Hóa 12 - Hữu cơ", subject: "Hóa", level: "Lớp 12", type: "multiple-choice", attempts: 45, status: "draft", createdAt: "2026-02-20" },
-  { id: "t5", code: "T005", name: "Lý 10 - Động lực học", subject: "Lý", level: "Lớp 10", type: "multiple-choice", attempts: 312, status: "archived", createdAt: "2025-09-01" },
+  { id: "t1", code: "T001", name: "Đề thi thử Toán 12", subject: "Toán", level: "Lớp 12", type: "multiple-choice", attempts: 234, status: "active", createdAt: "2026-01-01", questions: generateQuestions("Toán", 10) },
+  { id: "t2", code: "T002", name: "Đề thi thử Văn 11", subject: "Văn", level: "Lớp 11", type: "essay", attempts: 156, status: "active", createdAt: "2026-01-15", questions: generateQuestions("Văn", 10) },
+  { id: "t3", code: "T003", name: "IELTS Mock Test 1", subject: "Anh", level: "IELTS", type: "multiple-choice", attempts: 89, status: "active", createdAt: "2026-02-01", questions: generateQuestions("Anh", 10) },
+  { id: "t4", code: "T004", name: "Hóa 12 - Hữu cơ", subject: "Hóa", level: "Lớp 12", type: "multiple-choice", attempts: 45, status: "draft", createdAt: "2026-02-20", questions: generateQuestions("Hóa", 10) },
+  { id: "t5", code: "T005", name: "Lý 10 - Động lực học", subject: "Lý", level: "Lớp 10", type: "multiple-choice", attempts: 312, status: "archived", createdAt: "2025-09-01", questions: generateQuestions("Lý", 10) },
 ];
 
 const seedTransactions: AdminTransaction[] = [
@@ -126,10 +245,17 @@ const seedAuditLog: AuditLogEntry[] = [
 const defaultSettings: SystemSettings = {
   platformName: "EduConnect",
   escrowPercent: 20,
+  escrowHoldDays: 7,
   enableExams: true,
   enableChat: true,
   enablePayments: true,
   maintenanceMode: false,
+  emailNotifications: true,
+  smsNotifications: false,
+  pushNotifications: true,
+  twoFactorAuth: false,
+  sessionTimeout: 30,
+  maxLoginAttempts: 5,
 };
 
 interface AdminContextType {
@@ -139,26 +265,21 @@ interface AdminContextType {
   transactions: AdminTransaction[];
   auditLog: AuditLogEntry[];
   settings: SystemSettings;
-  // User actions
   approveUser: (id: string) => void;
   rejectUser: (id: string) => void;
   updateUserStatus: (id: string, status: UserStatus) => void;
   deleteUser: (id: string) => void;
-  // Class actions
   addClass: (cls: Omit<AdminClass, "id" | "createdAt">) => void;
   updateClass: (id: string, data: Partial<AdminClass>) => void;
   deleteClass: (id: string) => void;
-  // Test actions
-  addTest: (test: Omit<AdminTest, "id" | "createdAt" | "attempts">) => void;
+  addTest: (test: Omit<AdminTest, "id" | "createdAt" | "attempts" | "questions">) => void;
   updateTest: (id: string, data: Partial<AdminTest>) => void;
   deleteTest: (id: string) => void;
-  // Transaction actions
   addTransaction: (tx: Omit<AdminTransaction, "id">) => void;
-  // Settings
   updateSettings: (s: Partial<SystemSettings>) => void;
-  // Helpers
   getUserById: (id: string) => AdminUser | undefined;
   addAuditLog: (action: string, target: string) => void;
+  generateQuestionsForTest: (subject: string, count?: number) => TestQuestion[];
 }
 
 const AdminContext = createContext<AdminContextType | null>(null);
@@ -229,8 +350,9 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     if (cls) addAuditLog("Xóa lớp học", cls.name);
   }, [classes, addAuditLog]);
 
-  const addTest = useCallback((test: Omit<AdminTest, "id" | "createdAt" | "attempts">) => {
-    const newTest: AdminTest = { ...test, id: genId("t"), createdAt: new Date().toISOString().slice(0, 10), attempts: 0 };
+  const addTest = useCallback((test: Omit<AdminTest, "id" | "createdAt" | "attempts" | "questions">) => {
+    const questions = generateQuestions(test.subject, 10);
+    const newTest: AdminTest = { ...test, id: genId("t"), createdAt: new Date().toISOString().slice(0, 10), attempts: 0, questions };
     setTests(prev => [newTest, ...prev]);
     addAuditLog("Tạo bài test", test.name);
   }, [addAuditLog]);
@@ -258,6 +380,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
 
   const getUserById = useCallback((id: string) => users.find(u => u.id === id), [users]);
 
+  const generateQuestionsForTest = useCallback((subject: string, count: number = 10) => {
+    return generateQuestions(subject, count);
+  }, []);
+
   return (
     <AdminContext.Provider value={{
       users, classes, tests, transactions, auditLog, settings,
@@ -265,6 +391,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
       addClass, updateClass, deleteClass,
       addTest, updateTest, deleteTest,
       addTransaction, updateSettings, getUserById, addAuditLog,
+      generateQuestionsForTest,
     }}>
       {children}
     </AdminContext.Provider>

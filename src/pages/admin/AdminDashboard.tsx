@@ -1,12 +1,11 @@
 import { useAdmin } from "@/contexts/AdminContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, GraduationCap, BookOpen, CreditCard, Clock, FileText, UserCheck, ArrowUpRight, ArrowDownRight, ChevronRight } from "lucide-react";
+import { Users, GraduationCap, BookOpen, CreditCard, Clock, FileText, UserCheck, ArrowUpRight, ArrowDownRight, ChevronRight, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Progress } from "@/components/ui/progress";
 
 const AdminDashboard = () => {
-  const { users, classes, tests, transactions } = useAdmin();
+  const { users, classes, tests, transactions, settings } = useAdmin();
   const navigate = useNavigate();
 
   const totalUsers = users.length;
@@ -31,28 +30,33 @@ const AdminDashboard = () => {
 
   const topStats = [
     { label: "Tổng người dùng", value: totalUsers, icon: Users, change: "+12%", up: true, color: "bg-primary/10 text-primary" },
-    { label: "Gia sư & Giáo viên", value: totalTutorsTeachers, icon: GraduationCap, change: "+8%", up: true, color: "bg-secondary/20 text-secondary-foreground" },
-    { label: "Lớp đang hoạt động", value: activeClasses, icon: BookOpen, change: "+5%", up: true, color: "bg-primary/10 text-primary" },
-    { label: "Doanh thu tháng", value: `${(monthRevenue / 1000000).toFixed(1)}M`, icon: CreditCard, change: "+18%", up: true, color: "bg-secondary/20 text-secondary-foreground" },
+    { label: "Gia sư & Giáo viên", value: totalTutorsTeachers, icon: GraduationCap, change: "+8%", up: true, color: "bg-emerald-500/10 text-emerald-600" },
+    { label: "Lớp đang hoạt động", value: activeClasses, icon: BookOpen, change: "+5%", up: true, color: "bg-amber-500/10 text-amber-600" },
+    { label: "Doanh thu tháng", value: `${(monthRevenue / 1000000).toFixed(1)}M`, icon: CreditCard, change: "+18%", up: true, color: "bg-primary/10 text-primary" },
   ];
 
-  const recentActivities = [
-    ...users.filter(u => u.status === "pending").slice(0, 3).map(u => ({
-      avatar: u.avatar,
-      text: `${u.name} đăng ký làm ${u.role === "tutor" ? "gia sư" : "giáo viên"}`,
-      time: u.createdAt,
-      type: "pending" as const,
-    })),
-    ...transactions.slice(0, 3).map(tx => {
-      const user = users.find(u => u.id === tx.userId);
-      return {
-        avatar: user?.avatar || "",
-        text: tx.description,
-        time: tx.date,
-        type: tx.status as string,
-      };
-    }),
-  ].slice(0, 5);
+  // Recent classes (searching or new)
+  const recentClasses = classes.filter(c => c.status === "searching" || c.status === "active").slice(0, 4);
+  
+  // Recent transactions
+  const recentTransactions = transactions.slice(0, 5);
+
+  const getUserName = (id: string) => users.find(u => u.id === id)?.name || "—";
+
+  const statusColor: Record<string, string> = {
+    searching: "bg-amber-500/10 text-amber-600",
+    active: "bg-emerald-500/10 text-emerald-600",
+    completed: "bg-primary/10 text-primary",
+  };
+  const statusLabel: Record<string, string> = { searching: "Đang tìm", active: "Đang học", completed: "Hoàn thành" };
+  
+  const txStatusColor: Record<string, string> = {
+    completed: "bg-emerald-500/10 text-emerald-600",
+    pending: "bg-amber-500/10 text-amber-600",
+    failed: "bg-destructive/10 text-destructive",
+    refunded: "bg-primary/10 text-primary",
+  };
+  const txStatusLabel: Record<string, string> = { completed: "Hoàn thành", pending: "Đang xử lý", failed: "Thất bại", refunded: "Hoàn tiền" };
 
   return (
     <div className="p-6 space-y-6">
@@ -66,11 +70,7 @@ const AdminDashboard = () => {
                   <p className="text-[13px] text-muted-foreground font-medium">{s.label}</p>
                   <p className="text-3xl font-bold text-foreground tracking-tight">{s.value}</p>
                   <div className="flex items-center gap-1">
-                    {s.up ? (
-                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" />
-                    ) : (
-                      <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />
-                    )}
+                    {s.up ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" /> : <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />}
                     <span className={`text-xs font-semibold ${s.up ? "text-emerald-500" : "text-destructive"}`}>{s.change}</span>
                     <span className="text-xs text-muted-foreground">vs tháng trước</span>
                   </div>
@@ -100,12 +100,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full rounded-xl text-xs"
-              onClick={() => navigate("/admin/approvals")}
-            >
+            <Button variant="outline" size="sm" className="w-full rounded-xl text-xs" onClick={() => navigate("/admin/approvals")}>
               Xem ngay <ChevronRight className="w-3.5 h-3.5 ml-1" />
             </Button>
           </CardContent>
@@ -123,18 +118,10 @@ const AdminDashboard = () => {
                 <p className="text-2xl font-bold text-foreground">{monthTests}</p>
               </div>
             </div>
-            {/* Mini bar chart representation */}
             <div className="flex items-end gap-1.5 h-10">
               {[40, 65, 55, 80, 70, 90, 60].map((h, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-sm bg-primary/20 relative overflow-hidden"
-                  style={{ height: `${h}%` }}
-                >
-                  <div
-                    className="absolute bottom-0 w-full bg-primary rounded-sm"
-                    style={{ height: `${h}%` }}
-                  />
+                <div key={i} className="flex-1 rounded-sm bg-primary/20 relative overflow-hidden" style={{ height: `${h}%` }}>
+                  <div className="absolute bottom-0 w-full bg-primary rounded-sm" style={{ height: `${h}%` }} />
                 </div>
               ))}
             </div>
@@ -153,22 +140,13 @@ const AdminDashboard = () => {
                 <p className="text-2xl font-bold text-foreground">{avgApprovalDays} ngày</p>
               </div>
             </div>
-            {/* Circular progress */}
             <div className="flex items-center gap-3">
               <div className="relative w-12 h-12">
                 <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
                   <circle cx="24" cy="24" r="20" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-                  <circle
-                    cx="24" cy="24" r="20" fill="none"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeDasharray={`${Math.min(avgApprovalDays * 10, 125)} 125`}
-                  />
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="hsl(var(--primary))" strokeWidth="4" strokeLinecap="round" strokeDasharray={`${Math.min(avgApprovalDays * 10, 125)} 125`} />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-foreground">
-                  {avgApprovalDays}d
-                </span>
+                <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-foreground">{avgApprovalDays}d</span>
               </div>
               <p className="text-xs text-muted-foreground">Mục tiêu: &lt; 3 ngày</p>
             </div>
@@ -176,28 +154,72 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-      {/* Recent activities */}
-      <Card className="border-0 shadow-soft">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-foreground">Hoạt động gần đây</h3>
-            <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => navigate("/admin/audit")}>
-              Xem tất cả <ChevronRight className="w-3.5 h-3.5 ml-1" />
-            </Button>
-          </div>
-          <div className="space-y-3">
-            {recentActivities.map((a, i) => (
-              <div key={i} className="flex items-center gap-3 py-2">
-                {a.avatar && <img src={a.avatar} alt="" className="w-8 h-8 rounded-lg object-cover" />}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground truncate">{a.text}</p>
-                  <p className="text-xs text-muted-foreground">{a.time}</p>
+      {/* New row: Quản lý lớp mới + Giao dịch gần đây */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Quản lý lớp mới */}
+        <Card className="border-0 shadow-soft">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-foreground">Quản lý lớp học</h3>
+              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => navigate("/admin/classes")}>
+                Xem tất cả <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {recentClasses.map(c => (
+                <div key={c.id} className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-muted/30 transition-colors">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <BookOpen className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
+                    <p className="text-xs text-muted-foreground">{getUserName(c.tutorId)} · {c.fee.toLocaleString("vi-VN")}đ</p>
+                  </div>
+                  <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${statusColor[c.status]}`}>
+                    {statusLabel[c.status]}
+                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+              {recentClasses.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Chưa có lớp học</p>}
+            </div>
+            <Button variant="outline" size="sm" className="w-full mt-3 rounded-xl text-xs" onClick={() => navigate("/admin/classes")}>
+              <Plus className="w-3.5 h-3.5 mr-1" /> Tạo lớp mới
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Giao dịch gần đây */}
+        <Card className="border-0 shadow-soft">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-foreground">Giao dịch gần đây</h3>
+              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => navigate("/admin/transactions")}>
+                Xem tất cả <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {recentTransactions.map(tx => {
+                const user = users.find(u => u.id === tx.userId);
+                return (
+                  <div key={tx.id} className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-muted/30 transition-colors">
+                    {user?.avatar && <img src={user.avatar} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{tx.description}</p>
+                      <p className="text-xs text-muted-foreground">{user?.name || "—"} · {tx.date}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-semibold text-foreground">{tx.amount.toLocaleString("vi-VN")}đ</p>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${txStatusColor[tx.status]}`}>
+                        {txStatusLabel[tx.status]}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

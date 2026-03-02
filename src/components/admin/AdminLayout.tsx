@@ -1,7 +1,9 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, CheckCircle, BookOpen, FileText, CreditCard, BarChart3, ScrollText, Settings, LogOut, Bell, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, CheckCircle, BookOpen, FileText, CreditCard, BarChart3, ScrollText, Settings, LogOut, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/contexts/AdminContext";
+import EduLogo from "@/components/EduLogo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Tổng quan", end: true },
@@ -41,9 +43,7 @@ const AdminLayout = () => {
       <aside className="w-[260px] bg-card border-r border-border flex flex-col shrink-0">
         {/* Logo */}
         <div className="h-16 flex items-center gap-3 px-6 border-b border-border">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">E</span>
-          </div>
+          <EduLogo size={36} />
           <div>
             <h1 className="text-base font-bold text-foreground leading-tight">EduConnect</h1>
             <p className="text-[11px] text-muted-foreground leading-tight">Admin Panel</p>
@@ -62,7 +62,7 @@ const AdminLayout = () => {
                 cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group relative",
                   isActive
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    ? "bg-primary text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )
               }
@@ -97,7 +97,9 @@ const AdminLayout = () => {
           <div>
             <h2 className="text-lg font-semibold text-foreground">{currentTitle}</h2>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            
             {/* Notification bell */}
             <button className="relative p-2 rounded-xl hover:bg-muted transition-colors">
               <Bell className="w-5 h-5 text-muted-foreground" />
@@ -109,15 +111,15 @@ const AdminLayout = () => {
             </button>
 
             {/* Admin profile */}
-            <div className="flex items-center gap-3 pl-4 border-l border-border">
+            <div className="flex items-center gap-3 pl-3 border-l border-border">
               <img
-                src="https://randomuser.me/api/portraits/men/75.jpg"
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
                 alt="Admin"
                 className="w-9 h-9 rounded-xl object-cover ring-2 ring-primary/20"
               />
               <div className="hidden md:block">
-                <p className="text-sm font-semibold text-foreground leading-tight">Admin</p>
-                <p className="text-[11px] text-muted-foreground leading-tight">Quản trị viên</p>
+                <p className="text-sm font-semibold text-foreground leading-tight">Quản trị viên</p>
+                <p className="text-[11px] text-muted-foreground leading-tight">admin@educonnect.vn</p>
               </div>
             </div>
           </div>
