@@ -16,11 +16,11 @@ const bullets = [
 ];
 
 const avatars = [
-  "https://api.dicebear.com/9.x/personas/svg?seed=Tuan&backgroundColor=b6e3f4",
-  "https://api.dicebear.com/9.x/personas/svg?seed=Huong&backgroundColor=c0aede",
-  "https://api.dicebear.com/9.x/personas/svg?seed=Mai&backgroundColor=ffd5dc",
-  "https://api.dicebear.com/9.x/personas/svg?seed=Anh&backgroundColor=c0f0d4",
-  "https://api.dicebear.com/9.x/personas/svg?seed=Duc&backgroundColor=d1d4f9",
+  "https://randomuser.me/api/portraits/men/32.jpg",
+  "https://randomuser.me/api/portraits/women/44.jpg",
+  "https://randomuser.me/api/portraits/women/68.jpg",
+  "https://randomuser.me/api/portraits/men/75.jpg",
+  "https://randomuser.me/api/portraits/men/22.jpg",
 ];
 
 const HeroSection = () => {
