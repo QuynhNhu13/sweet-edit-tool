@@ -34,6 +34,7 @@ import TutorStudents from "./pages/tutor/TutorStudents";
 import TutorReviews from "./pages/tutor/TutorReviews";
 import TutorChat from "./pages/tutor/TutorChat";
 import TutorProfile from "./pages/tutor/TutorProfile";
+import TutorClassDetail from "./pages/tutor/TutorClassDetail";
 import TutorPublicProfile from "./pages/TutorPublicProfile";
 
 const queryClient = new QueryClient();
