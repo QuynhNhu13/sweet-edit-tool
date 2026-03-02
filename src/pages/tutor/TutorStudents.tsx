@@ -1,28 +1,88 @@
 import { useTutor } from "@/contexts/TutorContext";
-import { Users, TrendingUp, Target, BookOpen, BarChart3 } from "lucide-react";
+import { Users, TrendingUp, Target, BookOpen, BarChart3, Search, X, Phone, Mail, Calendar, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 
 const TutorStudents = () => {
-  const { studentProgress } = useTutor();
+  const { studentProgress, classes } = useTutor();
   const [selected, setSelected] = useState<string | null>(null);
-  const sp = selected ? studentProgress.find(s => s.studentId === selected) : null;
+  const [search, setSearch] = useState("");
+  const [filterSubject, setFilterSubject] = useState("all");
+
+  const sp = selected ? studentProgress.find(s => s.studentId + s.classId === selected) : null;
+
+  // Summary stats
+  const totalStudents = new Set(studentProgress.map(s => s.studentId)).size;
+  const activeStudents = studentProgress.filter(s => s.completedSessions > 0 && s.completedSessions < s.totalSessions).length;
+  const avgAttendance = studentProgress.filter(s => s.completedSessions > 0).reduce((sum, s) => sum + s.attendanceRate, 0) / Math.max(1, studentProgress.filter(s => s.completedSessions > 0).length);
+  const avgScore = studentProgress.filter(s => s.averageScore > 0).reduce((sum, s) => sum + s.averageScore, 0) / Math.max(1, studentProgress.filter(s => s.averageScore > 0).length);
+
+  const subjects = [...new Set(studentProgress.map(s => s.subject))];
+  const filtered = studentProgress.filter(s => {
+    if (search && !s.studentName.toLowerCase().includes(search.toLowerCase()) && !s.className.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filterSubject !== "all" && s.subject !== filterSubject) return false;
+    return true;
+  });
+
+  const chartConfig = { score: { label: "Điểm", color: "hsl(var(--primary))" } };
 
   return (
     <div className="p-6 space-y-6">
+      {/* Summary */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-card border border-border rounded-2xl p-5 text-center">
+          <Users className="w-6 h-6 text-primary mx-auto mb-2" />
+          <p className="text-2xl font-bold text-foreground">{totalStudents}</p>
+          <p className="text-xs text-muted-foreground">Tổng học sinh</p>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-5 text-center">
+          <BookOpen className="w-6 h-6 text-emerald-500 mx-auto mb-2" />
+          <p className="text-2xl font-bold text-foreground">{activeStudents}</p>
+          <p className="text-xs text-muted-foreground">Đang học</p>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-5 text-center">
+          <CheckCircle2 className="w-6 h-6 text-primary mx-auto mb-2" />
+          <p className="text-2xl font-bold text-foreground">{avgAttendance.toFixed(0)}%</p>
+          <p className="text-xs text-muted-foreground">Chuyên cần TB</p>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-5 text-center">
+          <BarChart3 className="w-6 h-6 text-amber-500 mx-auto mb-2" />
+          <p className="text-2xl font-bold text-foreground">{avgScore.toFixed(1)}</p>
+          <p className="text-xs text-muted-foreground">Điểm TB</p>
+        </div>
+      </div>
+
+      {/* Search & Filter */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm theo tên học sinh, lớp..." className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+          {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2"><X className="w-4 h-4 text-muted-foreground" /></button>}
+        </div>
+        <select value={filterSubject} onChange={e => setFilterSubject(e.target.value)} className="px-3 py-2 bg-card border border-border rounded-xl text-sm">
+          <option value="all">Tất cả môn</option>
+          {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+
+      {/* Student List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {studentProgress.map(s => (
-          <button key={s.studentId} onClick={() => setSelected(s.studentId)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all">
+        {filtered.map(s => (
+          <button key={s.studentId + s.classId} onClick={() => setSelected(s.studentId + s.classId)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all">
             <div className="flex items-center gap-4 mb-4">
               <img src={s.studentAvatar} alt="" className="w-12 h-12 rounded-full object-cover" />
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-base font-semibold text-foreground">{s.studentName}</p>
-                <p className="text-xs text-muted-foreground">{s.className} • {s.subject}</p>
+                <p className="text-xs text-muted-foreground">{s.className} • {s.subject} • {s.studentGrade}</p>
               </div>
+              {s.goalCompletion === 100 && <span className="text-[10px] font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-lg">Hoàn thành</span>}
             </div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-5 gap-2">
               <div className="p-2 bg-muted/50 rounded-lg text-center">
                 <p className="text-lg font-bold text-foreground">{s.completedSessions}/{s.totalSessions}</p>
                 <p className="text-[10px] text-muted-foreground">Buổi học</p>
@@ -32,25 +92,27 @@ const TutorStudents = () => {
                 <p className="text-[10px] text-muted-foreground">Điểm TB</p>
               </div>
               <div className="p-2 bg-muted/50 rounded-lg text-center">
-                <p className="text-lg font-bold text-foreground">{s.attendanceRate}%</p>
+                <p className={cn("text-lg font-bold", s.attendanceRate >= 90 ? "text-emerald-600" : s.attendanceRate >= 70 ? "text-amber-600" : "text-destructive")}>{s.attendanceRate}%</p>
                 <p className="text-[10px] text-muted-foreground">Chuyên cần</p>
+              </div>
+              <div className="p-2 bg-muted/50 rounded-lg text-center">
+                <p className="text-lg font-bold text-foreground">{s.homeworkCompletion}%</p>
+                <p className="text-[10px] text-muted-foreground">BTVN</p>
               </div>
               <div className="p-2 bg-muted/50 rounded-lg text-center">
                 <p className="text-lg font-bold text-primary">{s.goalCompletion}%</p>
                 <p className="text-[10px] text-muted-foreground">Mục tiêu</p>
               </div>
             </div>
-            {/* Goal progress bar */}
-            <div className="w-full bg-muted rounded-full h-1.5 mt-3">
-              <div className="bg-primary rounded-full h-1.5 transition-all" style={{ width: `${s.goalCompletion}%` }} />
-            </div>
+            <Progress value={s.goalCompletion} className="h-1.5 mt-3" />
           </button>
         ))}
       </div>
+      {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Không tìm thấy học sinh nào</p>}
 
       {/* Student Detail Dialog */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           {sp && (
             <>
               <DialogHeader>
@@ -58,19 +120,62 @@ const TutorStudents = () => {
                   <img src={sp.studentAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
                   <div>
                     <span>{sp.studentName}</span>
-                    <p className="text-xs text-muted-foreground font-normal">{sp.className}</p>
+                    <p className="text-xs text-muted-foreground font-normal">{sp.className} • {sp.studentGrade}</p>
                   </div>
                 </DialogTitle>
               </DialogHeader>
-              <Tabs defaultValue="skills">
+
+              {/* Contact Info */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                <div className="p-3 bg-muted/50 rounded-xl flex items-center gap-2"><Phone className="w-3 h-3 text-muted-foreground" /><span>{sp.studentPhone}</span></div>
+                <div className="p-3 bg-muted/50 rounded-xl flex items-center gap-2"><Mail className="w-3 h-3 text-muted-foreground" /><span className="truncate">{sp.studentEmail}</span></div>
+                <div className="p-3 bg-muted/50 rounded-xl flex items-center gap-2"><Users className="w-3 h-3 text-muted-foreground" /><span>PH: {sp.parentName}</span></div>
+                <div className="p-3 bg-muted/50 rounded-xl flex items-center gap-2"><Calendar className="w-3 h-3 text-muted-foreground" /><span>Từ {sp.startDate}</span></div>
+              </div>
+
+              <Tabs defaultValue="overview">
                 <TabsList className="mb-4">
+                  <TabsTrigger value="overview">Tổng quan</TabsTrigger>
                   <TabsTrigger value="skills">Kỹ năng</TabsTrigger>
-                  <TabsTrigger value="reports">Báo cáo tuần</TabsTrigger>
-                  <TabsTrigger value="stats">Tổng quan</TabsTrigger>
+                  <TabsTrigger value="scores">Điểm số</TabsTrigger>
+                  <TabsTrigger value="reports">Báo cáo</TabsTrigger>
                 </TabsList>
 
+                <TabsContent value="overview">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="p-4 bg-muted/50 rounded-xl text-center">
+                      <BookOpen className="w-5 h-5 text-primary mx-auto mb-1" />
+                      <p className="text-2xl font-bold text-foreground">{sp.completedSessions}/{sp.totalSessions}</p>
+                      <p className="text-xs text-muted-foreground">Buổi hoàn thành</p>
+                    </div>
+                    <div className="p-4 bg-muted/50 rounded-xl text-center">
+                      <BarChart3 className="w-5 h-5 text-primary mx-auto mb-1" />
+                      <p className="text-2xl font-bold text-foreground">{sp.averageScore > 0 ? sp.averageScore.toFixed(1) : "—"}</p>
+                      <p className="text-xs text-muted-foreground">Điểm TB</p>
+                    </div>
+                    <div className="p-4 bg-muted/50 rounded-xl text-center">
+                      <CheckCircle2 className={cn("w-5 h-5 mx-auto mb-1", sp.attendanceRate >= 90 ? "text-emerald-500" : "text-amber-500")} />
+                      <p className="text-2xl font-bold text-foreground">{sp.attendanceRate}%</p>
+                      <p className="text-xs text-muted-foreground">Chuyên cần</p>
+                    </div>
+                    <div className="p-4 bg-muted/50 rounded-xl text-center">
+                      <Target className="w-5 h-5 text-primary mx-auto mb-1" />
+                      <p className="text-2xl font-bold text-primary">{sp.goalCompletion}%</p>
+                      <p className="text-xs text-muted-foreground">Mục tiêu</p>
+                    </div>
+                    <div className="p-4 bg-muted/50 rounded-xl text-center">
+                      <p className="text-2xl font-bold text-foreground">{sp.homeworkCompletion}%</p>
+                      <p className="text-xs text-muted-foreground">Hoàn thành BTVN</p>
+                    </div>
+                    <div className="p-4 bg-muted/50 rounded-xl text-center">
+                      <p className="text-2xl font-bold text-foreground">{sp.missedSessions}</p>
+                      <p className="text-xs text-muted-foreground">Buổi vắng</p>
+                    </div>
+                  </div>
+                  {sp.notes && <div className="mt-4 p-4 bg-primary/5 rounded-xl border border-primary/10"><p className="text-xs text-muted-foreground mb-1">Ghi chú</p><p className="text-sm text-foreground">{sp.notes}</p></div>}
+                </TabsContent>
+
                 <TabsContent value="skills" className="space-y-3">
-                  <p className="text-xs text-muted-foreground">Biểu đồ tiến bộ theo kỹ năng</p>
                   {sp.skills.map(skill => (
                     <div key={skill.name} className="space-y-1">
                       <div className="flex items-center justify-between text-sm">
@@ -88,6 +193,22 @@ const TutorStudents = () => {
                   ))}
                 </TabsContent>
 
+                <TabsContent value="scores">
+                  {sp.scoreHistory.length > 0 ? (
+                    <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                      <LineChart data={sp.scoreHistory} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                        <XAxis dataKey="date" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+                        <YAxis domain={[0, 10]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: "hsl(var(--primary))" }} />
+                      </LineChart>
+                    </ChartContainer>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-8">Chưa có dữ liệu điểm</p>
+                  )}
+                </TabsContent>
+
                 <TabsContent value="reports" className="space-y-3">
                   {sp.weeklyReports.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">Chưa có báo cáo</p>
@@ -103,34 +224,6 @@ const TutorStudents = () => {
                       <p className="text-xs text-muted-foreground">{r.notes}</p>
                     </div>
                   ))}
-                  <button className="w-full py-2 bg-primary/10 text-primary rounded-xl text-sm font-medium hover:bg-primary/20 transition-colors">
-                    Xuất PDF báo cáo
-                  </button>
-                </TabsContent>
-
-                <TabsContent value="stats">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-4 bg-muted/50 rounded-xl text-center">
-                      <BookOpen className="w-5 h-5 text-primary mx-auto mb-1" />
-                      <p className="text-2xl font-bold text-foreground">{sp.completedSessions}/{sp.totalSessions}</p>
-                      <p className="text-xs text-muted-foreground">Buổi hoàn thành</p>
-                    </div>
-                    <div className="p-4 bg-muted/50 rounded-xl text-center">
-                      <BarChart3 className="w-5 h-5 text-primary mx-auto mb-1" />
-                      <p className="text-2xl font-bold text-foreground">{sp.averageScore > 0 ? sp.averageScore.toFixed(1) : "—"}</p>
-                      <p className="text-xs text-muted-foreground">Điểm trung bình</p>
-                    </div>
-                    <div className="p-4 bg-muted/50 rounded-xl text-center">
-                      <Users className="w-5 h-5 text-primary mx-auto mb-1" />
-                      <p className="text-2xl font-bold text-foreground">{sp.attendanceRate}%</p>
-                      <p className="text-xs text-muted-foreground">Chuyên cần</p>
-                    </div>
-                    <div className="p-4 bg-muted/50 rounded-xl text-center">
-                      <Target className="w-5 h-5 text-primary mx-auto mb-1" />
-                      <p className="text-2xl font-bold text-primary">{sp.goalCompletion}%</p>
-                      <p className="text-xs text-muted-foreground">Hoàn thành mục tiêu</p>
-                    </div>
-                  </div>
                 </TabsContent>
               </Tabs>
             </>

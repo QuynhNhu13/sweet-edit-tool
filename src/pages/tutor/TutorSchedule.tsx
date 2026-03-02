@@ -1,36 +1,122 @@
 import { useTutor } from "@/contexts/TutorContext";
-import { CalendarDays, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { CalendarDays, Clock, CheckCircle2, Edit2, Plus, X, Save, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
-const dayOrder = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
+const allDays = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
+const timeSlots = ["7:00-9:00", "9:00-11:00", "11:00-13:00", "14:00-16:00", "16:00-18:00", "17:00-19:00", "18:00-20:00", "19:00-21:00", "20:00-22:00"];
 
 const TutorSchedule = () => {
-  const { profile, classes } = useTutor();
+  const { profile, classes, updateAvailability } = useTutor();
+  const [editMode, setEditMode] = useState(false);
+  const [editAvail, setEditAvail] = useState(profile.availability);
+  const [selectedSession, setSelectedSession] = useState<any>(null);
 
-  // All upcoming sessions sorted
   const allSessions = classes.flatMap(c =>
-    c.sessions.map(s => ({ ...s, className: c.name, studentName: c.studentName, studentAvatar: c.studentAvatar }))
+    c.sessions.map(s => ({ ...s, className: c.name, studentName: c.studentName, studentAvatar: c.studentAvatar, subject: c.subject }))
   ).sort((a, b) => a.date.localeCompare(b.date));
 
   const upcoming = allSessions.filter(s => s.status === "scheduled");
   const completed = allSessions.filter(s => s.status === "completed").slice(-10).reverse();
 
+  const toggleSlot = (day: string, slot: string) => {
+    setEditAvail(prev => {
+      const dayEntry = prev.find(a => a.day === day);
+      if (dayEntry) {
+        const hasSlot = dayEntry.slots.includes(slot);
+        return prev.map(a => a.day === day ? { ...a, slots: hasSlot ? a.slots.filter(s => s !== slot) : [...a.slots, slot] } : a);
+      }
+      return [...prev, { day, slots: [slot] }];
+    });
+  };
+
+  const saveAvailability = () => {
+    updateAvailability(editAvail.filter(a => a.slots.length > 0));
+    setEditMode(false);
+    toast.success("Đã cập nhật lịch rảnh!");
+  };
+
+  const isSlotAvailable = (day: string, slot: string) => {
+    const source = editMode ? editAvail : profile.availability;
+    return source.find(a => a.day === day)?.slots.includes(slot) || false;
+  };
+
+  // Timetable: map sessions to day/time grid
+  const getSessionsForDayTime = (day: string, time: string) => {
+    return upcoming.filter(s => {
+      const sessionDate = new Date(s.date);
+      const dayOfWeek = sessionDate.getDay();
+      const dayMap: Record<string, number> = { "Thứ 2": 1, "Thứ 3": 2, "Thứ 4": 3, "Thứ 5": 4, "Thứ 6": 5, "Thứ 7": 6, "Chủ nhật": 0 };
+      return dayMap[day] === dayOfWeek && s.time === time;
+    });
+  };
+
   return (
     <div className="p-6 space-y-6">
-      {/* Availability Grid */}
+      {/* Timetable View */}
       <div className="bg-card border border-border rounded-2xl p-5">
-        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-primary" /> Lịch rảnh của bạn
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {profile.availability.map(av => (
-            <div key={av.day} className="p-3 bg-muted/50 rounded-xl">
-              <p className="text-xs font-semibold text-foreground mb-2">{av.day}</p>
-              {av.slots.map(slot => (
-                <span key={slot} className="block text-[11px] text-primary font-medium bg-primary/10 rounded-lg px-2 py-1 mb-1">{slot}</span>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <CalendarDays className="w-4 h-4 text-primary" /> Thời khóa biểu & Lịch rảnh
+          </h3>
+          <div className="flex gap-2">
+            {editMode ? (
+              <>
+                <button onClick={saveAvailability} className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium"><Save className="w-3 h-3" /> Lưu</button>
+                <button onClick={() => { setEditMode(false); setEditAvail(profile.availability); }} className="flex items-center gap-1 px-3 py-1.5 bg-muted text-muted-foreground rounded-lg text-xs font-medium"><X className="w-3 h-3" /> Hủy</button>
+              </>
+            ) : (
+              <button onClick={() => { setEditMode(true); setEditAvail(profile.availability); }} className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-medium"><Edit2 className="w-3 h-3" /> Chỉnh sửa</button>
+            )}
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[700px]">
+            <thead>
+              <tr>
+                <th className="text-[11px] text-muted-foreground font-medium p-2 text-left w-24">Giờ</th>
+                {allDays.map(day => <th key={day} className="text-[11px] text-muted-foreground font-medium p-2 text-center">{day}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {timeSlots.map(time => (
+                <tr key={time} className="border-t border-border/50">
+                  <td className="text-[11px] text-muted-foreground p-2 font-medium">{time}</td>
+                  {allDays.map(day => {
+                    const available = isSlotAvailable(day, time);
+                    const sessions = getSessionsForDayTime(day, time);
+                    return (
+                      <td key={day} className="p-1 text-center">
+                        {editMode ? (
+                          <button onClick={() => toggleSlot(day, time)} className={cn("w-full h-10 rounded-lg text-[10px] font-medium transition-all", available ? "bg-primary/20 text-primary border border-primary/30" : "bg-muted/30 text-muted-foreground/50 border border-transparent hover:border-primary/20")}>
+                            {available ? "✓" : "+"}
+                          </button>
+                        ) : sessions.length > 0 ? (
+                          <button onClick={() => setSelectedSession(sessions[0])} className="w-full p-1.5 bg-primary/10 border border-primary/20 rounded-lg text-left">
+                            <p className="text-[10px] font-medium text-primary truncate">{sessions[0].className}</p>
+                            <p className="text-[9px] text-muted-foreground truncate">{sessions[0].studentName}</p>
+                          </button>
+                        ) : available ? (
+                          <div className="w-full h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200/50 dark:border-emerald-800/50 flex items-center justify-center">
+                            <span className="text-[10px] text-emerald-600">Rảnh</span>
+                          </div>
+                        ) : (
+                          <div className="w-full h-10" />
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
               ))}
-            </div>
-          ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex items-center gap-4 mt-3 text-[10px]">
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-primary/20 border border-primary/30" /> Rảnh</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-primary/10 border border-primary/20" /> Có lớp</span>
         </div>
       </div>
 
@@ -45,7 +131,7 @@ const TutorSchedule = () => {
           ) : (
             <div className="space-y-2">
               {upcoming.map(s => (
-                <div key={s.id} className="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/10">
+                <button key={s.id} onClick={() => setSelectedSession(s)} className="w-full flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/10 text-left hover:shadow-sm transition-all">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                     <CalendarDays className="w-5 h-5 text-primary" />
                   </div>
@@ -54,7 +140,8 @@ const TutorSchedule = () => {
                     <p className="text-xs text-muted-foreground">{s.date} • {s.time}</p>
                   </div>
                   <img src={s.studentAvatar} alt="" className="w-7 h-7 rounded-full object-cover" />
-                </div>
+                  <Eye className="w-4 h-4 text-muted-foreground" />
+                </button>
               ))}
             </div>
           )}
@@ -67,22 +154,43 @@ const TutorSchedule = () => {
           </h3>
           <div className="space-y-2">
             {completed.map(s => (
-              <div key={s.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl">
+              <button key={s.id} onClick={() => setSelectedSession(s)} className="w-full flex items-center gap-3 p-3 bg-muted/30 rounded-xl text-left hover:bg-muted/50 transition-all">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-foreground truncate">{s.className} — {s.content || "N/A"}</p>
                   <p className="text-[11px] text-muted-foreground">{s.date} • {s.startedAt}-{s.endedAt}</p>
                 </div>
-                {s.rating && (
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(s.rating)].map((_, i) => <span key={i} className="text-amber-400 text-xs">★</span>)}
-                  </div>
-                )}
-              </div>
+                {s.rating && <div className="flex items-center gap-0.5">{[...Array(s.rating)].map((_, i) => <span key={i} className="text-amber-400 text-xs">★</span>)}</div>}
+              </button>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Session Detail Dialog */}
+      <Dialog open={!!selectedSession} onOpenChange={() => setSelectedSession(null)}>
+        <DialogContent className="max-w-md">
+          {selectedSession && (
+            <>
+              <DialogHeader><DialogTitle>{selectedSession.className}</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Ngày</span><span className="font-medium">{selectedSession.date}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Giờ</span><span className="font-medium">{selectedSession.time}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Học sinh</span><span className="font-medium">{selectedSession.studentName}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Môn</span><span className="font-medium">{selectedSession.subject}</span></div>
+                </div>
+                {selectedSession.content && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Nội dung</span><p className="text-sm">{selectedSession.content}</p></div>}
+                {selectedSession.notes && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Nhận xét</span><p className="text-sm">{selectedSession.notes}</p></div>}
+                {selectedSession.homework && <div className="p-3 bg-primary/5 rounded-xl border border-primary/10"><span className="text-xs text-muted-foreground block mb-1">BTVN</span><p className="text-sm font-medium">{selectedSession.homework}</p></div>}
+                {selectedSession.rating && (
+                  <div className="flex items-center gap-1">{[...Array(5)].map((_, i) => <span key={i} className={cn("text-sm", i < selectedSession.rating ? "text-amber-400" : "text-muted-foreground/30")}>★</span>)}{selectedSession.ratingComment && <span className="text-xs text-muted-foreground ml-2">{selectedSession.ratingComment}</span>}</div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

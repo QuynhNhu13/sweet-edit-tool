@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
 const TutorDashboard = () => {
   const { profile, classes, trials, wallet, walletBalance, escrowBalance, chatMessages, reviews, studentProgress, sendMessage, markMessagesRead } = useTutor();
   const navigate = useNavigate();
 
-  // Chat widget state
   const [chatOpen, setChatOpen] = useState(false);
   const [selectedChatClass, setSelectedChatClass] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState("");
@@ -20,14 +21,12 @@ const TutorDashboard = () => {
   const pendingTrials = trials.filter(t => t.status === "pending");
   const unreadMessages = chatMessages.filter(m => !m.read && m.sender !== "tutor").length;
 
-  // Income calculations
   const totalIncome = wallet.filter(w => w.type === "escrow_release" && w.status === "completed").reduce((s, w) => s + w.amount, 0);
   const totalFees = wallet.filter(w => w.type === "platform_fee" && w.status === "completed").reduce((s, w) => s + Math.abs(w.amount), 0);
   const netIncome = totalIncome - totalFees;
   const totalSessionsCompleted = classes.reduce((s, c) => s + c.completedSessions, 0);
   const totalSessionsAll = classes.reduce((s, c) => s + c.totalSessions, 0);
 
-  // Next session
   const upcomingSessions = classes.flatMap(c => c.sessions.filter(s => s.status === "scheduled")).sort((a, b) => a.date.localeCompare(b.date));
   const nextSession = upcomingSessions[0];
   const nextClass = nextSession ? classes.find(c => c.sessions.some(s => s.id === nextSession.id)) : null;
@@ -44,7 +43,6 @@ const TutorDashboard = () => {
     return `${hours}h ${mins}m`;
   };
 
-  // Chat widget logic
   const chatClassMessages = selectedChatClass ? chatMessages.filter(m => m.classId === selectedChatClass) : [];
   const unreadByClass = (classId: string) => chatMessages.filter(m => m.classId === classId && !m.read && m.sender !== "tutor").length;
 
@@ -61,8 +59,9 @@ const TutorDashboard = () => {
     setChatInput("");
   };
 
-  // Monthly income data (mock)
+  // Monthly income data for line chart
   const monthlyData = [
+    { month: "T9", income: 800000 },
     { month: "T10", income: 1200000 },
     { month: "T11", income: 1800000 },
     { month: "T12", income: 1600000 },
@@ -70,7 +69,10 @@ const TutorDashboard = () => {
     { month: "T2", income: 2640000 },
     { month: "T3", income: 800000 },
   ];
-  const maxIncome = Math.max(...monthlyData.map(d => d.income));
+
+  const chartConfig = {
+    income: { label: "Thu nhập", color: "hsl(var(--primary))" },
+  };
 
   const stats = [
     { label: "Lớp đang dạy", value: activeClasses.length, sub: `${completedClasses.length} hoàn thành`, icon: BookOpen, color: "text-primary", bg: "bg-primary/10", link: "/tutor/classes" },
@@ -104,7 +106,6 @@ const TutorDashboard = () => {
           <TrendingUp className="w-4 h-4 text-primary" /> Tiến độ tổng quan
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Teaching Progress */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground">Buổi dạy</span>
@@ -113,8 +114,6 @@ const TutorDashboard = () => {
             <Progress value={(totalSessionsCompleted / totalSessionsAll) * 100} className="h-2.5" />
             <p className="text-[10px] text-muted-foreground mt-1">{Math.round((totalSessionsCompleted / totalSessionsAll) * 100)}% hoàn thành</p>
           </div>
-
-          {/* Escrow Progress */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground">Giải ngân Escrow</span>
@@ -127,8 +126,6 @@ const TutorDashboard = () => {
             </div>
             <p className="text-[10px] text-muted-foreground mt-1">Đang giữ: {escrowBalance.toLocaleString("vi-VN")}đ</p>
           </div>
-
-          {/* Rating Progress */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground">Tỷ lệ đậu test</span>
@@ -141,7 +138,6 @@ const TutorDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Next session + Income chart */}
         <div className="lg:col-span-2 space-y-6">
           {/* Next Session */}
           <div className="bg-card border border-border rounded-2xl p-6">
@@ -162,10 +158,7 @@ const TutorDashboard = () => {
                   <p className="text-xs text-muted-foreground">Còn</p>
                   <p className="text-lg font-bold text-primary">{getCountdown()}</p>
                 </div>
-                <button
-                  onClick={() => navigate("/tutor/classes")}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
-                >
+                <button onClick={() => navigate(`/tutor/classes/${nextClass.id}`)} className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors">
                   Vào lớp
                 </button>
               </div>
@@ -174,22 +167,20 @@ const TutorDashboard = () => {
             )}
           </div>
 
-          {/* Income Chart (Simple bar) */}
+          {/* Income Line Chart */}
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
               <Wallet className="w-4 h-4 text-emerald-600" /> Thu nhập theo tháng
             </h3>
-            <div className="flex items-end gap-3 h-36">
-              {monthlyData.map((d, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[10px] text-muted-foreground">{(d.income / 1000000).toFixed(1)}tr</span>
-                  <div className="w-full rounded-t-lg bg-primary/10 relative overflow-hidden" style={{ height: `${Math.max(8, (d.income / maxIncome) * 100)}%` }}>
-                    <div className={cn("absolute inset-0 rounded-t-lg", i === monthlyData.length - 1 ? "bg-primary/50" : "bg-primary")} />
-                  </div>
-                  <span className="text-[10px] text-muted-foreground font-medium">{d.month}</span>
-                </div>
-              ))}
-            </div>
+            <ChartContainer config={chartConfig} className="h-[220px] w-full">
+              <LineChart data={monthlyData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis dataKey="month" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                <YAxis tickFormatter={(v) => `${(v / 1000000).toFixed(1)}tr`} className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                <ChartTooltip content={<ChartTooltipContent formatter={(value) => `${Number(value).toLocaleString("vi-VN")}đ`} />} />
+                <Line type="monotone" dataKey="income" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 5, fill: "hsl(var(--primary))" }} activeDot={{ r: 7 }} />
+              </LineChart>
+            </ChartContainer>
           </div>
 
           {/* Active Classes Progress */}
@@ -199,7 +190,7 @@ const TutorDashboard = () => {
             </h3>
             <div className="space-y-4">
               {activeClasses.map(c => (
-                <button key={c.id} onClick={() => navigate("/tutor/classes")} className="w-full text-left group">
+                <button key={c.id} onClick={() => navigate(`/tutor/classes/${c.id}`)} className="w-full text-left group">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-3">
                       <img src={c.studentAvatar} alt="" className="w-7 h-7 rounded-full object-cover" />
@@ -227,7 +218,6 @@ const TutorDashboard = () => {
 
         {/* Right column */}
         <div className="space-y-4">
-          {/* Pending Trials */}
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center justify-between">
               <span>Yêu cầu học thử</span>
@@ -247,7 +237,6 @@ const TutorDashboard = () => {
             )}
           </div>
 
-          {/* Wallet Summary */}
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="text-sm font-semibold text-foreground mb-3">Ví điện tử</h3>
             <div className="space-y-2">
@@ -263,7 +252,6 @@ const TutorDashboard = () => {
             <button onClick={() => navigate("/tutor/wallet")} className="w-full mt-3 text-xs text-primary font-medium hover:underline">Xem chi tiết →</button>
           </div>
 
-          {/* Latest Review */}
           {reviews.length > 0 && (
             <div className="bg-card border border-border rounded-2xl p-5">
               <h3 className="text-sm font-semibold text-foreground mb-3">Đánh giá gần nhất</h3>
@@ -282,12 +270,11 @@ const TutorDashboard = () => {
             </div>
           )}
 
-          {/* Student Progress Quick */}
           {studentProgress.filter(sp => sp.completedSessions > 0).length > 0 && (
             <div className="bg-card border border-border rounded-2xl p-5">
               <h3 className="text-sm font-semibold text-foreground mb-3">Tiến độ học sinh</h3>
-              {studentProgress.filter(sp => sp.completedSessions > 0).map(sp => (
-                <button key={sp.studentId} onClick={() => navigate("/tutor/students")} className="w-full flex items-center gap-3 p-3 bg-muted/50 rounded-xl mb-2 last:mb-0 text-left hover:bg-muted transition-colors">
+              {studentProgress.filter(sp => sp.completedSessions > 0).slice(0, 3).map(sp => (
+                <button key={sp.studentId + sp.classId} onClick={() => navigate("/tutor/students")} className="w-full flex items-center gap-3 p-3 bg-muted/50 rounded-xl mb-2 last:mb-0 text-left hover:bg-muted transition-colors">
                   <img src={sp.studentAvatar} alt="" className="w-8 h-8 rounded-full object-cover" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-foreground truncate">{sp.studentName}</p>
@@ -295,7 +282,7 @@ const TutorDashboard = () => {
                     <Progress value={sp.goalCompletion} className="h-1 mt-1" />
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-foreground">{sp.averageScore}</p>
+                    <p className="text-xs font-bold text-foreground">{sp.averageScore > 0 ? sp.averageScore.toFixed(1) : "—"}</p>
                     <p className="text-[10px] text-muted-foreground">ĐTB</p>
                   </div>
                 </button>
@@ -308,10 +295,7 @@ const TutorDashboard = () => {
       {/* Floating Chat Widget */}
       <div className="fixed bottom-6 right-6 z-50">
         {!chatOpen ? (
-          <button
-            onClick={() => setChatOpen(true)}
-            className="relative w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center hover:scale-105"
-          >
+          <button onClick={() => setChatOpen(true)} className="relative w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center hover:scale-105">
             <MessageSquare className="w-6 h-6" />
             {unreadMessages > 0 && (
               <span className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground px-1">
@@ -321,7 +305,6 @@ const TutorDashboard = () => {
           </button>
         ) : (
           <div className="w-[380px] h-[520px] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            {/* Chat Header */}
             <div className="p-4 border-b border-border flex items-center justify-between bg-primary/5">
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-primary" />
@@ -332,42 +315,24 @@ const TutorDashboard = () => {
               <div className="flex items-center gap-1">
                 {selectedChatClass && (
                   <>
-                    <button className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Gọi thoại">
-                      <Phone className="w-4 h-4" />
-                    </button>
-                    <button className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Gọi video">
-                      <Video className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => setSelectedChatClass(null)} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Quay lại">
-                      <ChevronRight className="w-4 h-4 rotate-180" />
-                    </button>
+                    <button className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Gọi thoại"><Phone className="w-4 h-4" /></button>
+                    <button className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Gọi video"><Video className="w-4 h-4" /></button>
+                    <button onClick={() => setSelectedChatClass(null)} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground"><ChevronRight className="w-4 h-4 rotate-180" /></button>
                   </>
                 )}
-                <button onClick={() => { setChatOpen(false); setSelectedChatClass(null); }} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
-                  <X className="w-4 h-4" />
-                </button>
+                <button onClick={() => { setChatOpen(false); setSelectedChatClass(null); }} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground"><X className="w-4 h-4" /></button>
               </div>
             </div>
-
             {!selectedChatClass ? (
-              /* Class list */
               <div className="flex-1 overflow-y-auto">
                 {classes.filter(c => c.escrowStatus !== "refunded").map(c => {
                   const lastMsg = chatMessages.filter(m => m.classId === c.id).slice(-1)[0];
                   const unread = unreadByClass(c.id);
                   return (
-                    <button
-                      key={c.id}
-                      onClick={() => setSelectedChatClass(c.id)}
-                      className="w-full text-left p-4 border-b border-border/50 hover:bg-muted/50 transition-colors flex items-center gap-3"
-                    >
+                    <button key={c.id} onClick={() => setSelectedChatClass(c.id)} className="w-full text-left p-4 border-b border-border/50 hover:bg-muted/50 transition-colors flex items-center gap-3">
                       <div className="relative">
                         <img src={c.studentAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
-                        {unread > 0 && (
-                          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center text-[9px] font-bold rounded-full bg-destructive text-destructive-foreground px-0.5">
-                            {unread}
-                          </span>
-                        )}
+                        {unread > 0 && <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center text-[9px] font-bold rounded-full bg-destructive text-destructive-foreground px-0.5">{unread}</span>}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
@@ -381,17 +346,11 @@ const TutorDashboard = () => {
                 })}
               </div>
             ) : (
-              /* Chat messages */
               <>
                 <div className="flex-1 overflow-y-auto p-3 space-y-2">
                   {chatClassMessages.map(m => (
                     <div key={m.id} className={cn("flex", m.sender === "tutor" ? "justify-end" : "justify-start")}>
-                      <div className={cn(
-                        "max-w-[75%] px-3 py-2 rounded-2xl text-sm",
-                        m.sender === "tutor"
-                          ? "bg-primary text-primary-foreground rounded-br-sm"
-                          : "bg-muted text-foreground rounded-bl-sm"
-                      )}>
+                      <div className={cn("max-w-[75%] px-3 py-2 rounded-2xl text-sm", m.sender === "tutor" ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-muted text-foreground rounded-bl-sm")}>
                         {m.sender !== "tutor" && <p className="text-[10px] font-semibold mb-0.5 opacity-70">{m.senderName}</p>}
                         <p className="text-[13px]">{m.message}</p>
                         <p className={cn("text-[9px] mt-0.5", m.sender === "tutor" ? "text-primary-foreground/60" : "text-muted-foreground")}>{m.timestamp.split(" ")[1]}</p>
@@ -400,18 +359,9 @@ const TutorDashboard = () => {
                   ))}
                   <div ref={messagesEndRef} />
                 </div>
-
                 <div className="p-3 border-t border-border flex gap-2">
-                  <input
-                    value={chatInput}
-                    onChange={e => setChatInput(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && handleSendChat()}
-                    className="flex-1 px-3 py-2 bg-muted/50 border border-border rounded-xl text-sm"
-                    placeholder="Nhập tin nhắn..."
-                  />
-                  <button onClick={handleSendChat} disabled={!chatInput.trim()} className="p-2 bg-primary text-primary-foreground rounded-xl disabled:opacity-50">
-                    <Send className="w-4 h-4" />
-                  </button>
+                  <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSendChat()} className="flex-1 px-3 py-2 bg-muted/50 border border-border rounded-xl text-sm" placeholder="Nhập tin nhắn..." />
+                  <button onClick={handleSendChat} disabled={!chatInput.trim()} className="p-2 bg-primary text-primary-foreground rounded-xl disabled:opacity-50"><Send className="w-4 h-4" /></button>
                 </div>
               </>
             )}
