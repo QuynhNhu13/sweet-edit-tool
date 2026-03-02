@@ -20,13 +20,7 @@ const bullets = [
   "Thanh toán an toàn, minh bạch",
 ];
 
-const avatars = [
-  "https://randomuser.me/api/portraits/men/32.jpg",
-  "https://randomuser.me/api/portraits/women/44.jpg",
-  "https://randomuser.me/api/portraits/women/68.jpg",
-  "https://randomuser.me/api/portraits/men/75.jpg",
-  "https://randomuser.me/api/portraits/men/22.jpg",
-];
+const avatars = [tutor1, tutor2, tutor3, tutor4, tutor5];
 
 const HeroSection = () => {
   return (
