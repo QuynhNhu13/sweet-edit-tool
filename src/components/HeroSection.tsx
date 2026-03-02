@@ -2,6 +2,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Users, GraduationCap, ThumbsUp, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import tutor1 from "@/assets/tutor-1.jpg";
+import tutor2 from "@/assets/tutor-2.jpg";
+import tutor3 from "@/assets/tutor-3.jpg";
+import tutor4 from "@/assets/tutor-4.jpg";
+import tutor5 from "@/assets/tutor-5.jpg";
 
 const stats = [
   { icon: Users, value: "1,200+", label: "Gia sư & Giáo viên" },
