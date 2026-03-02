@@ -51,7 +51,7 @@ const ExamOnline = () => {
                   <div className="flex justify-between"><span>Phí thi</span><span className="text-neon font-bold">{e.price}</span></div>
                   <div className="flex justify-between"><span>Lượt thi</span><span className="text-foreground font-medium">{e.attempts}</span></div>
                 </div>
-                <Button className="w-full rounded-2xl gradient-blue text-white font-semibold" asChild>
+                <Button className="w-full rounded-full gradient-blue text-white font-semibold h-12" asChild>
                   <Link to="/register">Thi ngay</Link>
                 </Button>
               </div>

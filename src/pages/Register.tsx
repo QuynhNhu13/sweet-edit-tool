@@ -77,7 +77,7 @@ const Register = () => {
                 <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
                 <Input id="confirmPassword" type="password" placeholder="••••••••" className="mt-1.5 rounded-xl h-11" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} required />
               </div>
-              <Button type="submit" disabled={loading} className="w-full h-12 rounded-2xl bg-neon text-neon-foreground hover:bg-neon/90 text-base font-bold shadow-neon">
+              <Button type="submit" disabled={loading} className="w-full h-12 rounded-full bg-neon text-neon-foreground hover:bg-neon/90 text-base font-bold shadow-neon">
                 {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Đang xử lý...</> : "Đăng ký"}
               </Button>
             </form>

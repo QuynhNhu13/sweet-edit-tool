@@ -42,7 +42,7 @@ const Login = () => {
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Input id="password" type="password" placeholder="••••••••" className="mt-1.5 rounded-xl h-11" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
               </div>
-              <Button type="submit" disabled={loading} className="w-full h-12 rounded-2xl gradient-blue text-white text-base font-bold">
+              <Button type="submit" disabled={loading} className="w-full h-12 rounded-full gradient-blue text-white text-base font-bold">
                 {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Đang xử lý...</> : "Đăng nhập"}
               </Button>
             </form>

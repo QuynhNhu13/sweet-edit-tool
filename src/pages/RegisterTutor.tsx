@@ -84,7 +84,7 @@ const RegisterTutor = () => {
                   <Label htmlFor="education">Bằng cấp / Chứng chỉ</Label>
                   <Input id="education" placeholder="VD: Cử nhân Sư phạm Toán" className="mt-1.5 rounded-xl h-11" required />
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-12 rounded-2xl bg-neon text-neon-foreground hover:bg-neon/90 text-base font-bold shadow-neon">
+                <Button type="submit" disabled={loading} className="w-full h-12 rounded-full bg-neon text-neon-foreground hover:bg-neon/90 text-base font-bold shadow-neon">
                   {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Đang gửi...</> : "Gửi đăng ký"}
                 </Button>
               </form>
