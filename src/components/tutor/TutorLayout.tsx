@@ -24,7 +24,7 @@ const pageTitles: Record<string, string> = {
   "/tutor": "Tổng quan",
   "/tutor/classes": "Quản lý lớp học",
   "/tutor/students": "Tiến độ học sinh",
-  "/tutor/wallet": "Ví & Escrow",
+  "/tutor/wallet": "Ví & Thu nhập",
   "/tutor/schedule": "Lịch dạy",
   "/tutor/reviews": "Đánh giá",
   "/tutor/chat": "Tin nhắn",
