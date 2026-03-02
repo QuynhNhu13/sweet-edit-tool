@@ -7,12 +7,12 @@ const PlaceholderPage = ({ title, description }: { title: string; description: s
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="pt-24 pb-16 min-h-[80vh] flex items-center">
+      <div className="pt-28 pb-16 min-h-[80vh] flex items-center">
         <div className="container mx-auto px-4 text-center max-w-lg">
-          <div className="bg-card rounded-2xl p-10 shadow-elevated border border-border">
-            <h1 className="text-2xl font-extrabold text-foreground mb-3">{title}</h1>
+          <div className="bg-card rounded-3xl p-10 shadow-elevated border border-border">
+            <h1 className="text-2xl font-extrabold font-display text-foreground mb-3">{title}</h1>
             <p className="text-muted-foreground mb-8">{description}</p>
-            <Button asChild className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button asChild className="rounded-2xl gradient-blue text-white font-semibold">
               <Link to="/">Về trang chủ</Link>
             </Button>
           </div>

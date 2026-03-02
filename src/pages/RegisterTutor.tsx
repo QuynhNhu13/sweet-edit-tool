@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,28 +23,31 @@ const RegisterTutor = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="pt-24 pb-16">
+      <div className="pt-28 pb-16">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-start max-w-5xl mx-auto">
-            {/* Info */}
+          <div className="grid lg:grid-cols-2 gap-14 items-start max-w-5xl mx-auto">
             <div className="lg:sticky lg:top-24">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4">Trở thành gia sư EduConnect</h1>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon/10 text-neon text-sm font-semibold mb-6">
+                Tuyển gia sư
+              </span>
+              <h1 className="text-4xl font-extrabold font-display text-foreground mb-4">
+                Trở thành gia sư <span className="text-gradient">EduConnect</span>
+              </h1>
               <p className="text-muted-foreground text-lg mb-8">
-                Tham gia đội ngũ hơn 1,200 gia sư chất lượng và bắt đầu hành trình giảng dạy của bạn.
+                Tham gia đội ngũ hơn 1,200 gia sư chất lượng và bắt đầu hành trình giảng dạy.
               </p>
               <ul className="space-y-4">
                 {benefits.map((b) => (
                   <li key={b} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-secondary flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-neon flex-shrink-0" />
                     <span className="text-foreground font-medium">{b}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Form */}
-            <div className="bg-card rounded-2xl p-8 shadow-elevated border border-border">
-              <h2 className="text-xl font-bold text-foreground mb-6">Thông tin đăng ký</h2>
+            <div className="bg-card rounded-3xl p-8 shadow-elevated border border-border">
+              <h2 className="text-xl font-bold font-display text-foreground mb-6">Thông tin đăng ký</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -67,13 +69,13 @@ const RegisterTutor = () => {
                 </div>
                 <div>
                   <Label htmlFor="exp">Kinh nghiệm giảng dạy</Label>
-                  <Textarea id="exp" placeholder="Mô tả kinh nghiệm giảng dạy của bạn..." className="mt-1.5 rounded-xl min-h-[100px]" required />
+                  <Textarea id="exp" placeholder="Mô tả kinh nghiệm..." className="mt-1.5 rounded-xl min-h-[100px]" required />
                 </div>
                 <div>
                   <Label htmlFor="education">Bằng cấp / Chứng chỉ</Label>
-                  <Input id="education" placeholder="VD: Cử nhân Sư phạm Toán - ĐHSP Hà Nội" className="mt-1.5 rounded-xl h-11" required />
+                  <Input id="education" placeholder="VD: Cử nhân Sư phạm Toán" className="mt-1.5 rounded-xl h-11" required />
                 </div>
-                <Button type="submit" className="w-full h-12 rounded-xl bg-secondary hover:bg-secondary/90 text-secondary-foreground text-base">
+                <Button type="submit" className="w-full h-12 rounded-2xl bg-neon text-neon-foreground hover:bg-neon/90 text-base font-bold shadow-neon">
                   Gửi đăng ký
                 </Button>
               </form>

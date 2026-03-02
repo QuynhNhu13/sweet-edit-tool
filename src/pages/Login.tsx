@@ -18,14 +18,14 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="pt-24 pb-16 min-h-[80vh] flex items-center">
+      <div className="pt-28 pb-16 min-h-[80vh] flex items-center">
         <div className="container mx-auto px-4 max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-foreground mb-2">Đăng nhập</h1>
+            <h1 className="text-3xl font-extrabold font-display text-foreground mb-2">Đăng nhập</h1>
             <p className="text-muted-foreground">Chào mừng trở lại EduConnect</p>
           </div>
 
-          <div className="bg-card rounded-2xl p-8 shadow-elevated border border-border">
+          <div className="bg-card rounded-3xl p-8 shadow-elevated border border-border">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="email">Email</Label>
@@ -35,14 +35,14 @@ const Login = () => {
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Input id="password" type="password" placeholder="••••••••" className="mt-1.5 rounded-xl h-11" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
               </div>
-              <Button type="submit" className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-base">
+              <Button type="submit" className="w-full h-12 rounded-2xl gradient-blue text-white text-base font-bold">
                 Đăng nhập
               </Button>
             </form>
 
             <p className="text-center text-sm text-muted-foreground mt-6">
               Chưa có tài khoản?{" "}
-              <Link to="/register" className="text-secondary font-semibold hover:underline">Đăng ký ngay</Link>
+              <Link to="/register" className="text-neon font-semibold hover:underline">Đăng ký ngay</Link>
             </p>
           </div>
         </div>

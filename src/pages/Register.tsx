@@ -29,23 +29,22 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="pt-24 pb-16">
+      <div className="pt-28 pb-16">
         <div className="container mx-auto px-4 max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-foreground mb-2">Đăng ký tài khoản</h1>
+            <h1 className="text-3xl font-extrabold font-display text-foreground mb-2">Đăng ký tài khoản</h1>
             <p className="text-muted-foreground">Tham gia EduConnect ngay hôm nay</p>
           </div>
 
-          <div className="bg-card rounded-2xl p-8 shadow-elevated border border-border">
-            {/* Role selector */}
+          <div className="bg-card rounded-3xl p-8 shadow-elevated border border-border">
             <div className="flex gap-2 mb-6">
               {roles.map((r) => (
                 <button
                   key={r.key}
                   onClick={() => setRole(r.key)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  className={`flex-1 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                     role === r.key
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-neon text-neon-foreground shadow-neon"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
                 >
@@ -71,7 +70,7 @@ const Register = () => {
                 <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
                 <Input id="confirmPassword" type="password" placeholder="••••••••" className="mt-1.5 rounded-xl h-11" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} required />
               </div>
-              <Button type="submit" className="w-full h-12 rounded-xl bg-secondary hover:bg-secondary/90 text-secondary-foreground text-base">
+              <Button type="submit" className="w-full h-12 rounded-2xl bg-neon text-neon-foreground hover:bg-neon/90 text-base font-bold shadow-neon">
                 Đăng ký
               </Button>
             </form>
