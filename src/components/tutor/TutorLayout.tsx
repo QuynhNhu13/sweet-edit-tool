@@ -112,7 +112,7 @@ const TutorLayout = () => {
               <img src={profile.avatar} alt={profile.name} className="w-8 h-8 rounded-full object-cover" />
               <div>
                 <p className="text-sm font-semibold text-foreground leading-tight">{profile.name}</p>
-                <p className="text-[11px] text-muted-foreground leading-tight">{profile.subjects.join(", ")}</p>
+                <p className="text-[11px] text-muted-foreground leading-tight">Gia sư</p>
               </div>
             </div>
           </div>

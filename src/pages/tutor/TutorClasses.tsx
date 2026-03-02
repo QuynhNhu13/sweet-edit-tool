@@ -1,9 +1,10 @@
 import { useTutor } from "@/contexts/TutorContext";
-import { BookOpen, Clock, CheckCircle2, Play, Square, FileText, MessageSquare, ChevronRight, UserCheck, UserX } from "lucide-react";
+import { BookOpen, Clock, CheckCircle2, Play, Square, FileText, UserCheck, UserX, Search, Filter, ChevronRight, MapPin, Monitor, Users2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
 const escrowColors: Record<string, string> = {
@@ -20,13 +21,52 @@ const escrowLabels: Record<string, string> = {
   refunded: "Đã hoàn tiền",
 };
 
+// Mock data: "Đang tìm gia sư" (open requests from parents)
+const seekingTutor = [
+  { id: "seek1", studentName: "Nguyễn Thị Hà", parentName: "Nguyễn Văn Bình", subject: "Toán", grade: "Lớp 11", format: "online" as const, budget: "200.000 - 300.000đ/buổi", schedule: "T3, T5 - 19:00-21:00", location: "TP.HCM", note: "Con cần ôn thi giữa kỳ, yếu phần hình học", postedDate: "2026-02-28", avatar: "" },
+  { id: "seek2", studentName: "Trần Đức Anh", parentName: "Trần Thị Ngọc", subject: "Lý", grade: "Lớp 12", format: "offline" as const, budget: "250.000 - 350.000đ/buổi", schedule: "T7, CN - 9:00-11:00", location: "Quận 7, TP.HCM", note: "Ôn thi ĐH, cần gia sư có kinh nghiệm", postedDate: "2026-03-01", avatar: "" },
+  { id: "seek3", studentName: "Phạm Minh Khôi", parentName: "Phạm Thị Thu", subject: "Toán", grade: "Lớp 10", format: "hybrid" as const, budget: "180.000 - 250.000đ/buổi", schedule: "T2, T4 - 17:00-19:00", location: "Quận 1, TP.HCM", note: "Mới chuyển trường, cần bổ trợ kiến thức", postedDate: "2026-03-01", avatar: "" },
+  { id: "seek4", studentName: "Lê Hồng Nhung", parentName: "Lê Văn Tú", subject: "Anh", grade: "Lớp 9", format: "online" as const, budget: "200.000 - 280.000đ/buổi", schedule: "T3, T6 - 19:30-21:00", location: "Hà Nội", note: "Luyện thi vào 10 chuyên Anh", postedDate: "2026-02-27", avatar: "" },
+];
+
+const formatIcons = { online: Monitor, offline: MapPin, hybrid: Users2 };
+const formatLabels = { online: "Online", offline: "Offline", hybrid: "Kết hợp" };
+
 const TutorClasses = () => {
   const { classes, trials, confirmTrial, rejectTrial, startSession, endSession } = useTutor();
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [sessionDialog, setSessionDialog] = useState<{ sessionId: string; classId: string; mode: "start" | "end" } | null>(null);
   const [endForm, setEndForm] = useState({ content: "", notes: "", homework: "" });
+  const [activeTab, setActiveTab] = useState("my-classes");
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterSubject, setFilterSubject] = useState<string>("all");
+  const [selectedSeeking, setSelectedSeeking] = useState<string | null>(null);
+  const [selectedTrial, setSelectedTrial] = useState<string | null>(null);
 
   const cls = selectedClass ? classes.find(c => c.id === selectedClass) : null;
+  const seekingDetail = selectedSeeking ? seekingTutor.find(s => s.id === selectedSeeking) : null;
+  const trialDetail = selectedTrial ? trials.find(t => t.id === selectedTrial) : null;
+
+  // Filters
+  const subjects = [...new Set(classes.map(c => c.subject))];
+  const filteredClasses = classes.filter(c => {
+    if (search && !c.name.toLowerCase().includes(search.toLowerCase()) && !c.studentName.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filterStatus !== "all" && c.escrowStatus !== filterStatus) return false;
+    if (filterSubject !== "all" && c.subject !== filterSubject) return false;
+    return true;
+  });
+
+  const filteredSeeking = seekingTutor.filter(s => {
+    if (search && !s.studentName.toLowerCase().includes(search.toLowerCase()) && !s.subject.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filterSubject !== "all" && s.subject !== filterSubject) return false;
+    return true;
+  });
+
+  const filteredTrials = trials.filter(t => {
+    if (search && !t.studentName.toLowerCase().includes(search.toLowerCase()) && !t.subject.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
 
   const handleStart = () => {
     if (!sessionDialog) return;
@@ -43,72 +83,266 @@ const TutorClasses = () => {
     setEndForm({ content: "", notes: "", homework: "" });
   };
 
+  const trialStatusColors: Record<string, string> = {
+    pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    confirmed: "bg-primary/10 text-primary",
+    rejected: "bg-destructive/10 text-destructive",
+    completed: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  };
+  const trialStatusLabels: Record<string, string> = {
+    pending: "Chờ xác nhận",
+    confirmed: "Đã xác nhận",
+    rejected: "Đã từ chối",
+    completed: "Hoàn thành",
+  };
+
   return (
     <div className="p-6 space-y-6">
-      {/* Trial Bookings */}
-      {trials.filter(t => t.status === "pending" || t.status === "confirmed").length > 0 && (
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Yêu cầu học thử</h3>
-          <div className="space-y-3">
-            {trials.filter(t => t.status === "pending" || t.status === "confirmed").map(t => (
-              <div key={t.id} className="flex items-center gap-4 p-4 bg-muted/50 rounded-xl">
-                <img src={t.parentAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{t.studentName} ({t.subject})</p>
-                  <p className="text-xs text-muted-foreground">Phụ huynh: {t.parentName} • {t.requestedDate} {t.requestedTime}</p>
-                </div>
-                {t.status === "pending" ? (
-                  <div className="flex gap-2">
-                    <button onClick={() => { confirmTrial(t.id); toast.success("Đã xác nhận!"); }} className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium"><UserCheck className="w-3 h-3" /> Xác nhận</button>
-                    <button onClick={() => { rejectTrial(t.id); toast.info("Đã từ chối"); }} className="flex items-center gap-1 px-3 py-1.5 bg-muted text-muted-foreground rounded-lg text-xs font-medium hover:bg-destructive/10 hover:text-destructive"><UserX className="w-3 h-3" /> Từ chối</button>
+      {/* Search & Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Tìm kiếm theo tên lớp, học sinh, môn học..."
+            className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <select
+            value={filterSubject}
+            onChange={e => setFilterSubject(e.target.value)}
+            className="px-3 py-2 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="all">Tất cả môn</option>
+            {["Toán", "Lý", "Hóa", "Anh"].map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          {activeTab === "my-classes" && (
+            <select
+              value={filterStatus}
+              onChange={e => setFilterStatus(e.target.value)}
+              className="px-3 py-2 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              <option value="all">Tất cả trạng thái</option>
+              <option value="pending">Chờ bắt đầu</option>
+              <option value="in_progress">Đang học</option>
+              <option value="completed">Hoàn thành</option>
+              <option value="refunded">Đã hoàn tiền</option>
+            </select>
+          )}
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-muted/50 p-1 rounded-xl">
+          <TabsTrigger value="my-classes" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+            Lớp của tôi ({classes.length})
+          </TabsTrigger>
+          <TabsTrigger value="seeking" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+            Đang tìm gia sư ({seekingTutor.length})
+          </TabsTrigger>
+          <TabsTrigger value="trials" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">
+            Yêu cầu học thử ({trials.filter(t => t.status === "pending").length})
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Tab 1: My Classes */}
+        <TabsContent value="my-classes" className="mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filteredClasses.map(c => (
+              <button key={c.id} onClick={() => setSelectedClass(c.id)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all group">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="text-base font-semibold text-foreground">{c.name}</p>
+                    <p className="text-xs text-muted-foreground">{c.subject} • {c.format}</p>
                   </div>
-                ) : (
-                  <span className="text-xs font-medium text-primary px-2 py-1 bg-primary/10 rounded-lg">Đã xác nhận</span>
+                  <span className={cn("text-[11px] font-medium px-2 py-1 rounded-lg", escrowColors[c.escrowStatus])}>
+                    {escrowLabels[c.escrowStatus]}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 mb-3">
+                  <img src={c.studentAvatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                  <div>
+                    <p className="text-sm text-foreground">{c.studentName}</p>
+                    <p className="text-[11px] text-muted-foreground">PH: {c.parentName}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                  <span>{c.completedSessions}/{c.totalSessions} buổi</span>
+                  <span>{c.fee.toLocaleString("vi-VN")}đ</span>
+                </div>
+                <Progress value={(c.completedSessions / c.totalSessions) * 100} className="h-1.5" />
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground">
+                  <span>Escrow:</span>
+                  <div className="flex-1 bg-secondary rounded-full h-1 overflow-hidden">
+                    <div className="bg-emerald-500 rounded-full h-1 transition-all" style={{ width: `${(c.escrowReleased / c.escrowAmount) * 100}%` }} />
+                  </div>
+                  <span>{Math.round((c.escrowReleased / c.escrowAmount) * 100)}%</span>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-[11px] text-muted-foreground">{c.schedule}</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </button>
+            ))}
+            {filteredClasses.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Không tìm thấy lớp học nào</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Tab 2: Seeking Tutor */}
+        <TabsContent value="seeking" className="mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filteredSeeking.map(s => {
+              const FormatIcon = formatIcons[s.format];
+              return (
+                <button key={s.id} onClick={() => setSelectedSeeking(s.id)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all group">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="text-base font-semibold text-foreground">{s.subject} - {s.grade}</p>
+                      <p className="text-xs text-muted-foreground">{s.parentName}</p>
+                    </div>
+                    <span className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg bg-primary/10 text-primary">
+                      <FormatIcon className="w-3 h-3" /> {formatLabels[s.format]}
+                    </span>
+                  </div>
+                  <div className="mb-3">
+                    <p className="text-sm text-foreground">Học sinh: {s.studentName}</p>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.note}</p>
+                  </div>
+                  <div className="space-y-1.5 text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between">
+                      <span>Ngân sách</span>
+                      <span className="font-medium text-foreground">{s.budget}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Lịch học</span>
+                      <span className="font-medium text-foreground">{s.schedule}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Khu vực</span>
+                      <span className="font-medium text-foreground">{s.location}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-[10px] text-muted-foreground">Đăng: {s.postedDate}</span>
+                    <span className="text-xs text-primary font-medium group-hover:underline">Ứng tuyển →</span>
+                  </div>
+                </button>
+              );
+            })}
+            {filteredSeeking.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <Search className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Không tìm thấy yêu cầu nào</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Tab 3: Trial Bookings */}
+        <TabsContent value="trials" className="mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {filteredTrials.map(t => (
+              <div key={t.id} className="bg-card border border-border rounded-2xl p-5">
+                <div className="flex items-center gap-4">
+                  <img src={t.parentAvatar} alt="" className="w-12 h-12 rounded-full object-cover" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-base font-semibold text-foreground">{t.studentName}</p>
+                      <span className={cn("text-[11px] font-medium px-2 py-1 rounded-lg", trialStatusColors[t.status])}>
+                        {trialStatusLabels[t.status]}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Phụ huynh: {t.parentName}</p>
+                    <p className="text-xs text-muted-foreground">{t.subject} • {t.requestedDate} • {t.requestedTime}</p>
+                  </div>
+                </div>
+
+                {t.feedback && (
+                  <div className="mt-3 p-3 bg-muted/50 rounded-xl">
+                    <p className="text-xs text-muted-foreground">Phản hồi: {t.feedback}</p>
+                    {t.rating && (
+                      <div className="flex items-center gap-1 mt-1">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className={cn("text-xs", i < t.rating! ? "text-amber-400" : "text-muted-foreground/30")}>★</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {t.status === "pending" && (
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => { confirmTrial(t.id); toast.success("Đã xác nhận buổi học thử!"); }}
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium"
+                    >
+                      <UserCheck className="w-4 h-4" /> Xác nhận
+                    </button>
+                    <button
+                      onClick={() => { rejectTrial(t.id); toast.info("Đã từ chối"); }}
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-muted text-muted-foreground rounded-xl text-sm font-medium hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <UserX className="w-4 h-4" /> Từ chối
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
+            {filteredTrials.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Không có yêu cầu học thử</p>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
 
-      {/* Classes List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-        {classes.map(c => (
-          <button key={c.id} onClick={() => setSelectedClass(c.id)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all group">
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <p className="text-base font-semibold text-foreground">{c.name}</p>
-                <p className="text-xs text-muted-foreground">{c.subject} • {c.format}</p>
+      {/* Seeking Detail Dialog */}
+      <Dialog open={!!selectedSeeking} onOpenChange={() => setSelectedSeeking(null)}>
+        <DialogContent className="max-w-md">
+          {seekingDetail && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{seekingDetail.subject} - {seekingDetail.grade}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Học sinh</span><span className="font-medium">{seekingDetail.studentName}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Phụ huynh</span><span className="font-medium">{seekingDetail.parentName}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Hình thức</span><span className="font-medium">{formatLabels[seekingDetail.format]}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Khu vực</span><span className="font-medium">{seekingDetail.location}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl col-span-2"><span className="text-xs text-muted-foreground block">Lịch học</span><span className="font-medium">{seekingDetail.schedule}</span></div>
+                  <div className="p-3 bg-muted/50 rounded-xl col-span-2"><span className="text-xs text-muted-foreground block">Ngân sách</span><span className="font-medium">{seekingDetail.budget}</span></div>
+                </div>
+                <div className="p-3 bg-muted/50 rounded-xl">
+                  <span className="text-xs text-muted-foreground block mb-1">Ghi chú</span>
+                  <p className="text-sm">{seekingDetail.note}</p>
+                </div>
+                <button
+                  onClick={() => { toast.success("Đã gửi ứng tuyển!"); setSelectedSeeking(null); }}
+                  className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium"
+                >
+                  Ứng tuyển dạy lớp này
+                </button>
               </div>
-              <span className={cn("text-[11px] font-medium px-2 py-1 rounded-lg", escrowColors[c.escrowStatus])}>
-                {escrowLabels[c.escrowStatus]}
-              </span>
-            </div>
-            <div className="flex items-center gap-3 mb-3">
-              <img src={c.studentAvatar} alt="" className="w-8 h-8 rounded-full object-cover" />
-              <div>
-                <p className="text-sm text-foreground">{c.studentName}</p>
-                <p className="text-[11px] text-muted-foreground">PH: {c.parentName}</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{c.completedSessions}/{c.totalSessions} buổi</span>
-              <span>{c.fee.toLocaleString("vi-VN")}đ</span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-1.5 mt-2">
-              <div className="bg-primary rounded-full h-1.5 transition-all" style={{ width: `${(c.completedSessions / c.totalSessions) * 100}%` }} />
-            </div>
-            {/* Escrow bar */}
-            <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground">
-              <span>Escrow:</span>
-              <div className="flex-1 bg-muted rounded-full h-1">
-                <div className="bg-emerald-500 rounded-full h-1 transition-all" style={{ width: `${(c.escrowReleased / c.escrowAmount) * 100}%` }} />
-              </div>
-              <span>{Math.round((c.escrowReleased / c.escrowAmount) * 100)}%</span>
-            </div>
-          </button>
-        ))}
-      </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Class Detail Dialog */}
       <Dialog open={!!selectedClass} onOpenChange={() => setSelectedClass(null)}>
@@ -190,7 +424,7 @@ const TutorClasses = () => {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground mb-2">Tiến độ giải ngân (mỗi {cls.releaseMilestone} buổi)</p>
-                      <div className="w-full bg-muted rounded-full h-3">
+                      <div className="w-full bg-secondary rounded-full h-3 overflow-hidden">
                         <div className="bg-emerald-500 rounded-full h-3 transition-all flex items-center justify-end pr-1" style={{ width: `${(cls.escrowReleased / cls.escrowAmount) * 100}%` }}>
                           {cls.escrowReleased > 0 && <span className="text-[8px] text-white font-bold">{Math.round((cls.escrowReleased / cls.escrowAmount) * 100)}%</span>}
                         </div>

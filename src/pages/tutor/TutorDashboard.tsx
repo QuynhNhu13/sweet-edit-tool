@@ -1,22 +1,37 @@
 import { useTutor } from "@/contexts/TutorContext";
-import { BookOpen, Wallet, Star, Users, Clock, CalendarDays, ArrowUpRight, TrendingUp, CheckCircle2 } from "lucide-react";
+import { BookOpen, Wallet, Star, Users, Clock, CalendarDays, ArrowUpRight, TrendingUp, CheckCircle2, MessageSquare, X, Send, Phone, Video, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useState, useRef, useEffect } from "react";
+import { Progress } from "@/components/ui/progress";
 
 const TutorDashboard = () => {
-  const { profile, classes, trials, wallet, walletBalance, escrowBalance, chatMessages, reviews, studentProgress } = useTutor();
+  const { profile, classes, trials, wallet, walletBalance, escrowBalance, chatMessages, reviews, studentProgress, sendMessage, markMessagesRead } = useTutor();
   const navigate = useNavigate();
 
+  // Chat widget state
+  const [chatOpen, setChatOpen] = useState(false);
+  const [selectedChatClass, setSelectedChatClass] = useState<string | null>(null);
+  const [chatInput, setChatInput] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   const activeClasses = classes.filter(c => c.escrowStatus !== "completed" && c.escrowStatus !== "refunded");
+  const completedClasses = classes.filter(c => c.escrowStatus === "completed");
   const pendingTrials = trials.filter(t => t.status === "pending");
   const unreadMessages = chatMessages.filter(m => !m.read && m.sender !== "tutor").length;
+
+  // Income calculations
+  const totalIncome = wallet.filter(w => w.type === "escrow_release" && w.status === "completed").reduce((s, w) => s + w.amount, 0);
+  const totalFees = wallet.filter(w => w.type === "platform_fee" && w.status === "completed").reduce((s, w) => s + Math.abs(w.amount), 0);
+  const netIncome = totalIncome - totalFees;
+  const totalSessionsCompleted = classes.reduce((s, c) => s + c.completedSessions, 0);
+  const totalSessionsAll = classes.reduce((s, c) => s + c.totalSessions, 0);
 
   // Next session
   const upcomingSessions = classes.flatMap(c => c.sessions.filter(s => s.status === "scheduled")).sort((a, b) => a.date.localeCompare(b.date));
   const nextSession = upcomingSessions[0];
   const nextClass = nextSession ? classes.find(c => c.sessions.some(s => s.id === nextSession.id)) : null;
 
-  // Time until next session
   const getCountdown = () => {
     if (!nextSession) return null;
     const sessionDate = new Date(`${nextSession.date}T${nextSession.time.split("-")[0]}:00`);
@@ -29,16 +44,44 @@ const TutorDashboard = () => {
     return `${hours}h ${mins}m`;
   };
 
+  // Chat widget logic
+  const chatClassMessages = selectedChatClass ? chatMessages.filter(m => m.classId === selectedChatClass) : [];
+  const unreadByClass = (classId: string) => chatMessages.filter(m => m.classId === classId && !m.read && m.sender !== "tutor").length;
+
+  useEffect(() => {
+    if (selectedChatClass) {
+      markMessagesRead(selectedChatClass);
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [selectedChatClass, chatClassMessages.length, markMessagesRead]);
+
+  const handleSendChat = () => {
+    if (!chatInput.trim() || !selectedChatClass) return;
+    sendMessage(selectedChatClass, chatInput.trim());
+    setChatInput("");
+  };
+
+  // Monthly income data (mock)
+  const monthlyData = [
+    { month: "T10", income: 1200000 },
+    { month: "T11", income: 1800000 },
+    { month: "T12", income: 1600000 },
+    { month: "T1", income: 2200000 },
+    { month: "T2", income: 2640000 },
+    { month: "T3", income: 800000 },
+  ];
+  const maxIncome = Math.max(...monthlyData.map(d => d.income));
+
   const stats = [
-    { label: "Lớp đang dạy", value: activeClasses.length, icon: BookOpen, color: "text-primary", bg: "bg-primary/10", link: "/tutor/classes" },
-    { label: "Ví khả dụng", value: `${walletBalance.toLocaleString("vi-VN")}đ`, icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20", link: "/tutor/wallet" },
-    { label: "Đánh giá TB", value: profile.rating.toFixed(1), icon: Star, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-900/20", link: "/tutor/reviews" },
-    { label: "Tổng buổi dạy", value: profile.totalSessions, icon: CheckCircle2, color: "text-primary", bg: "bg-primary/10", link: "/tutor/schedule" },
+    { label: "Lớp đang dạy", value: activeClasses.length, sub: `${completedClasses.length} hoàn thành`, icon: BookOpen, color: "text-primary", bg: "bg-primary/10", link: "/tutor/classes" },
+    { label: "Thu nhập ròng", value: `${(netIncome / 1000000).toFixed(1)}tr`, sub: `Tổng: ${(totalIncome / 1000000).toFixed(1)}tr`, icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20", link: "/tutor/wallet" },
+    { label: "Đánh giá TB", value: profile.rating.toFixed(1), sub: `${profile.totalReviews} đánh giá`, icon: Star, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-900/20", link: "/tutor/reviews" },
+    { label: "Buổi đã dạy", value: totalSessionsCompleted, sub: `/ ${totalSessionsAll} tổng`, icon: CheckCircle2, color: "text-primary", bg: "bg-primary/10", link: "/tutor/schedule" },
   ];
 
   return (
     <div className="p-6 space-y-6">
-      {/* Stats */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s, i) => (
           <button key={i} onClick={() => navigate(s.link)} className="bg-card border border-border rounded-2xl p-5 flex items-center gap-4 hover:shadow-elevated transition-all text-left group">
@@ -48,57 +91,136 @@ const TutorDashboard = () => {
             <div className="flex-1 min-w-0">
               <p className="text-xs text-muted-foreground">{s.label}</p>
               <p className="text-xl font-bold text-foreground">{s.value}</p>
+              <p className="text-[10px] text-muted-foreground">{s.sub}</p>
             </div>
             <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Next Session */}
-        <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-primary" /> Buổi học sắp tới
-          </h3>
-          {nextSession && nextClass ? (
-            <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                <CalendarDays className="w-7 h-7 text-primary" />
-              </div>
-              <div className="flex-1">
-                <p className="text-base font-semibold text-foreground">{nextClass.name}</p>
-                <p className="text-sm text-muted-foreground">{nextSession.date} • {nextSession.time}</p>
-                <p className="text-xs text-muted-foreground">Học sinh: {nextClass.studentName}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">Còn</p>
-                <p className="text-lg font-bold text-primary">{getCountdown()}</p>
-              </div>
-              <button
-                onClick={() => navigate("/tutor/classes")}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
-              >
-                Vào lớp
-              </button>
+      {/* Progress Overview */}
+      <div className="bg-card border border-border rounded-2xl p-6">
+        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-primary" /> Tiến độ tổng quan
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Teaching Progress */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-muted-foreground">Buổi dạy</span>
+              <span className="text-xs font-semibold text-foreground">{totalSessionsCompleted}/{totalSessionsAll}</span>
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Không có buổi học nào sắp tới</p>
-          )}
+            <Progress value={(totalSessionsCompleted / totalSessionsAll) * 100} className="h-2.5" />
+            <p className="text-[10px] text-muted-foreground mt-1">{Math.round((totalSessionsCompleted / totalSessionsAll) * 100)}% hoàn thành</p>
+          </div>
 
-          {/* Escrow Overview */}
-          <h3 className="text-sm font-semibold text-foreground mt-6 mb-3 flex items-center gap-2">
-            <Wallet className="w-4 h-4 text-emerald-600" /> Escrow
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-muted/50 rounded-xl">
-              <p className="text-xs text-muted-foreground">Đang giữ</p>
-              <p className="text-lg font-bold text-foreground">{escrowBalance.toLocaleString("vi-VN")}đ</p>
-            </div>
-            <div className="p-3 bg-muted/50 rounded-xl">
-              <p className="text-xs text-muted-foreground">Đã giải ngân</p>
-              <p className="text-lg font-bold text-emerald-600">
+          {/* Escrow Progress */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-muted-foreground">Giải ngân Escrow</span>
+              <span className="text-xs font-semibold text-emerald-600">
                 {classes.reduce((s, c) => s + c.escrowReleased, 0).toLocaleString("vi-VN")}đ
-              </p>
+              </span>
+            </div>
+            <div className="w-full bg-secondary rounded-full h-2.5 overflow-hidden">
+              <div className="bg-emerald-500 h-full rounded-full transition-all" style={{ width: `${(classes.reduce((s, c) => s + c.escrowReleased, 0) / Math.max(1, classes.reduce((s, c) => s + c.escrowAmount, 0))) * 100}%` }} />
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Đang giữ: {escrowBalance.toLocaleString("vi-VN")}đ</p>
+          </div>
+
+          {/* Rating Progress */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-muted-foreground">Tỷ lệ đậu test</span>
+              <span className="text-xs font-semibold text-foreground">{profile.testPassRate}%</span>
+            </div>
+            <Progress value={profile.testPassRate} className="h-2.5" />
+            <p className="text-[10px] text-muted-foreground mt-1">{profile.totalReviews} đánh giá • {profile.rating.toFixed(1)} ★</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Next session + Income chart */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Next Session */}
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-primary" /> Buổi học sắp tới
+            </h3>
+            {nextSession && nextClass ? (
+              <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <CalendarDays className="w-7 h-7 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-semibold text-foreground">{nextClass.name}</p>
+                  <p className="text-sm text-muted-foreground">{nextSession.date} • {nextSession.time}</p>
+                  <p className="text-xs text-muted-foreground">Học sinh: {nextClass.studentName}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Còn</p>
+                  <p className="text-lg font-bold text-primary">{getCountdown()}</p>
+                </div>
+                <button
+                  onClick={() => navigate("/tutor/classes")}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                  Vào lớp
+                </button>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">Không có buổi học nào sắp tới</p>
+            )}
+          </div>
+
+          {/* Income Chart (Simple bar) */}
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Wallet className="w-4 h-4 text-emerald-600" /> Thu nhập theo tháng
+            </h3>
+            <div className="flex items-end gap-3 h-36">
+              {monthlyData.map((d, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[10px] text-muted-foreground">{(d.income / 1000000).toFixed(1)}tr</span>
+                  <div className="w-full rounded-t-lg bg-primary/10 relative overflow-hidden" style={{ height: `${Math.max(8, (d.income / maxIncome) * 100)}%` }}>
+                    <div className={cn("absolute inset-0 rounded-t-lg", i === monthlyData.length - 1 ? "bg-primary/50" : "bg-primary")} />
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-medium">{d.month}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Classes Progress */}
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-primary" /> Tiến độ lớp học
+            </h3>
+            <div className="space-y-4">
+              {activeClasses.map(c => (
+                <button key={c.id} onClick={() => navigate("/tutor/classes")} className="w-full text-left group">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-3">
+                      <img src={c.studentAvatar} alt="" className="w-7 h-7 rounded-full object-cover" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{c.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{c.studentName} • {c.schedule}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-semibold text-foreground">{c.completedSessions}/{c.totalSessions}</p>
+                      <p className="text-[10px] text-muted-foreground">{Math.round((c.completedSessions / c.totalSessions) * 100)}%</p>
+                    </div>
+                  </div>
+                  <Progress value={(c.completedSessions / c.totalSessions) * 100} className="h-1.5" />
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-[10px] text-muted-foreground">Escrow: {c.escrowReleased.toLocaleString("vi-VN")}đ / {c.escrowAmount.toLocaleString("vi-VN")}đ</span>
+                    <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                </button>
+              ))}
+              {activeClasses.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Không có lớp đang hoạt động</p>}
             </div>
           </div>
         </div>
@@ -107,7 +229,10 @@ const TutorDashboard = () => {
         <div className="space-y-4">
           {/* Pending Trials */}
           <div className="bg-card border border-border rounded-2xl p-5">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Yêu cầu học thử ({pendingTrials.length})</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center justify-between">
+              <span>Yêu cầu học thử</span>
+              {pendingTrials.length > 0 && <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">{pendingTrials.length}</span>}
+            </h3>
             {pendingTrials.length > 0 ? pendingTrials.map(t => (
               <div key={t.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl mb-2 last:mb-0">
                 <img src={t.parentAvatar} alt="" className="w-9 h-9 rounded-full object-cover" />
@@ -122,19 +247,20 @@ const TutorDashboard = () => {
             )}
           </div>
 
-          {/* Unread Messages */}
+          {/* Wallet Summary */}
           <div className="bg-card border border-border rounded-2xl p-5">
-            <h3 className="text-sm font-semibold text-foreground mb-3">
-              Tin nhắn chưa đọc
-              {unreadMessages > 0 && <span className="ml-2 px-2 py-0.5 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground">{unreadMessages}</span>}
-            </h3>
-            {unreadMessages > 0 ? (
-              <button onClick={() => navigate("/tutor/chat")} className="w-full text-sm text-primary font-medium hover:underline">
-                Xem {unreadMessages} tin nhắn →
-              </button>
-            ) : (
-              <p className="text-xs text-muted-foreground text-center py-4">Không có tin nhắn mới</p>
-            )}
+            <h3 className="text-sm font-semibold text-foreground mb-3">Ví điện tử</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                <span className="text-xs text-muted-foreground">Khả dụng</span>
+                <span className="text-sm font-bold text-emerald-600">{walletBalance.toLocaleString("vi-VN")}đ</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-primary/5 rounded-xl">
+                <span className="text-xs text-muted-foreground">Escrow đang giữ</span>
+                <span className="text-sm font-bold text-primary">{escrowBalance.toLocaleString("vi-VN")}đ</span>
+              </div>
+            </div>
+            <button onClick={() => navigate("/tutor/wallet")} className="w-full mt-3 text-xs text-primary font-medium hover:underline">Xem chi tiết →</button>
           </div>
 
           {/* Latest Review */}
@@ -155,7 +281,142 @@ const TutorDashboard = () => {
               </div>
             </div>
           )}
+
+          {/* Student Progress Quick */}
+          {studentProgress.filter(sp => sp.completedSessions > 0).length > 0 && (
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <h3 className="text-sm font-semibold text-foreground mb-3">Tiến độ học sinh</h3>
+              {studentProgress.filter(sp => sp.completedSessions > 0).map(sp => (
+                <button key={sp.studentId} onClick={() => navigate("/tutor/students")} className="w-full flex items-center gap-3 p-3 bg-muted/50 rounded-xl mb-2 last:mb-0 text-left hover:bg-muted transition-colors">
+                  <img src={sp.studentAvatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-foreground truncate">{sp.studentName}</p>
+                    <p className="text-[10px] text-muted-foreground">{sp.className}</p>
+                    <Progress value={sp.goalCompletion} className="h-1 mt-1" />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-foreground">{sp.averageScore}</p>
+                    <p className="text-[10px] text-muted-foreground">ĐTB</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+      </div>
+
+      {/* Floating Chat Widget */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {!chatOpen ? (
+          <button
+            onClick={() => setChatOpen(true)}
+            className="relative w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center hover:scale-105"
+          >
+            <MessageSquare className="w-6 h-6" />
+            {unreadMessages > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground px-1">
+                {unreadMessages}
+              </span>
+            )}
+          </button>
+        ) : (
+          <div className="w-[380px] h-[520px] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            {/* Chat Header */}
+            <div className="p-4 border-b border-border flex items-center justify-between bg-primary/5">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">
+                  {selectedChatClass ? classes.find(c => c.id === selectedChatClass)?.name : "Tin nhắn"}
+                </h3>
+              </div>
+              <div className="flex items-center gap-1">
+                {selectedChatClass && (
+                  <>
+                    <button className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Gọi thoại">
+                      <Phone className="w-4 h-4" />
+                    </button>
+                    <button className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Gọi video">
+                      <Video className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => setSelectedChatClass(null)} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground" title="Quay lại">
+                      <ChevronRight className="w-4 h-4 rotate-180" />
+                    </button>
+                  </>
+                )}
+                <button onClick={() => { setChatOpen(false); setSelectedChatClass(null); }} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {!selectedChatClass ? (
+              /* Class list */
+              <div className="flex-1 overflow-y-auto">
+                {classes.filter(c => c.escrowStatus !== "refunded").map(c => {
+                  const lastMsg = chatMessages.filter(m => m.classId === c.id).slice(-1)[0];
+                  const unread = unreadByClass(c.id);
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => setSelectedChatClass(c.id)}
+                      className="w-full text-left p-4 border-b border-border/50 hover:bg-muted/50 transition-colors flex items-center gap-3"
+                    >
+                      <div className="relative">
+                        <img src={c.studentAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                        {unread > 0 && (
+                          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center text-[9px] font-bold rounded-full bg-destructive text-destructive-foreground px-0.5">
+                            {unread}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
+                          {lastMsg && <span className="text-[10px] text-muted-foreground shrink-0 ml-2">{lastMsg.timestamp.split(" ")[1]}</span>}
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">{lastMsg ? `${lastMsg.senderName}: ${lastMsg.message}` : "Chưa có tin nhắn"}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Chat messages */
+              <>
+                <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                  {chatClassMessages.map(m => (
+                    <div key={m.id} className={cn("flex", m.sender === "tutor" ? "justify-end" : "justify-start")}>
+                      <div className={cn(
+                        "max-w-[75%] px-3 py-2 rounded-2xl text-sm",
+                        m.sender === "tutor"
+                          ? "bg-primary text-primary-foreground rounded-br-sm"
+                          : "bg-muted text-foreground rounded-bl-sm"
+                      )}>
+                        {m.sender !== "tutor" && <p className="text-[10px] font-semibold mb-0.5 opacity-70">{m.senderName}</p>}
+                        <p className="text-[13px]">{m.message}</p>
+                        <p className={cn("text-[9px] mt-0.5", m.sender === "tutor" ? "text-primary-foreground/60" : "text-muted-foreground")}>{m.timestamp.split(" ")[1]}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                <div className="p-3 border-t border-border flex gap-2">
+                  <input
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleSendChat()}
+                    className="flex-1 px-3 py-2 bg-muted/50 border border-border rounded-xl text-sm"
+                    placeholder="Nhập tin nhắn..."
+                  />
+                  <button onClick={handleSendChat} disabled={!chatInput.trim()} className="p-2 bg-primary text-primary-foreground rounded-xl disabled:opacity-50">
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
