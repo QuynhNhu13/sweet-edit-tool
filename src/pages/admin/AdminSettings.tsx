@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, CreditCard, Bell, Shield, Save, Zap } from "lucide-react";
+import { Settings, CreditCard, Bell, Shield, Save, FileText, MessageSquare, Wrench, Lock, Clock, KeyRound, Mail, Smartphone, BellRing } from "lucide-react";
 
 const AdminSettings = () => {
   const { settings, updateSettings } = useAdmin();
@@ -22,7 +22,7 @@ const AdminSettings = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-6">
       <Tabs defaultValue="escrow" className="space-y-6">
         <TabsList className="bg-muted/50 p-1 rounded-2xl h-auto flex-wrap">
           <TabsTrigger value="escrow" className="rounded-xl data-[state=active]:shadow-sm px-4 py-2.5 gap-2 text-sm">
@@ -52,7 +52,7 @@ const AdminSettings = () => {
                   <p className="text-sm text-muted-foreground">Cấu hình phí giao dịch và thời gian giữ tiền</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Phí Escrow (%)</Label>
                   <Input type="number" min={0} max={100} value={form.escrowPercent} onChange={e => setForm(f => ({ ...f, escrowPercent: Number(e.target.value) }))} className="rounded-xl h-11" />
@@ -63,15 +63,23 @@ const AdminSettings = () => {
                   <Input type="number" min={1} max={30} value={form.escrowHoldDays} onChange={e => setForm(f => ({ ...f, escrowHoldDays: Number(e.target.value) }))} className="rounded-xl h-11" />
                   <p className="text-xs text-muted-foreground">Số ngày giữ tiền trước khi chuyển cho gia sư</p>
                 </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Phí thi thử (VNĐ)</Label>
+                  <Input type="number" min={0} value={50000} className="rounded-xl h-11" readOnly />
+                  <p className="text-xs text-muted-foreground">Phí mặc định cho mỗi lượt thi thử</p>
+                </div>
               </div>
-              <div className="flex items-center justify-between py-4 px-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
-                <div>
-                  <p className="text-sm font-medium text-foreground">💳 Thanh toán online</p>
-                  <p className="text-xs text-muted-foreground">Bật/tắt thanh toán trực tuyến</p>
+              <div className="flex items-center justify-between py-4 px-5 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="w-4 h-4 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Thanh toán online</p>
+                    <p className="text-xs text-muted-foreground">Bật/tắt thanh toán trực tuyến</p>
+                  </div>
                 </div>
                 <Switch checked={form.enablePayments} onCheckedChange={v => setForm(f => ({ ...f, enablePayments: v }))} />
               </div>
-              <Button className="rounded-xl w-full h-11" onClick={handleSave}>
+              <Button className="rounded-xl h-11" onClick={handleSave}>
                 <Save className="w-4 h-4 mr-2" /> Lưu cài đặt Escrow
               </Button>
             </CardContent>
@@ -91,26 +99,35 @@ const AdminSettings = () => {
                   <p className="text-sm text-muted-foreground">Cấu hình chung cho nền tảng</p>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Tên nền tảng</Label>
-                <Input value={form.platformName} onChange={e => setForm(f => ({ ...f, platformName: e.target.value }))} className="rounded-xl h-11 max-w-md" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Tên nền tảng</Label>
+                  <Input value={form.platformName} onChange={e => setForm(f => ({ ...f, platformName: e.target.value }))} className="rounded-xl h-11" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Email hỗ trợ</Label>
+                  <Input value="support@educonnect.vn" className="rounded-xl h-11" readOnly />
+                </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {[
-                  { key: "enableExams", icon: "📝", label: "Thi thử online", desc: "Cho phép học sinh làm bài test trực tuyến" },
-                  { key: "enableChat", icon: "💬", label: "Chat", desc: "Cho phép nhắn tin giữa gia sư và học sinh" },
-                  { key: "maintenanceMode", icon: "🔧", label: "Chế độ bảo trì", desc: "Tạm ngưng hệ thống để bảo trì" },
+                  { key: "enableExams", icon: FileText, label: "Thi thử online", desc: "Cho phép học sinh làm bài test trực tuyến" },
+                  { key: "enableChat", icon: MessageSquare, label: "Chat", desc: "Cho phép nhắn tin giữa gia sư và học sinh" },
+                  { key: "maintenanceMode", icon: Wrench, label: "Chế độ bảo trì", desc: "Tạm ngưng hệ thống để bảo trì" },
                 ].map(item => (
-                  <div key={item.key} className="flex items-center justify-between py-4 px-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{item.icon} {item.label}</p>
-                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                  <div key={item.key} className="flex items-center justify-between py-4 px-5 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <item.icon className="w-4 h-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{item.label}</p>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
                     </div>
                     <Switch checked={(form as any)[item.key]} onCheckedChange={v => setForm(f => ({ ...f, [item.key]: v }))} />
                   </div>
                 ))}
               </div>
-              <Button className="rounded-xl w-full h-11" onClick={handleSave}>
+              <Button className="rounded-xl h-11" onClick={handleSave}>
                 <Save className="w-4 h-4 mr-2" /> Lưu cài đặt chung
               </Button>
             </CardContent>
@@ -130,22 +147,25 @@ const AdminSettings = () => {
                   <p className="text-sm text-muted-foreground">Cấu hình kênh thông báo cho hệ thống</p>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {[
-                  { key: "emailNotifications", icon: "📧", label: "Email", desc: "Gửi thông báo qua email" },
-                  { key: "smsNotifications", icon: "📱", label: "SMS", desc: "Gửi thông báo qua tin nhắn SMS" },
-                  { key: "pushNotifications", icon: "🔔", label: "Push notification", desc: "Gửi thông báo đẩy trên trình duyệt" },
+                  { key: "emailNotifications", icon: Mail, label: "Email", desc: "Gửi thông báo qua email" },
+                  { key: "smsNotifications", icon: Smartphone, label: "SMS", desc: "Gửi thông báo qua tin nhắn SMS" },
+                  { key: "pushNotifications", icon: BellRing, label: "Push notification", desc: "Gửi thông báo đẩy trên trình duyệt" },
                 ].map(item => (
-                  <div key={item.key} className="flex items-center justify-between py-4 px-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{item.icon} {item.label}</p>
-                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                  <div key={item.key} className="flex items-center justify-between py-4 px-5 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <item.icon className="w-4 h-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{item.label}</p>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
                     </div>
                     <Switch checked={(form as any)[item.key]} onCheckedChange={v => setForm(f => ({ ...f, [item.key]: v }))} />
                   </div>
                 ))}
               </div>
-              <Button className="rounded-xl w-full h-11" onClick={handleSave}>
+              <Button className="rounded-xl h-11" onClick={handleSave}>
                 <Save className="w-4 h-4 mr-2" /> Lưu cài đặt thông báo
               </Button>
             </CardContent>
@@ -165,26 +185,34 @@ const AdminSettings = () => {
                   <p className="text-sm text-muted-foreground">Cấu hình bảo mật cho tài khoản và hệ thống</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between py-4 px-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
-                <div>
-                  <p className="text-sm font-medium text-foreground">🔐 Xác thực 2 bước (2FA)</p>
-                  <p className="text-xs text-muted-foreground">Yêu cầu xác thực 2 lớp khi đăng nhập</p>
+              <div className="flex items-center justify-between py-4 px-5 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <Lock className="w-4 h-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Xác thực 2 bước (2FA)</p>
+                    <p className="text-xs text-muted-foreground">Yêu cầu xác thực 2 lớp khi đăng nhập</p>
+                  </div>
                 </div>
                 <Switch checked={form.twoFactorAuth} onCheckedChange={v => setForm(f => ({ ...f, twoFactorAuth: v }))} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Thời gian phiên đăng nhập (phút)</Label>
+                  <Label className="text-sm font-medium flex items-center gap-2"><Clock className="w-3.5 h-3.5" /> Phiên đăng nhập (phút)</Label>
                   <Input type="number" min={5} max={120} value={form.sessionTimeout} onChange={e => setForm(f => ({ ...f, sessionTimeout: Number(e.target.value) }))} className="rounded-xl h-11" />
                   <p className="text-xs text-muted-foreground">Tự động đăng xuất sau thời gian không hoạt động</p>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Số lần đăng nhập sai tối đa</Label>
+                  <Label className="text-sm font-medium flex items-center gap-2"><KeyRound className="w-3.5 h-3.5" /> Đăng nhập sai tối đa</Label>
                   <Input type="number" min={3} max={10} value={form.maxLoginAttempts} onChange={e => setForm(f => ({ ...f, maxLoginAttempts: Number(e.target.value) }))} className="rounded-xl h-11" />
                   <p className="text-xs text-muted-foreground">Khóa tài khoản sau số lần đăng nhập sai</p>
                 </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium flex items-center gap-2"><Shield className="w-3.5 h-3.5" /> Độ dài mật khẩu tối thiểu</Label>
+                  <Input type="number" min={6} max={32} value={8} className="rounded-xl h-11" readOnly />
+                  <p className="text-xs text-muted-foreground">Yêu cầu tối thiểu ký tự cho mật khẩu</p>
+                </div>
               </div>
-              <Button className="rounded-xl w-full h-11" onClick={handleSave}>
+              <Button className="rounded-xl h-11" onClick={handleSave}>
                 <Save className="w-4 h-4 mr-2" /> Lưu cài đặt bảo mật
               </Button>
             </CardContent>

@@ -1,21 +1,40 @@
 import { useAdmin } from "@/contexts/AdminContext";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Eye, Search, Edit, Star } from "lucide-react";
+import { Trash2, Eye, Search, Star, Users, UserCheck, GraduationCap, UserPlus } from "lucide-react";
 import type { AdminUser, UserStatus } from "@/contexts/AdminContext";
 import { useToast } from "@/hooks/use-toast";
 
 const roleTabs = [
-  { value: "all", label: "Tất cả" },
-  { value: "tutor", label: "Gia sư" },
-  { value: "teacher", label: "Giáo viên" },
-  { value: "student", label: "Học sinh" },
-  { value: "parent", label: "Phụ huynh" },
+  { value: "all", label: "Tất cả", icon: Users },
+  { value: "tutor", label: "Gia sư", icon: GraduationCap },
+  { value: "teacher", label: "Giáo viên", icon: UserCheck },
+  { value: "student", label: "Học sinh", icon: UserPlus },
+  { value: "parent", label: "Phụ huynh", icon: Users },
+];
+
+const statusOptions = [
+  { value: "all", label: "Tất cả trạng thái" },
+  { value: "pending", label: "Chờ duyệt" },
+  { value: "approved", label: "Hoạt động" },
+  { value: "rejected", label: "Từ chối" },
+  { value: "suspended", label: "Tạm khóa" },
+];
+
+const subjectOptions = [
+  { value: "all", label: "Tất cả môn" },
+  { value: "Toán", label: "Toán" },
+  { value: "Văn", label: "Văn" },
+  { value: "Anh", label: "Anh" },
+  { value: "Lý", label: "Lý" },
+  { value: "Hóa", label: "Hóa" },
+  { value: "Sinh", label: "Sinh" },
+  { value: "Sử", label: "Sử" },
 ];
 
 const statusLabel: Record<string, string> = { pending: "Chờ duyệt", approved: "Hoạt động", rejected: "Từ chối", suspended: "Tạm khóa" };
@@ -33,15 +52,22 @@ const AdminUsers = () => {
   const { users, updateUserStatus, deleteUser } = useAdmin();
   const [tab, setTab] = useState("all");
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [subjectFilter, setSubjectFilter] = useState("all");
   const [detail, setDetail] = useState<AdminUser | null>(null);
   const [page, setPage] = useState(1);
   const { toast } = useToast();
 
-  const filtered = users.filter(u => {
+  const filtered = useMemo(() => users.filter(u => {
     if (tab !== "all" && u.role !== tab) return false;
-    if (search && !u.name.toLowerCase().includes(search.toLowerCase()) && !u.email.toLowerCase().includes(search.toLowerCase())) return false;
+    if (statusFilter !== "all" && u.status !== statusFilter) return false;
+    if (subjectFilter !== "all" && u.subject !== subjectFilter) return false;
+    if (search) {
+      const s = search.toLowerCase();
+      if (!u.name.toLowerCase().includes(s) && !u.email.toLowerCase().includes(s) && !(u.subject || "").toLowerCase().includes(s)) return false;
+    }
     return true;
-  });
+  }), [users, tab, statusFilter, subjectFilter, search]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -56,17 +82,71 @@ const AdminUsers = () => {
     toast({ title: "Đã cập nhật trạng thái" });
   };
 
+  const resetFilters = () => {
+    setTab("all"); setSearch(""); setStatusFilter("all"); setSubjectFilter("all"); setPage(1);
+  };
+
+  const stats = useMemo(() => ({
+    total: users.length,
+    tutors: users.filter(u => u.role === "tutor" || u.role === "teacher").length,
+    students: users.filter(u => u.role === "student").length,
+    pending: users.filter(u => u.status === "pending").length,
+  }), [users]);
+
   return (
-    <div className="p-6 space-y-5">
-      {/* Search */}
-      <div className="relative max-w-lg">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Tìm theo tên hoặc email..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="pl-10 h-11 rounded-2xl bg-card border-border"
-        />
+    <div className="p-6 space-y-6">
+      {/* Stats row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Tổng người dùng", value: stats.total, icon: Users, color: "text-primary" },
+          { label: "Gia sư & Giáo viên", value: stats.tutors, icon: GraduationCap, color: "text-emerald-600" },
+          { label: "Học sinh", value: stats.students, icon: UserPlus, color: "text-blue-600" },
+          { label: "Chờ duyệt", value: stats.pending, icon: UserCheck, color: "text-amber-600" },
+        ].map((s, i) => (
+          <Card key={i} className="border-0 shadow-soft">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
+                <p className="text-2xl font-bold text-foreground">{s.value}</p>
+              </div>
+              <div className={`w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center ${s.color}`}>
+                <s.icon className="w-5 h-5" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Search + Filters */}
+      <div className="flex flex-col md:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Tìm theo tên, email hoặc môn..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="pl-10 h-11 rounded-2xl bg-card border-border"
+          />
+        </div>
+        <Select value={subjectFilter} onValueChange={v => { setSubjectFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-full md:w-44 h-11 rounded-2xl bg-card border-border">
+            <SelectValue placeholder="Lọc theo môn" />
+          </SelectTrigger>
+          <SelectContent>
+            {subjectOptions.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-full md:w-48 h-11 rounded-2xl bg-card border-border">
+            <SelectValue placeholder="Lọc trạng thái" />
+          </SelectTrigger>
+          <SelectContent>
+            {statusOptions.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        {(search || statusFilter !== "all" || subjectFilter !== "all" || tab !== "all") && (
+          <Button variant="outline" onClick={resetFilters} className="h-11 rounded-2xl">Xóa lọc</Button>
+        )}
       </div>
 
       {/* Role tabs */}
@@ -75,16 +155,22 @@ const AdminUsers = () => {
           <button
             key={r.value}
             onClick={() => { setTab(r.value); setPage(1); }}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
               tab === r.value
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
+            <r.icon className="w-3.5 h-3.5" />
             {r.label}
           </button>
         ))}
       </div>
+
+      {/* Results count */}
+      <p className="text-sm text-muted-foreground">
+        Tìm thấy <span className="font-semibold text-foreground">{filtered.length}</span> người dùng
+      </p>
 
       {/* Table */}
       <Card className="border-0 shadow-soft overflow-hidden">
@@ -199,7 +285,7 @@ const AdminUsers = () => {
           {detail && (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <img src={detail.avatar} className="w-16 h-16 rounded-2xl object-cover" />
+                <img src={detail.avatar} className="w-16 h-16 rounded-2xl object-cover" alt={detail.name} />
                 <div>
                   <p className="font-bold text-lg text-foreground">{detail.name}</p>
                   <span className="text-xs px-2.5 py-1 rounded-lg bg-primary/10 text-primary font-medium">{roleLabel[detail.role]}</span>
@@ -211,6 +297,8 @@ const AdminUsers = () => {
                 <div className="bg-muted/50 p-3 rounded-xl"><span className="text-muted-foreground block text-xs mb-1">Trạng thái</span><span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[detail.status]}`}>{statusLabel[detail.status]}</span></div>
                 <div className="bg-muted/50 p-3 rounded-xl"><span className="text-muted-foreground block text-xs mb-1">Ngày tạo</span><span className="text-foreground">{detail.createdAt}</span></div>
                 {detail.subject && <div className="bg-muted/50 p-3 rounded-xl col-span-2"><span className="text-muted-foreground block text-xs mb-1">Môn</span><span className="text-foreground">{detail.subject}</span></div>}
+                {detail.school && <div className="bg-muted/50 p-3 rounded-xl col-span-2"><span className="text-muted-foreground block text-xs mb-1">Trường</span><span className="text-foreground">{detail.school}</span></div>}
+                {detail.studentId && <div className="bg-muted/50 p-3 rounded-xl col-span-2"><span className="text-muted-foreground block text-xs mb-1">MSSV</span><span className="text-foreground">{detail.studentId}</span></div>}
               </div>
               {detail.bio && <p className="text-sm text-foreground bg-muted/50 p-3 rounded-xl">{detail.bio}</p>}
             </div>
