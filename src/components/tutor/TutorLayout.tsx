@@ -13,7 +13,7 @@ const navItems = [
   { to: "/tutor", icon: LayoutDashboard, label: "Tổng quan", end: true },
   { to: "/tutor/classes", icon: BookOpen, label: "Lớp học" },
   { to: "/tutor/students", icon: Users, label: "Học sinh" },
-  { to: "/tutor/wallet", icon: Wallet, label: "Ví & Escrow" },
+  { to: "/tutor/wallet", icon: Wallet, label: "Ví & Thu nhập" },
   { to: "/tutor/schedule", icon: CalendarDays, label: "Lịch dạy" },
   { to: "/tutor/reviews", icon: Star, label: "Đánh giá" },
   { to: "/tutor/chat", icon: MessageSquare, label: "Tin nhắn" },
