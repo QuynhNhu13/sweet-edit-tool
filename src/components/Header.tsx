@@ -144,10 +144,10 @@ const Header = () => {
             </div>
           </details>
           <div className="flex gap-2 pt-2">
-            <Button variant="ghost" asChild className="flex-1 rounded-xl">
+            <Button variant="ghost" asChild className="flex-1 rounded-full">
               <Link to="/login" onClick={() => setMobileOpen(false)}>Đăng nhập</Link>
             </Button>
-            <Button asChild className="flex-1 rounded-xl bg-neon text-neon-foreground hover:bg-neon/90">
+            <Button asChild className="flex-1 rounded-full bg-neon text-neon-foreground hover:bg-neon/90">
               <Link to="/register" onClick={() => setMobileOpen(false)}>Đăng ký</Link>
             </Button>
           </div>

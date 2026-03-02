@@ -87,7 +87,7 @@ const ExamSection = () => {
                 ))}
               </div>
 
-              <Button className="w-full gradient-blue text-white h-13 rounded-2xl font-bold text-base" asChild>
+              <Button className="w-full gradient-blue text-white h-14 rounded-full font-bold text-base" asChild>
                 <Link to="/exam-online">Bắt đầu thi thử</Link>
               </Button>
             </div>

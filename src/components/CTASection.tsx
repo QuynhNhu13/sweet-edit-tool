@@ -39,13 +39,13 @@ const CTASection = () => {
             Đăng ký ngay hôm nay để tìm gia sư phù hợp hoặc bắt đầu sự nghiệp giảng dạy của bạn.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" asChild className="bg-neon text-neon-foreground hover:bg-neon/90 text-base px-10 h-14 rounded-2xl font-bold shadow-neon group">
+            <Button size="lg" asChild className="bg-neon text-neon-foreground hover:bg-neon/90 text-base px-10 h-14 rounded-full font-bold shadow-neon group">
               <Link to="/find-tutor" className="flex items-center gap-2">
                 Tìm gia sư ngay
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="border-white/20 text-white hover:bg-white/10 text-base px-10 h-14 rounded-2xl font-semibold">
+            <Button size="lg" variant="outline" asChild className="border-white/20 text-white hover:bg-white/10 text-base px-10 h-14 rounded-full font-semibold">
               <Link to="/register-tutor">Trở thành gia sư</Link>
             </Button>
           </div>
