@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,28 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Calendar, Clock, CheckCircle2, AlertTriangle, Search, Users, FileText, MessageSquare } from "lucide-react";
+import { Calendar, Clock, CheckCircle2, AlertTriangle, Search, Users } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 type AppointmentStatus = "scheduled" | "in-progress" | "completed" | "cancelled";
 interface Appointment {
-  id: string;
-  title: string;
-  type: "complaint" | "dispute" | "consultation" | "matching";
-  participants: string[];
-  date: string;
-  time: string;
-  status: AppointmentStatus;
-  description: string;
-  resolution?: string;
+  id: string; title: string; type: "complaint" | "dispute" | "consultation" | "matching";
+  participants: string[]; date: string; time: string; status: AppointmentStatus; description: string; resolution?: string;
 }
 
-const typeCfg: Record<string, { label: string; color: string }> = {
-  complaint: { label: "Khiếu nại", color: "bg-red-500/10 text-red-700" },
-  dispute: { label: "Tranh chấp", color: "bg-amber-500/10 text-amber-700" },
-  consultation: { label: "Tư vấn", color: "bg-blue-500/10 text-blue-700" },
-  matching: { label: "Ghép lớp", color: "bg-emerald-500/10 text-emerald-700" },
+const typeCfg: Record<string, { label: string }> = {
+  complaint: { label: "Khiếu nại" },
+  dispute: { label: "Tranh chấp" },
+  consultation: { label: "Tư vấn" },
+  matching: { label: "Ghép lớp" },
 };
 
 const statusCfg: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -77,19 +70,19 @@ const OfficeAppointments = () => {
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><Calendar className="w-5 h-5 text-blue-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Calendar className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{upcoming}</p><p className="text-xs text-muted-foreground">Sắp tới</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><Clock className="w-5 h-5 text-amber-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Clock className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{inProgress}</p><p className="text-xs text-muted-foreground">Đang xử lý</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-emerald-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{appointments.filter(a => a.status === "completed").length}</p><p className="text-xs text-muted-foreground">Hoàn tất</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-red-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
           <div><p className="text-xl font-bold text-foreground">{appointments.filter(a => a.type === "complaint" || a.type === "dispute").length}</p><p className="text-xs text-muted-foreground">Khiếu nại/Tranh chấp</p></div>
         </CardContent></Card>
       </div>
@@ -121,7 +114,7 @@ const OfficeAppointments = () => {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className={`text-[10px] ${tCfg.color}`}>{tCfg.label}</Badge>
+                      <Badge variant="outline" className="text-[10px]">{tCfg.label}</Badge>
                       <Badge variant={sCfg.variant}>{sCfg.label}</Badge>
                     </div>
                     <p className="text-sm font-semibold text-foreground">{a.title}</p>
@@ -132,8 +125,8 @@ const OfficeAppointments = () => {
                       <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {a.participants.length} người</span>
                     </div>
                     {a.resolution && (
-                      <div className="mt-2 p-2 bg-emerald-500/5 border border-emerald-200 rounded-lg">
-                        <p className="text-xs text-emerald-700"><span className="font-medium">Kết quả:</span> {a.resolution}</p>
+                      <div className="mt-2 p-2 bg-muted/50 border border-border rounded-lg">
+                        <p className="text-xs text-foreground"><span className="font-medium">Kết quả:</span> {a.resolution}</p>
                       </div>
                     )}
                   </div>
@@ -157,7 +150,7 @@ const OfficeAppointments = () => {
           {detail && (
             <div className="space-y-4 pt-2">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={typeCfg[detail.type].color}>{typeCfg[detail.type].label}</Badge>
+                <Badge variant="outline">{typeCfg[detail.type].label}</Badge>
                 <Badge variant={statusCfg[detail.status].variant}>{statusCfg[detail.status].label}</Badge>
               </div>
               <p className="text-base font-semibold text-foreground">{detail.title}</p>
@@ -171,7 +164,7 @@ const OfficeAppointments = () => {
               </div>
               <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Nội dung</Label><p className="text-sm text-foreground mt-1">{detail.description}</p></div>
               {detail.resolution && (
-                <div className="p-3 bg-emerald-500/5 border border-emerald-200 rounded-xl"><Label className="text-[10px] text-emerald-600">Kết quả xử lý</Label><p className="text-sm text-foreground mt-1">{detail.resolution}</p></div>
+                <div className="p-3 bg-muted/50 border border-border rounded-xl"><Label className="text-[10px] text-muted-foreground">Kết quả xử lý</Label><p className="text-sm text-foreground mt-1">{detail.resolution}</p></div>
               )}
             </div>
           )}
@@ -181,7 +174,7 @@ const OfficeAppointments = () => {
       {/* Resolve */}
       <Dialog open={!!resolveId} onOpenChange={() => { setResolveId(null); setResolution(""); }}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-emerald-600" /> Hoàn tất lịch hẹn</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-primary" /> Hoàn tất lịch hẹn</DialogTitle></DialogHeader>
           <div className="space-y-4 pt-2">
             <p className="text-sm text-muted-foreground">Nhập kết quả xử lý:</p>
             <Textarea value={resolution} onChange={e => setResolution(e.target.value)} placeholder="VD: Đã thống nhất hoàn 50% phí, gia sư cam kết cải thiện..." className="rounded-xl" rows={4} />

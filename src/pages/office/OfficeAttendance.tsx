@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -42,19 +41,19 @@ const OfficeAttendance = () => {
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><Clock className="w-5 h-5 text-amber-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Clock className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{pending}</p><p className="text-xs text-muted-foreground">Chờ xác nhận</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-emerald-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{completed}</p><p className="text-xs text-muted-foreground">Đã hoàn thành</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-red-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
           <div><p className="text-xl font-bold text-foreground">{reported}</p><p className="text-xs text-muted-foreground">Đã báo lỗi</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><CalendarDays className="w-5 h-5 text-blue-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CalendarDays className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{attendance.length}</p><p className="text-xs text-muted-foreground">Tổng buổi học</p></div>
         </CardContent></Card>
       </div>
@@ -125,9 +124,9 @@ const OfficeAttendance = () => {
                 <div><Label className="text-xs text-muted-foreground">PH xác nhận</Label><p className="text-sm font-medium text-foreground">{detail.parentConfirmed ? "Đã xác nhận" : "Chưa xác nhận"}</p></div>
               </div>
               {detail.issue && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
-                  <p className="text-xs font-medium text-red-700">Vấn đề báo cáo:</p>
-                  <p className="text-sm text-red-600 mt-1">{detail.issue}</p>
+                <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-xl">
+                  <p className="text-xs font-medium text-destructive">Vấn đề báo cáo:</p>
+                  <p className="text-sm text-destructive/80 mt-1">{detail.issue}</p>
                 </div>
               )}
             </div>

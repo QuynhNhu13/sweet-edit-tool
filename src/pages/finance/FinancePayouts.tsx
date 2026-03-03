@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Banknote, CheckCircle2, XCircle, Clock, Eye, Search, Shield, Wallet, TrendingUp, AlertTriangle } from "lucide-react";
+import { Banknote, CheckCircle2, XCircle, Clock, Eye, Search, Shield, Wallet, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,23 +54,23 @@ const FinancePayouts = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><Shield className="w-5 h-5 text-blue-600" /></div>
-          <div><p className="text-lg font-bold text-blue-600">{totalEscrow.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Escrow Balance</p></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Shield className="w-5 h-5 text-foreground" /></div>
+          <div><p className="text-lg font-bold text-foreground">{totalEscrow.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Escrow Balance</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><Clock className="w-5 h-5 text-amber-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Clock className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-lg font-bold text-foreground">{pending.length}</p><p className="text-[10px] text-muted-foreground">Chờ duyệt</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center"><Wallet className="w-5 h-5 text-orange-600" /></div>
-          <div><p className="text-lg font-bold text-orange-600">{totalPending.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Tổng chờ duyệt</p></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Wallet className="w-5 h-5 text-foreground" /></div>
+          <div><p className="text-lg font-bold text-foreground">{totalPending.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Tổng chờ duyệt</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-emerald-600" /></div>
-          <div><p className="text-lg font-bold text-emerald-600">{totalApproved.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Đã giải ngân</p></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
+          <div><p className="text-lg font-bold text-primary">{totalApproved.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Đã giải ngân</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center"><XCircle className="w-5 h-5 text-red-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><XCircle className="w-5 h-5 text-destructive" /></div>
           <div><p className="text-lg font-bold text-foreground">{withdrawals.filter(w => w.status === "rejected").length}</p><p className="text-[10px] text-muted-foreground">Từ chối</p></div>
         </CardContent></Card>
       </div>
@@ -94,14 +94,14 @@ const FinancePayouts = () => {
 
       {/* Pending */}
       {pending.length > 0 && (
-        <Card className="border-border border-l-4 border-l-amber-500">
-          <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-amber-600" /> Yêu cầu chờ duyệt ({pending.length})</CardTitle></CardHeader>
+        <Card className="border-border border-l-4 border-l-primary">
+          <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-muted-foreground" /> Yêu cầu chờ duyệt ({pending.length})</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             {pending.map(w => (
               <div key={w.id} className="p-4 bg-muted/50 rounded-xl border border-border">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <img src={w.tutorAvatar} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-200" />
+                    <img src={w.tutorAvatar} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-border" />
                     <div>
                       <p className="text-sm font-semibold text-foreground">{w.tutorName}</p>
                       <p className="text-xs text-muted-foreground">Yêu cầu ngày {w.requestDate}</p>
@@ -112,8 +112,8 @@ const FinancePayouts = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 text-xs">
                   <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Ngân hàng</span><span className="font-medium text-foreground">{w.bankName}</span></div>
                   <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">STK</span><span className="font-medium text-foreground">{w.bankAccount}</span></div>
-                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Tổng thu nhập</span><span className="font-medium text-emerald-600">{w.totalEarned.toLocaleString("vi-VN")}đ</span></div>
-                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Số dư khả dụng</span><span className="font-medium text-blue-600">{(w.totalEarned - w.totalWithdrawn).toLocaleString("vi-VN")}đ</span></div>
+                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Tổng thu nhập</span><span className="font-medium text-primary">{w.totalEarned.toLocaleString("vi-VN")}đ</span></div>
+                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Số dư khả dụng</span><span className="font-medium text-foreground">{(w.totalEarned - w.totalWithdrawn).toLocaleString("vi-VN")}đ</span></div>
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" className="rounded-xl" onClick={() => setDetailId(w.id)}><Eye className="w-3.5 h-3.5 mr-1" /> Chi tiết</Button>
@@ -140,7 +140,7 @@ const FinancePayouts = () => {
                       <img src={w.tutorAvatar} alt="" className="w-9 h-9 rounded-full object-cover" />
                       <div>
                         <p className="text-sm font-medium text-foreground">{w.tutorName}</p>
-                        <p className="text-xs text-muted-foreground">{w.requestDate} • {w.bankName} {w.bankAccount}</p>
+                        <p className="text-xs text-muted-foreground">{w.requestDate} · {w.bankName} {w.bankAccount}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -180,7 +180,7 @@ const FinancePayouts = () => {
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-500/5 border border-blue-200 rounded-xl text-center">
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl text-center">
                 <p className="text-xs text-muted-foreground mb-1">Số tiền yêu cầu rút</p>
                 <p className="text-2xl font-bold text-foreground">{detail.amount.toLocaleString("vi-VN")}đ</p>
               </div>
@@ -188,13 +188,13 @@ const FinancePayouts = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Ngân hàng</Label><p className="text-sm font-medium text-foreground">{detail.bankName}</p></div>
                 <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Số tài khoản</Label><p className="text-sm font-medium text-foreground">{detail.bankAccount}</p></div>
-                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Tổng thu nhập</Label><p className="text-sm font-medium text-emerald-600">{detail.totalEarned.toLocaleString("vi-VN")}đ</p></div>
+                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Tổng thu nhập</Label><p className="text-sm font-medium text-primary">{detail.totalEarned.toLocaleString("vi-VN")}đ</p></div>
                 <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Đã rút</Label><p className="text-sm font-medium text-foreground">{detail.totalWithdrawn.toLocaleString("vi-VN")}đ</p></div>
               </div>
 
-              <div className="p-3 bg-emerald-500/5 border border-emerald-200 rounded-xl flex items-center justify-between">
-                <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-emerald-600" /><span className="text-sm text-muted-foreground">Escrow khả dụng</span></div>
-                <p className="text-sm font-bold text-emerald-600">{(detail.totalEarned - detail.totalWithdrawn).toLocaleString("vi-VN")}đ</p>
+              <div className="p-3 bg-muted/50 border border-border rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-foreground" /><span className="text-sm text-muted-foreground">Escrow khả dụng</span></div>
+                <p className="text-sm font-bold text-primary">{(detail.totalEarned - detail.totalWithdrawn).toLocaleString("vi-VN")}đ</p>
               </div>
 
               {detail.note && (

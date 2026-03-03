@@ -29,10 +29,10 @@ const AdminDashboard = () => {
     : 0;
 
   const topStats = [
-    { label: "Tổng người dùng", value: totalUsers, icon: Users, change: "+12%", up: true, color: "bg-primary/10 text-primary" },
-    { label: "Gia sư & Giáo viên", value: totalTutorsTeachers, icon: GraduationCap, change: "+8%", up: true, color: "bg-emerald-500/10 text-emerald-600" },
-    { label: "Lớp đang hoạt động", value: activeClasses, icon: BookOpen, change: "+5%", up: true, color: "bg-amber-500/10 text-amber-600" },
-    { label: "Doanh thu tháng", value: `${(monthRevenue / 1000000).toFixed(1)}M`, icon: CreditCard, change: "+18%", up: true, color: "bg-primary/10 text-primary" },
+    { label: "Tổng người dùng", value: totalUsers, icon: Users, change: "+12%", up: true },
+    { label: "Gia sư & Giáo viên", value: totalTutorsTeachers, icon: GraduationCap, change: "+8%", up: true },
+    { label: "Lớp đang hoạt động", value: activeClasses, icon: BookOpen, change: "+5%", up: true },
+    { label: "Doanh thu tháng", value: `${(monthRevenue / 1000000).toFixed(1)}M`, icon: CreditCard, change: "+18%", up: true },
   ];
 
   const recentClasses = classes.filter(c => c.status === "searching" || c.status === "active").slice(0, 4);
@@ -40,19 +40,8 @@ const AdminDashboard = () => {
 
   const getUserName = (id: string) => users.find(u => u.id === id)?.name || "—";
 
-  const statusColor: Record<string, string> = {
-    searching: "bg-amber-500/10 text-amber-600",
-    active: "bg-emerald-500/10 text-emerald-600",
-    completed: "bg-primary/10 text-primary",
-  };
   const statusLabel: Record<string, string> = { searching: "Đang tìm", active: "Đang học", completed: "Hoàn thành" };
   
-  const txStatusColor: Record<string, string> = {
-    completed: "bg-emerald-500/10 text-emerald-600",
-    pending: "bg-amber-500/10 text-amber-600",
-    failed: "bg-destructive/10 text-destructive",
-    refunded: "bg-primary/10 text-primary",
-  };
   const txStatusLabel: Record<string, string> = { completed: "Hoàn thành", pending: "Đang xử lý", failed: "Thất bại", refunded: "Hoàn tiền" };
 
   return (
@@ -67,13 +56,13 @@ const AdminDashboard = () => {
                   <p className="text-[13px] text-muted-foreground font-medium">{s.label}</p>
                   <p className="text-3xl font-bold text-foreground tracking-tight">{s.value}</p>
                   <div className="flex items-center gap-1">
-                    {s.up ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" /> : <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />}
-                    <span className={`text-xs font-semibold ${s.up ? "text-emerald-500" : "text-destructive"}`}>{s.change}</span>
+                    {s.up ? <ArrowUpRight className="w-3.5 h-3.5 text-primary" /> : <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />}
+                    <span className={`text-xs font-semibold ${s.up ? "text-primary" : "text-destructive"}`}>{s.change}</span>
                     <span className="text-xs text-muted-foreground">vs tháng trước</span>
                   </div>
                 </div>
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${s.color}`}>
-                  <s.icon className="w-5 h-5" />
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-muted">
+                  <s.icon className="w-5 h-5 text-foreground" />
                 </div>
               </div>
             </CardContent>
@@ -105,8 +94,8 @@ const AdminDashboard = () => {
         <Card className="border-0 shadow-soft">
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                <FileText className="w-5 h-5 text-foreground" />
               </div>
               <div>
                 <p className="text-[13px] text-muted-foreground font-medium">Bài test tháng này</p>
@@ -161,14 +150,14 @@ const AdminDashboard = () => {
             <div className="space-y-3">
               {recentClasses.map(c => (
                 <div key={c.id} className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-muted/30 transition-colors">
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <BookOpen className="w-4 h-4 text-primary" />
+                  <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                    <BookOpen className="w-4 h-4 text-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
                     <p className="text-xs text-muted-foreground">{getUserName(c.tutorId)} · {c.fee.toLocaleString("vi-VN")}đ</p>
                   </div>
-                  <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${statusColor[c.status]}`}>
+                  <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-muted text-foreground">
                     {statusLabel[c.status]}
                   </span>
                 </div>
@@ -201,7 +190,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-semibold text-foreground">{tx.amount.toLocaleString("vi-VN")}đ</p>
-                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${txStatusColor[tx.status]}`}>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                         {txStatusLabel[tx.status]}
                       </span>
                     </div>

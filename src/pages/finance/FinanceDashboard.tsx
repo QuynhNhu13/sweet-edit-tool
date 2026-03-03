@@ -1,7 +1,7 @@
 import { useFinance } from "@/contexts/FinanceContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DollarSign, ArrowUpRight, ArrowDownRight, Clock, TrendingUp, ArrowLeftRight, Banknote, BarChart3 } from "lucide-react";
+import { DollarSign, ArrowUpRight, Clock, TrendingUp, ArrowLeftRight, Banknote, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -35,28 +35,28 @@ const FinanceDashboard = () => {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Tổng quan tài chính</h1>
-        <p className="text-muted-foreground text-sm">Kế toán • Hôm nay, 03/03/2026</p>
+        <p className="text-muted-foreground text-sm">Kế toán · Hôm nay, 03/03/2026</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3"><DollarSign className="w-5 h-5 text-emerald-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><DollarSign className="w-5 h-5 text-foreground" /></div>
           <p className="text-xl font-bold text-foreground">{totalRevenue.toLocaleString("vi-VN")}đ</p>
           <p className="text-xs text-muted-foreground mt-1">Doanh thu tháng</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3"><ArrowLeftRight className="w-5 h-5 text-blue-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><ArrowLeftRight className="w-5 h-5 text-foreground" /></div>
           <p className="text-xl font-bold text-foreground">{todayTx}</p>
           <p className="text-xs text-muted-foreground mt-1">Giao dịch hôm nay</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3"><Clock className="w-5 h-5 text-amber-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><Clock className="w-5 h-5 text-foreground" /></div>
           <p className="text-xl font-bold text-foreground">{pendingPayouts.toLocaleString("vi-VN")}đ</p>
           <p className="text-xs text-muted-foreground mt-1">Chờ thanh toán</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3"><TrendingUp className="w-5 h-5 text-purple-600" /></div>
-          <p className="text-xl font-bold text-foreground flex items-center gap-1">+{growth}% <ArrowUpRight className="w-4 h-4 text-emerald-500" /></p>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><TrendingUp className="w-5 h-5 text-foreground" /></div>
+          <p className="text-xl font-bold text-foreground flex items-center gap-1">+{growth}% <ArrowUpRight className="w-4 h-4 text-primary" /></p>
           <p className="text-xs text-muted-foreground mt-1">Tăng trưởng</p>
         </CardContent></Card>
       </div>
@@ -69,15 +69,15 @@ const FinanceDashboard = () => {
               <AreaChart data={revenueData}>
                 <defs>
                   <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(160, 60%, 45%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(160, 60%, 45%)" stopOpacity={0} />
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="month" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis tickFormatter={v => `${(v / 1000000).toFixed(0)}M`} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip formatter={(v: number) => `${v.toLocaleString("vi-VN")}đ`} />
-                <Area type="monotone" dataKey="revenue" stroke="hsl(160, 60%, 45%)" fill="url(#revenueGrad)" strokeWidth={2} />
+                <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" fill="url(#revenueGrad)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -92,7 +92,7 @@ const FinanceDashboard = () => {
                   <p className="text-xs font-medium text-foreground">{t.description}</p>
                   <p className="text-[10px] text-muted-foreground">{t.date}</p>
                 </div>
-                <span className={`text-xs font-bold ${t.type === "tuition" || t.type === "deposit" ? "text-emerald-600" : "text-foreground"}`}>
+                <span className={`text-xs font-bold ${t.type === "tuition" || t.type === "deposit" ? "text-primary" : "text-foreground"}`}>
                   {t.type === "refund" ? "-" : "+"}{t.amount.toLocaleString("vi-VN")}đ
                 </span>
               </div>

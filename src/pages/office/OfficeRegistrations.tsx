@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,26 +19,11 @@ import avatarFemale3 from "@/assets/avatar-female-3.jpg";
 
 type RegStatus = "pending" | "approved" | "rejected";
 interface Registration {
-  id: string;
-  name: string;
-  avatar: string;
-  role: "student" | "tutor" | "teacher" | "parent";
-  email: string;
-  phone: string;
-  subject?: string;
-  note: string;
-  date: string;
-  status: RegStatus;
-  rejectReason?: string;
+  id: string; name: string; avatar: string; role: "student" | "tutor" | "teacher" | "parent";
+  email: string; phone: string; subject?: string; note: string; date: string; status: RegStatus; rejectReason?: string;
 }
 
 const roleLabels: Record<string, string> = { student: "Học sinh", tutor: "Gia sư", teacher: "Giáo viên", parent: "Phụ huynh" };
-const roleColors: Record<string, string> = {
-  student: "bg-blue-500/10 text-blue-700",
-  tutor: "bg-emerald-500/10 text-emerald-700",
-  teacher: "bg-purple-500/10 text-purple-700",
-  parent: "bg-amber-500/10 text-amber-700",
-};
 
 const statusCfg: Record<string, { label: string; variant: "default" | "destructive" | "outline" }> = {
   pending: { label: "Chờ duyệt", variant: "outline" },
@@ -93,19 +78,19 @@ const OfficeRegistrations = () => {
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><UserPlus className="w-5 h-5 text-amber-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><UserPlus className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{pendingCount}</p><p className="text-xs text-muted-foreground">Chờ duyệt</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><GraduationCap className="w-5 h-5 text-emerald-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><GraduationCap className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{regs.filter(r => r.role === "tutor" || r.role === "teacher").length}</p><p className="text-xs text-muted-foreground">GS/GV đăng ký</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><BookOpen className="w-5 h-5 text-blue-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><BookOpen className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{regs.filter(r => r.role === "student").length}</p><p className="text-xs text-muted-foreground">HS đăng ký</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center"><Users className="w-5 h-5 text-purple-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Users className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{regs.filter(r => r.status === "approved").length}</p><p className="text-xs text-muted-foreground">Đã duyệt</p></div>
         </CardContent></Card>
       </div>
@@ -157,7 +142,7 @@ const OfficeRegistrations = () => {
                       <p className="text-sm font-medium text-foreground">{r.name}</p>
                     </div>
                   </TableCell>
-                  <TableCell><Badge variant="outline" className={`text-[10px] ${roleColors[r.role]}`}>{roleLabels[r.role]}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className="text-[10px]">{roleLabels[r.role]}</Badge></TableCell>
                   <TableCell><p className="text-xs text-foreground">{r.email}</p><p className="text-[10px] text-muted-foreground">{r.phone}</p></TableCell>
                   <TableCell className="text-sm">{r.subject || "—"}</TableCell>
                   <TableCell className="text-sm">{r.date}</TableCell>
@@ -167,7 +152,7 @@ const OfficeRegistrations = () => {
                       <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setDetailId(r.id)}><Eye className="w-3.5 h-3.5" /></Button>
                       {r.status === "pending" && (
                         <>
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-emerald-600" onClick={() => approve(r.id)}><CheckCircle2 className="w-3.5 h-3.5" /></Button>
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-primary" onClick={() => approve(r.id)}><CheckCircle2 className="w-3.5 h-3.5" /></Button>
                           <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive" onClick={() => setRejectId(r.id)}><XCircle className="w-3.5 h-3.5" /></Button>
                         </>
                       )}
@@ -190,7 +175,7 @@ const OfficeRegistrations = () => {
                 <img src={detail.avatar} alt="" className="w-14 h-14 rounded-full object-cover" />
                 <div>
                   <p className="text-base font-semibold text-foreground">{detail.name}</p>
-                  <Badge variant="outline" className={roleColors[detail.role]}>{roleLabels[detail.role]}</Badge>
+                  <Badge variant="outline">{roleLabels[detail.role]}</Badge>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">

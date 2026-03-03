@@ -7,21 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeftRight, Download, Eye, Search, Filter, ArrowUpRight, ArrowDownRight, DollarSign, Calendar } from "lucide-react";
+import { ArrowLeftRight, Download, Eye, Search, ArrowUpRight, ArrowDownRight, DollarSign, Calendar } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const typeLabels: Record<string, string> = {
   tuition: "Học phí", salary: "Lương", withdrawal: "Rút tiền", deposit: "Nạp tiền", "exam-fee": "Phí thi", refund: "Hoàn tiền",
-};
-
-const typeColors: Record<string, string> = {
-  tuition: "bg-emerald-500/10 text-emerald-700 border-emerald-200",
-  salary: "bg-blue-500/10 text-blue-700 border-blue-200",
-  withdrawal: "bg-orange-500/10 text-orange-700 border-orange-200",
-  deposit: "bg-purple-500/10 text-purple-700 border-purple-200",
-  "exam-fee": "bg-amber-500/10 text-amber-700 border-amber-200",
-  refund: "bg-red-500/10 text-red-700 border-red-200",
 };
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -63,20 +54,20 @@ const FinanceTransactions = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><ArrowUpRight className="w-4 h-4 text-emerald-600" /><span className="text-xs text-muted-foreground">Tổng thu</span></div>
-          <p className="text-xl font-bold text-emerald-600">+{totalIn.toLocaleString("vi-VN")}đ</p>
+          <div className="flex items-center gap-2 mb-2"><ArrowUpRight className="w-4 h-4 text-primary" /><span className="text-xs text-muted-foreground">Tổng thu</span></div>
+          <p className="text-xl font-bold text-primary">+{totalIn.toLocaleString("vi-VN")}đ</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><ArrowDownRight className="w-4 h-4 text-red-600" /><span className="text-xs text-muted-foreground">Tổng chi</span></div>
-          <p className="text-xl font-bold text-red-600">-{totalOut.toLocaleString("vi-VN")}đ</p>
+          <div className="flex items-center gap-2 mb-2"><ArrowDownRight className="w-4 h-4 text-destructive" /><span className="text-xs text-muted-foreground">Tổng chi</span></div>
+          <p className="text-xl font-bold text-destructive">-{totalOut.toLocaleString("vi-VN")}đ</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><DollarSign className="w-4 h-4 text-blue-600" /><span className="text-xs text-muted-foreground">Lợi nhuận</span></div>
+          <div className="flex items-center gap-2 mb-2"><DollarSign className="w-4 h-4 text-foreground" /><span className="text-xs text-muted-foreground">Lợi nhuận</span></div>
           <p className="text-xl font-bold text-foreground">{(totalIn - totalOut).toLocaleString("vi-VN")}đ</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><Calendar className="w-4 h-4 text-amber-600" /><span className="text-xs text-muted-foreground">Chờ xử lý</span></div>
-          <p className="text-xl font-bold text-amber-600">{pendingCount}</p>
+          <div className="flex items-center gap-2 mb-2"><Calendar className="w-4 h-4 text-muted-foreground" /><span className="text-xs text-muted-foreground">Chờ xử lý</span></div>
+          <p className="text-xl font-bold text-foreground">{pendingCount}</p>
         </CardContent></Card>
       </div>
 
@@ -150,9 +141,9 @@ const FinanceTransactions = () => {
                       <TableCell className="text-sm">{t.user}</TableCell>
                       <TableCell className="text-sm">{t.userRole}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={`text-[10px] ${typeColors[t.type] || ""}`}>{typeLabels[t.type]}</Badge>
+                        <Badge variant="outline" className="text-[10px]">{typeLabels[t.type]}</Badge>
                       </TableCell>
-                      <TableCell className={`text-sm font-medium ${isIncome ? "text-emerald-600" : "text-red-600"}`}>
+                      <TableCell className={`text-sm font-medium ${isIncome ? "text-primary" : "text-destructive"}`}>
                         {isIncome ? "+" : "-"}{t.amount.toLocaleString("vi-VN")}đ
                       </TableCell>
                       <TableCell className="text-sm">{t.date}</TableCell>
@@ -181,14 +172,14 @@ const FinanceTransactions = () => {
           {detail && (
             <div className="space-y-4 pt-2">
               <div className="p-4 bg-muted/50 rounded-xl text-center">
-                <p className={`text-2xl font-bold ${(detail.type === "tuition" || detail.type === "deposit" || detail.type === "exam-fee") ? "text-emerald-600" : "text-red-600"}`}>
+                <p className={`text-2xl font-bold ${(detail.type === "tuition" || detail.type === "deposit" || detail.type === "exam-fee") ? "text-primary" : "text-destructive"}`}>
                   {(detail.type === "tuition" || detail.type === "deposit" || detail.type === "exam-fee") ? "+" : "-"}{detail.amount.toLocaleString("vi-VN")}đ
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">{detail.description}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label className="text-xs text-muted-foreground">Mã giao dịch</Label><p className="text-sm font-mono font-medium text-foreground">{detail.id.toUpperCase()}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Loại</Label><div className="mt-1"><Badge variant="outline" className={typeColors[detail.type]}>{typeLabels[detail.type]}</Badge></div></div>
+                <div><Label className="text-xs text-muted-foreground">Loại</Label><div className="mt-1"><Badge variant="outline">{typeLabels[detail.type]}</Badge></div></div>
                 <div><Label className="text-xs text-muted-foreground">Người dùng</Label><p className="text-sm font-medium text-foreground">{detail.user}</p></div>
                 <div><Label className="text-xs text-muted-foreground">Vai trò</Label><p className="text-sm font-medium text-foreground">{detail.userRole}</p></div>
                 <div><Label className="text-xs text-muted-foreground">Ngày giao dịch</Label><p className="text-sm font-medium text-foreground">{detail.date}</p></div>

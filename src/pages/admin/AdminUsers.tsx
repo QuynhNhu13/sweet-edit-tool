@@ -26,11 +26,10 @@ const statusOptions = [
   { value: "suspended", label: "Tạm khóa" },
 ];
 
-
 const statusLabel: Record<string, string> = { pending: "Chờ duyệt", approved: "Hoạt động", rejected: "Từ chối", suspended: "Tạm khóa" };
 const statusColor: Record<string, string> = {
-  pending: "bg-amber-500/10 text-amber-600",
-  approved: "bg-emerald-500/10 text-emerald-600",
+  pending: "bg-muted text-muted-foreground",
+  approved: "bg-primary/10 text-primary",
   rejected: "bg-destructive/10 text-destructive",
   suspended: "bg-muted text-muted-foreground",
 };
@@ -83,10 +82,10 @@ const AdminUsers = () => {
       {/* Stats row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Tổng người dùng", value: stats.total, icon: Users, color: "text-primary" },
-          { label: "Gia sư & Giáo viên", value: stats.tutors, icon: GraduationCap, color: "text-emerald-600" },
-          { label: "Học sinh", value: stats.students, icon: UserPlus, color: "text-blue-600" },
-          { label: "Chờ duyệt", value: stats.pending, icon: UserCheck, color: "text-amber-600" },
+          { label: "Tổng người dùng", value: stats.total, icon: Users },
+          { label: "Gia sư & Giáo viên", value: stats.tutors, icon: GraduationCap },
+          { label: "Học sinh", value: stats.students, icon: UserPlus },
+          { label: "Chờ duyệt", value: stats.pending, icon: UserCheck },
         ].map((s, i) => (
           <Card key={i} className="border-0 shadow-soft">
             <CardContent className="p-4 flex items-center justify-between">
@@ -94,8 +93,8 @@ const AdminUsers = () => {
                 <p className="text-xs text-muted-foreground">{s.label}</p>
                 <p className="text-2xl font-bold text-foreground">{s.value}</p>
               </div>
-              <div className={`w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center ${s.color}`}>
-                <s.icon className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                <s.icon className="w-5 h-5 text-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -106,20 +105,11 @@ const AdminUsers = () => {
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Tìm theo tên, email hoặc môn..."
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
-            className="pl-10 h-11 rounded-2xl bg-card border-border"
-          />
+          <Input placeholder="Tìm theo tên, email hoặc môn..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} className="pl-10 h-11 rounded-2xl bg-card border-border" />
         </div>
         <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
-          <SelectTrigger className="w-full md:w-48 h-11 rounded-2xl bg-card border-border">
-            <SelectValue placeholder="Lọc trạng thái" />
-          </SelectTrigger>
-          <SelectContent>
-            {statusOptions.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-          </SelectContent>
+          <SelectTrigger className="w-full md:w-48 h-11 rounded-2xl bg-card border-border"><SelectValue placeholder="Lọc trạng thái" /></SelectTrigger>
+          <SelectContent>{statusOptions.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
         </Select>
         {(search || statusFilter !== "all" || tab !== "all") && (
           <Button variant="outline" onClick={resetFilters} className="h-11 rounded-2xl">Xóa lọc</Button>
@@ -129,25 +119,15 @@ const AdminUsers = () => {
       {/* Role tabs */}
       <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-2xl w-fit">
         {roleTabs.map(r => (
-          <button
-            key={r.value}
-            onClick={() => { setTab(r.value); setPage(1); }}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
-              tab === r.value
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
+          <button key={r.value} onClick={() => { setTab(r.value); setPage(1); }}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${tab === r.value ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
             <r.icon className="w-3.5 h-3.5" />
             {r.label}
           </button>
         ))}
       </div>
 
-      {/* Results count */}
-      <p className="text-sm text-muted-foreground">
-        Tìm thấy <span className="font-semibold text-foreground">{filtered.length}</span> người dùng
-      </p>
+      <p className="text-sm text-muted-foreground">Tìm thấy <span className="font-semibold text-foreground">{filtered.length}</span> người dùng</p>
 
       {/* Table */}
       <Card className="border-0 shadow-soft overflow-hidden">
@@ -176,33 +156,19 @@ const AdminUsers = () => {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-primary/5 text-primary">
-                      {roleLabel[u.role] || u.role}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {u.subject ? (
-                      <span className="text-xs px-2.5 py-1 rounded-lg bg-muted text-foreground font-medium">{u.subject}</span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
+                  <TableCell><span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-muted text-foreground">{roleLabel[u.role] || u.role}</span></TableCell>
+                  <TableCell>{u.subject ? <span className="text-xs px-2.5 py-1 rounded-lg bg-muted text-foreground font-medium">{u.subject}</span> : <span className="text-xs text-muted-foreground">—</span>}</TableCell>
                   <TableCell>
                     {(u.role === "tutor" || u.role === "teacher") ? (
                       <div className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        <Star className="w-3.5 h-3.5 fill-foreground text-foreground" />
                         <span className="text-sm font-medium text-foreground">4.{Math.floor(Math.random() * 5) + 5}</span>
                       </div>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
+                    ) : <span className="text-xs text-muted-foreground">—</span>}
                   </TableCell>
                   <TableCell>
                     <Select value={u.status} onValueChange={v => handleStatusChange(u.id, v)}>
-                      <SelectTrigger className={`w-28 h-7 text-[11px] rounded-full border-0 font-medium ${statusColor[u.status]}`}>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger className={`w-28 h-7 text-[11px] rounded-full border-0 font-medium ${statusColor[u.status]}`}><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Chờ duyệt</SelectItem>
                         <SelectItem value="approved">Hoạt động</SelectItem>
@@ -214,12 +180,8 @@ const AdminUsers = () => {
                   <TableCell className="text-sm text-muted-foreground">{u.createdAt}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-0.5">
-                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => setDetail(u)}>
-                        <Eye className="w-4 h-4 text-muted-foreground" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-destructive hover:text-destructive" onClick={() => handleDelete(u)}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg" onClick={() => setDetail(u)}><Eye className="w-4 h-4 text-muted-foreground" /></Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-destructive hover:text-destructive" onClick={() => handleDelete(u)}><Trash2 className="w-4 h-4" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -235,22 +197,10 @@ const AdminUsers = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Hiển thị {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, filtered.length)} / {filtered.length}
-          </p>
+          <p className="text-sm text-muted-foreground">Hiển thị {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, filtered.length)} / {filtered.length}</p>
           <div className="flex gap-1">
             {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setPage(i + 1)}
-                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                  page === i + 1
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                {i + 1}
-              </button>
+              <button key={i} onClick={() => setPage(i + 1)} className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${page === i + 1 ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>{i + 1}</button>
             ))}
           </div>
         </div>
@@ -265,7 +215,7 @@ const AdminUsers = () => {
                 <img src={detail.avatar} className="w-16 h-16 rounded-2xl object-cover" alt={detail.name} />
                 <div>
                   <p className="font-bold text-lg text-foreground">{detail.name}</p>
-                  <span className="text-xs px-2.5 py-1 rounded-lg bg-primary/10 text-primary font-medium">{roleLabel[detail.role]}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-lg bg-muted text-foreground font-medium">{roleLabel[detail.role]}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 text-sm">

@@ -10,15 +10,15 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const priorityConfig: Record<string, { label: string; className: string }> = {
-  high: { label: "Cao", className: "bg-red-100 text-red-700 border-red-200" },
-  medium: { label: "Trung bình", className: "bg-amber-100 text-amber-700 border-amber-200" },
-  low: { label: "Thấp", className: "bg-blue-100 text-blue-700 border-blue-200" },
+  high: { label: "Cao", className: "bg-destructive/10 text-destructive border-destructive/20" },
+  medium: { label: "Trung bình", className: "bg-muted text-foreground border-border" },
+  low: { label: "Thấp", className: "bg-muted text-muted-foreground border-border" },
 };
 
-const statusConfig: Record<string, { label: string; icon: React.ElementType; className: string }> = {
-  pending: { label: "Chờ xử lý", icon: Clock, className: "text-amber-600" },
-  investigating: { label: "Đang điều tra", icon: SearchIcon, className: "text-blue-600" },
-  resolved: { label: "Đã xử lý", icon: CheckCircle2, className: "text-emerald-600" },
+const statusConfig: Record<string, { label: string; icon: React.ElementType }> = {
+  pending: { label: "Chờ xử lý", icon: Clock },
+  investigating: { label: "Đang điều tra", icon: SearchIcon },
+  resolved: { label: "Đã xử lý", icon: CheckCircle2 },
 };
 
 const OfficeIncidents = () => {
@@ -45,15 +45,15 @@ const OfficeIncidents = () => {
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-red-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
           <div><p className="text-xl font-bold text-foreground">{incidents.filter(i => i.status === "pending").length}</p><p className="text-xs text-muted-foreground">Chờ xử lý</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><SearchIcon className="w-5 h-5 text-blue-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><SearchIcon className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{incidents.filter(i => i.status === "investigating").length}</p><p className="text-xs text-muted-foreground">Đang điều tra</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-emerald-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{incidents.filter(i => i.status === "resolved").length}</p><p className="text-xs text-muted-foreground">Đã xử lý</p></div>
         </CardContent></Card>
       </div>
@@ -76,15 +76,15 @@ const OfficeIncidents = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${pCfg.className}`}>{pCfg.label}</span>
-                    <div className={`flex items-center gap-1 text-xs font-medium ${sCfg.className}`}><sCfg.icon className="w-3.5 h-3.5" />{sCfg.label}</div>
+                    <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground"><sCfg.icon className="w-3.5 h-3.5" />{sCfg.label}</div>
                   </div>
                   <p className="text-xs text-muted-foreground">{incident.createdAt}</p>
                 </div>
                 <h3 className="text-sm font-semibold text-foreground mb-1">{incident.className}</h3>
                 <p className="text-sm text-muted-foreground mb-3">{incident.description}</p>
                 {incident.resolution && (
-                  <div className="p-2 bg-emerald-50 border border-emerald-200 rounded-lg mb-3">
-                    <p className="text-xs text-emerald-700"><span className="font-medium">Xử lý:</span> {incident.resolution}</p>
+                  <div className="p-2 bg-muted/50 border border-border rounded-lg mb-3">
+                    <p className="text-xs text-foreground"><span className="font-medium">Xử lý:</span> {incident.resolution}</p>
                   </div>
                 )}
                 <div className="flex items-center justify-between">
@@ -116,7 +116,7 @@ const OfficeIncidents = () => {
                 <div><Label className="text-xs text-muted-foreground">Thời gian</Label><p className="text-sm font-medium text-foreground">{detail.createdAt}</p></div>
               </div>
               <div><Label className="text-xs text-muted-foreground">Mô tả</Label><p className="text-sm text-foreground mt-1 p-3 bg-muted/50 rounded-xl">{detail.description}</p></div>
-              {detail.resolution && <div><Label className="text-xs text-muted-foreground">Kết quả xử lý</Label><p className="text-sm text-emerald-700 mt-1 p-3 bg-emerald-50 rounded-xl border border-emerald-200">{detail.resolution}</p></div>}
+              {detail.resolution && <div><Label className="text-xs text-muted-foreground">Kết quả xử lý</Label><p className="text-sm text-foreground mt-1 p-3 bg-muted/50 rounded-xl border border-border">{detail.resolution}</p></div>}
             </div>
           )}
         </DialogContent>

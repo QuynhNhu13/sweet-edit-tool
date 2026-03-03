@@ -68,19 +68,19 @@ const OfficeClasses = () => {
       {/* Overview Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><BookOpen className="w-5 h-5 text-blue-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><BookOpen className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{activeCount}</p><p className="text-xs text-muted-foreground">Đang hoạt động</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-emerald-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{completedCount}</p><p className="text-xs text-muted-foreground">Hoàn thành</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><Search className="w-5 h-5 text-amber-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Search className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{searchingCount}</p><p className="text-xs text-muted-foreground">Đang tìm GS</p></div>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center"><Clock className="w-5 h-5 text-purple-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Clock className="w-5 h-5 text-foreground" /></div>
           <div><p className="text-xl font-bold text-foreground">{totalFee.toLocaleString("vi-VN")}đ</p><p className="text-xs text-muted-foreground">Học phí/tháng</p></div>
         </CardContent></Card>
       </div>

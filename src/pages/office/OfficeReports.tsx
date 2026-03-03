@@ -33,7 +33,7 @@ const classDistribution = [
   { name: "Hóa", value: 8 },
 ];
 
-const COLORS = ["hsl(220, 70%, 55%)", "hsl(160, 60%, 45%)", "hsl(35, 90%, 55%)", "hsl(280, 60%, 55%)", "hsl(350, 70%, 55%)"];
+const COLORS = ["hsl(var(--primary))", "hsl(var(--ring))", "hsl(var(--muted-foreground))", "hsl(var(--foreground))", "hsl(var(--destructive))"];
 
 const kpiData = [
   { label: "Đăng ký mới", value: 7, target: 200, percent: 3.5 },
@@ -54,10 +54,10 @@ const OfficeReports = () => {
   const { toast } = useToast();
 
   const stats = [
-    { label: "Tổng buổi học tuần", value: dailyData.reduce((s, d) => s + d.sessions, 0), icon: BookOpen, color: "bg-blue-500/10 text-blue-600" },
-    { label: "Tỷ lệ điểm danh", value: "94%", icon: TrendingUp, color: "bg-emerald-500/10 text-emerald-600" },
-    { label: "Sự cố trong tuần", value: dailyData.reduce((s, d) => s + d.issues, 0), icon: BarChart3, color: "bg-amber-500/10 text-amber-600" },
-    { label: "HS đang học", value: classes.filter(c => c.status === "active").length, icon: Users, color: "bg-purple-500/10 text-purple-600" },
+    { label: "Tổng buổi học tuần", value: dailyData.reduce((s, d) => s + d.sessions, 0), icon: BookOpen },
+    { label: "Tỷ lệ điểm danh", value: "94%", icon: TrendingUp },
+    { label: "Sự cố trong tuần", value: dailyData.reduce((s, d) => s + d.issues, 0), icon: BarChart3 },
+    { label: "HS đang học", value: classes.filter(c => c.status === "active").length, icon: Users },
   ];
 
   const exportReport = () => {
@@ -74,7 +74,7 @@ const OfficeReports = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map(k => (
           <Card key={k.label} className="border-border"><CardContent className="p-4">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${k.color}`}><k.icon className="w-5 h-5" /></div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-muted"><k.icon className="w-5 h-5 text-foreground" /></div>
             <p className="text-2xl font-bold text-foreground">{k.value}</p>
             <p className="text-xs text-muted-foreground mt-1">{k.label}</p>
           </CardContent></Card>
@@ -91,8 +91,8 @@ const OfficeReports = () => {
                 <XAxis dataKey="day" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip />
-                <Bar dataKey="sessions" name="Buổi học" fill="hsl(220, 70%, 55%)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="issues" name="Sự cố" fill="hsl(350, 70%, 55%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="sessions" name="Buổi học" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="issues" name="Sự cố" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -115,7 +115,7 @@ const OfficeReports = () => {
       <Card className="border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Thống kê qua các tuần</CardTitle>
-          <p className="text-xs text-muted-foreground">So sánh các chỉ số qua các tuần (Dữ liệu thực từ hệ thống)</p>
+          <p className="text-xs text-muted-foreground">So sánh các chỉ số qua các tuần</p>
         </CardHeader>
         <CardContent>
           <Table>

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area } from "recharts";
-import { Download, DollarSign, TrendingUp, TrendingDown, Trophy, Users, BookOpen, ArrowUpRight } from "lucide-react";
+import { Download, DollarSign, TrendingUp, TrendingDown, Trophy, Users, ArrowUpRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const monthlyData = [
@@ -38,8 +38,8 @@ const topTutors = [
   { name: "Hoàng Đức Em", role: "Gia sư", revenue: 3600000, classes: 1, students: 2, rating: 4.5 },
 ];
 
-const COLORS_REV = ["hsl(220, 70%, 55%)", "hsl(35, 90%, 55%)", "hsl(160, 60%, 45%)", "hsl(280, 60%, 55%)"];
-const COLORS_EXP = ["hsl(350, 70%, 55%)", "hsl(35, 90%, 55%)", "hsl(220, 70%, 55%)", "hsl(160, 60%, 45%)", "hsl(280, 60%, 55%)"];
+const COLORS_REV = ["hsl(var(--primary))", "hsl(var(--ring))", "hsl(var(--muted-foreground))", "hsl(var(--foreground))"];
+const COLORS_EXP = ["hsl(var(--destructive))", "hsl(var(--ring))", "hsl(var(--primary))", "hsl(var(--muted-foreground))", "hsl(var(--foreground))"];
 
 const FinanceReports = () => {
   const { toast } = useToast();
@@ -49,8 +49,6 @@ const FinanceReports = () => {
   const profitMargin = ((totalProfit / totalRevenue) * 100).toFixed(1);
 
   const exportReport = (type: string) => { toast({ title: `Đã xuất ${type}` }); };
-
-  const medalColors = ["bg-amber-500/20 text-amber-600", "bg-gray-300/30 text-gray-600", "bg-orange-500/20 text-orange-600"];
 
   return (
     <div className="p-6 space-y-6">
@@ -72,23 +70,23 @@ const FinanceReports = () => {
       {/* KPI Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><DollarSign className="w-4 h-4 text-emerald-600" /><span className="text-xs text-muted-foreground">Doanh thu T3</span></div>
-          <p className="text-xl font-bold text-emerald-600">{totalRevenue.toLocaleString("vi-VN")}đ</p>
-          <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1"><ArrowUpRight className="w-3 h-3" /> +10.5% so với T2</p>
+          <div className="flex items-center gap-2 mb-2"><DollarSign className="w-4 h-4 text-foreground" /><span className="text-xs text-muted-foreground">Doanh thu T3</span></div>
+          <p className="text-xl font-bold text-primary">{totalRevenue.toLocaleString("vi-VN")}đ</p>
+          <p className="text-xs text-primary flex items-center gap-1 mt-1"><ArrowUpRight className="w-3 h-3" /> +10.5% so với T2</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><TrendingDown className="w-4 h-4 text-red-600" /><span className="text-xs text-muted-foreground">Chi phí T3</span></div>
-          <p className="text-xl font-bold text-red-600">{totalExpense.toLocaleString("vi-VN")}đ</p>
-          <p className="text-xs text-red-600 flex items-center gap-1 mt-1"><ArrowUpRight className="w-3 h-3" /> +6.9% so với T2</p>
+          <div className="flex items-center gap-2 mb-2"><TrendingDown className="w-4 h-4 text-foreground" /><span className="text-xs text-muted-foreground">Chi phí T3</span></div>
+          <p className="text-xl font-bold text-destructive">{totalExpense.toLocaleString("vi-VN")}đ</p>
+          <p className="text-xs text-destructive flex items-center gap-1 mt-1"><ArrowUpRight className="w-3 h-3" /> +6.9% so với T2</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><TrendingUp className="w-4 h-4 text-blue-600" /><span className="text-xs text-muted-foreground">Lợi nhuận T3</span></div>
+          <div className="flex items-center gap-2 mb-2"><TrendingUp className="w-4 h-4 text-foreground" /><span className="text-xs text-muted-foreground">Lợi nhuận T3</span></div>
           <p className="text-xl font-bold text-foreground">{totalProfit.toLocaleString("vi-VN")}đ</p>
-          <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1"><ArrowUpRight className="w-3 h-3" /> +22.2% so với T2</p>
+          <p className="text-xs text-primary flex items-center gap-1 mt-1"><ArrowUpRight className="w-3 h-3" /> +22.2% so với T2</p>
         </CardContent></Card>
         <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><Trophy className="w-4 h-4 text-purple-600" /><span className="text-xs text-muted-foreground">Biên lợi nhuận</span></div>
-          <p className="text-xl font-bold text-purple-600">{profitMargin}%</p>
+          <div className="flex items-center gap-2 mb-2"><Trophy className="w-4 h-4 text-foreground" /><span className="text-xs text-muted-foreground">Biên lợi nhuận</span></div>
+          <p className="text-xl font-bold text-foreground">{profitMargin}%</p>
           <p className="text-xs text-muted-foreground mt-1">Tỷ suất lợi nhuận</p>
         </CardContent></Card>
       </div>
@@ -104,29 +102,27 @@ const FinanceReports = () => {
               <YAxis tickFormatter={v => `${(v / 1000000).toFixed(0)}M`} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
               <Tooltip formatter={(v: number) => `${v.toLocaleString("vi-VN")}đ`} />
               <Legend />
-              <Bar dataKey="revenue" name="Doanh thu" fill="hsl(160, 60%, 45%)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="expense" name="Chi phí" fill="hsl(350, 70%, 55%)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="profit" name="Lợi nhuận" fill="hsl(220, 70%, 55%)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" name="Doanh thu" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="expense" name="Chi phí" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="profit" name="Lợi nhuận" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Revenue & Expense Breakdown Side by Side */}
+      {/* Revenue & Expense Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border-border">
           <CardHeader className="pb-2"><CardTitle className="text-base">Cơ cấu nguồn thu</CardTitle></CardHeader>
           <CardContent>
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <ResponsiveContainer width="100%" height={220}>
-                <PieChart>
-                  <Pie data={revenueBreakdown} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {revenueBreakdown.map((_, i) => <Cell key={i} fill={COLORS_REV[i % COLORS_REV.length]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={revenueBreakdown} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  {revenueBreakdown.map((_, i) => <Cell key={i} fill={COLORS_REV[i % COLORS_REV.length]} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
             <div className="mt-3 space-y-2">
               {revenueBreakdown.map((item, i) => (
                 <div key={item.name} className="flex items-center justify-between text-sm">
@@ -144,16 +140,14 @@ const FinanceReports = () => {
         <Card className="border-border">
           <CardHeader className="pb-2"><CardTitle className="text-base">Cơ cấu chi phí</CardTitle></CardHeader>
           <CardContent>
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <ResponsiveContainer width="100%" height={220}>
-                <PieChart>
-                  <Pie data={expenseBreakdown} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {expenseBreakdown.map((_, i) => <Cell key={i} fill={COLORS_EXP[i % COLORS_EXP.length]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={expenseBreakdown} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  {expenseBreakdown.map((_, i) => <Cell key={i} fill={COLORS_EXP[i % COLORS_EXP.length]} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
             <div className="mt-3 space-y-2">
               {expenseBreakdown.map((item, i) => (
                 <div key={item.name} className="flex items-center justify-between text-sm">
@@ -177,15 +171,15 @@ const FinanceReports = () => {
             <AreaChart data={monthlyData}>
               <defs>
                 <linearGradient id="profitGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(220, 70%, 55%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(220, 70%, 55%)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis tickFormatter={v => `${(v / 1000000).toFixed(0)}M`} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
               <Tooltip formatter={(v: number) => `${v.toLocaleString("vi-VN")}đ`} />
-              <Area type="monotone" dataKey="profit" stroke="hsl(220, 70%, 55%)" fill="url(#profitGrad)" strokeWidth={2} name="Lợi nhuận" />
+              <Area type="monotone" dataKey="profit" stroke="hsl(var(--primary))" fill="url(#profitGrad)" strokeWidth={2} name="Lợi nhuận" />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
@@ -205,10 +199,10 @@ const FinanceReports = () => {
           {topTutors.map((t, i) => (
             <div key={t.name} className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
               <div className="flex items-center gap-3">
-                <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${i < 3 ? medalColors[i] : "bg-muted text-muted-foreground"}`}>{i + 1}</span>
+                <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${i < 3 ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{i + 1}</span>
                 <div>
                   <p className="text-sm font-medium text-foreground">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.role} • {t.classes} lớp • {t.students} HS • ⭐ {t.rating}</p>
+                  <p className="text-xs text-muted-foreground">{t.role} · {t.classes} lớp · {t.students} HS · {t.rating}</p>
                 </div>
               </div>
               <p className="text-sm font-bold text-foreground">{t.revenue.toLocaleString("vi-VN")}đ</p>
