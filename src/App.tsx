@@ -70,6 +70,8 @@ import OfficeAttendance from "./pages/office/OfficeAttendance";
 import OfficeIncidents from "./pages/office/OfficeIncidents";
 import OfficeClasses from "./pages/office/OfficeClasses";
 import OfficeAISchedule from "./pages/office/OfficeAISchedule";
+import OfficeRegistrations from "./pages/office/OfficeRegistrations";
+import OfficeAppointments from "./pages/office/OfficeAppointments";
 import OfficeReports from "./pages/office/OfficeReports";
 import FinanceLayout from "./components/finance/FinanceLayout";
 import FinanceDashboard from "./pages/finance/FinanceDashboard";
