@@ -132,6 +132,13 @@ const App = () => (
                   <Route path="chat" element={<StudentChat />} />
                 </Route>
                 <Route path="/student/meeting/:sessionId" element={<OnlineMeeting />} />
+                <Route path="/parent" element={<ParentLayout />}>
+                  <Route index element={<ParentDashboard />} />
+                  <Route path="chat" element={<ParentChat />} />
+                  <Route path="children" element={<ParentChildren />} />
+                  <Route path="reports" element={<ParentReports />} />
+                  <Route path="wallet" element={<ParentWallet />} />
+                </Route>
                 <Route path="/pricing" element={<PlaceholderPage title="Bảng giá" description="Trang bảng giá đang được cập nhật." />} />
                 <Route path="/help" element={<PlaceholderPage title="Trung tâm trợ giúp" description="Trung tâm trợ giúp đang được xây dựng." />} />
                 <Route path="/faq" element={<PlaceholderPage title="Câu hỏi thường gặp" description="Trang FAQ đang được cập nhật." />} />
