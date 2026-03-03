@@ -143,6 +143,14 @@ const StudentSchedule = () => {
 
       {view === "calendar" ? (
         <div className="bg-card border border-border rounded-2xl p-4 overflow-x-auto">
+          <div className="flex items-center justify-between mb-4">
+            <Button variant="ghost" size="sm" onClick={() => setWeekOffset(o => o - 1)}><ChevronLeft className="w-4 h-4" /></Button>
+            <div className="text-center">
+              <p className="text-sm font-semibold text-foreground">{formatWeekLabel(currentWeek.monday, currentWeek.sunday)}</p>
+              {weekOffset !== 0 && <button className="text-xs text-primary hover:underline mt-1" onClick={() => setWeekOffset(0)}>Về tuần hiện tại</button>}
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setWeekOffset(o => o + 1)}><ChevronRight className="w-4 h-4" /></Button>
+          </div>
           <table className="w-full min-w-[700px]">
             <thead>
               <tr>
