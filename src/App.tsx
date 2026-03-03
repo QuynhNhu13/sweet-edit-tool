@@ -8,6 +8,7 @@ import { AdminProvider } from "@/contexts/AdminContext";
 import { TutorProvider } from "@/contexts/TutorContext";
 import { TeacherProvider } from "@/contexts/TeacherContext";
 import { StudentProvider } from "@/contexts/StudentContext";
+import { ParentProvider } from "@/contexts/ParentContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
@@ -52,6 +53,12 @@ import StudentResults from "./pages/student/StudentResults";
 import StudentReport from "./pages/student/StudentReport";
 import StudentChat from "./pages/student/StudentChat";
 import StudentWallet from "./pages/student/StudentWallet";
+import ParentLayout from "./components/parent/ParentLayout";
+import ParentDashboard from "./pages/parent/ParentDashboard";
+import ParentChat from "./pages/parent/ParentChat";
+import ParentChildren from "./pages/parent/ParentChildren";
+import ParentReports from "./pages/parent/ParentReports";
+import ParentWallet from "./pages/parent/ParentWallet";
 
 const queryClient = new QueryClient();
 
