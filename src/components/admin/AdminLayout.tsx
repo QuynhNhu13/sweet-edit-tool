@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useAdmin } from "@/contexts/AdminContext";
 import EduLogo from "@/components/EduLogo";
 import ThemeToggle from "@/components/ThemeToggle";
+import UserAvatarDropdown from "@/components/UserAvatarDropdown";
 import { useState, useRef, useEffect } from "react";
 
 const navItems = [
@@ -204,11 +205,7 @@ const AdminLayout = () => {
               )}
             </div>
 
-            {/* Admin name only, no avatar */}
-            <div className="pl-3 border-l border-border">
-              <p className="text-sm font-semibold text-foreground leading-tight">Quản trị viên</p>
-              <p className="text-[11px] text-muted-foreground leading-tight">admin@educonnect.vn</p>
-            </div>
+            <UserAvatarDropdown name="Quản trị viên" role="Admin" />
           </div>
         </header>
 

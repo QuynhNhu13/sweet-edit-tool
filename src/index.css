@@ -153,4 +153,12 @@
   .blob {
     border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
   }
+  .sidebar-theme {
+    --card: var(--sidebar-background);
+    --card-foreground: var(--sidebar-foreground);
+    --muted: var(--sidebar-accent);
+    --muted-foreground: var(--sidebar-muted-foreground);
+    --border: var(--sidebar-border);
+    --foreground: var(--sidebar-foreground);
+  }
 }

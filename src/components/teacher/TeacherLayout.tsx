@@ -9,6 +9,7 @@ import { useTeacher } from "@/contexts/TeacherContext";
 import { TutorContext } from "@/contexts/TutorContext";
 import EduLogo from "@/components/EduLogo";
 import ThemeToggle from "@/components/ThemeToggle";
+import UserAvatarDropdown from "@/components/UserAvatarDropdown";
 import { useState, useRef, useEffect } from "react";
 import MessageBubble from "@/components/MessageBubble";
 
@@ -85,30 +86,30 @@ const TeacherLayout = () => {
   return (
     <TutorContext.Provider value={teacherCtx}>
       <div className="flex h-screen bg-muted/30 overflow-hidden">
-        <aside className={cn("bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
+        <aside className={cn("sidebar-theme bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
           <div className="h-16 flex items-center gap-3 px-4 border-b border-border">
             <EduLogo size={collapsed ? 28 : 36} />
             {!collapsed && (
               <div className="min-w-0">
-                <h1 className="text-base font-bold text-foreground leading-tight truncate">EduConnect</h1>
-                <p className="text-[11px] text-muted-foreground leading-tight flex items-center gap-1">
+                <h1 className="text-base font-bold leading-tight truncate">EduConnect</h1>
+                <p className="text-[11px] opacity-70 leading-tight flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3" /> Giáo viên
                 </p>
               </div>
             )}
-            <button onClick={() => setCollapsed(!collapsed)} className={cn("p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground", collapsed ? "mx-auto" : "ml-auto")}>
+            <button onClick={() => setCollapsed(!collapsed)} className={cn("p-1.5 rounded-lg hover:bg-muted transition-colors opacity-70", collapsed ? "mx-auto" : "ml-auto")}>
               {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
             </button>
           </div>
 
           <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
-            {!collapsed && <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">Menu</p>}
+            {!collapsed && <p className="text-[11px] font-semibold uppercase tracking-wider px-3 mb-3 opacity-50">Menu</p>}
             {navItems.map(item => (
               <NavLink key={item.to} to={item.to} end={item.end} title={collapsed ? item.label : undefined}
                 className={({ isActive }) => cn(
                   "flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 relative",
                   collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
-                  isActive ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  isActive ? "bg-primary text-primary-foreground shadow-md" : "opacity-70 hover:bg-muted hover:opacity-100"
                 )}>
                 <item.icon className="w-[18px] h-[18px] shrink-0" />
                 {!collapsed && <span className="flex-1">{item.label}</span>}
@@ -120,7 +121,7 @@ const TeacherLayout = () => {
           </nav>
 
           <div className="px-2 py-3 border-t border-border">
-            <button onClick={() => navigate("/")} className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive w-full transition-all", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}>
+            <button onClick={() => navigate("/")} className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium opacity-70 hover:bg-destructive/20 hover:opacity-100 w-full transition-all", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}>
               <LogOut className="w-[18px] h-[18px] shrink-0" />
               {!collapsed && <span>Đăng xuất</span>}
             </button>
@@ -133,7 +134,6 @@ const TeacherLayout = () => {
             <div className="flex items-center gap-3">
               <ThemeToggle />
 
-              {/* Notification bell */}
               <div className="relative" ref={notifRef}>
                 <button className="relative p-2 rounded-xl hover:bg-muted transition-colors" onClick={() => setShowNotif(!showNotif)}>
                   <Bell className="w-5 h-5 text-muted-foreground" />
@@ -155,39 +155,29 @@ const TeacherLayout = () => {
                       )}
                     </div>
                     <div className="max-h-[400px] overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <p className="text-sm text-muted-foreground text-center py-8">Không có thông báo</p>
-                      ) : (
-                        notifications.map(n => (
-                          <button
-                            key={n.id}
-                            onClick={() => { markNotificationRead(n.id); setShowNotif(false); }}
-                            className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors flex gap-3", !n.read && "bg-primary/5")}
-                          >
-                            <div className="mt-0.5 shrink-0">{notifIcon[n.type]}</div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <p className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>{n.title}</p>
-                                {!n.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                              </div>
-                              <p className="text-xs text-muted-foreground mt-0.5 truncate">{n.message}</p>
-                              <p className="text-[10px] text-muted-foreground/70 mt-1">{n.timestamp}</p>
+                      {notifications.map(n => (
+                        <button
+                          key={n.id}
+                          onClick={() => { markNotificationRead(n.id); setShowNotif(false); }}
+                          className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors flex gap-3", !n.read && "bg-primary/5")}
+                        >
+                          <div className="mt-0.5 shrink-0">{notifIcon[n.type]}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>{n.title}</p>
+                              {!n.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
                             </div>
-                          </button>
-                        ))
-                      )}
+                            <p className="text-xs text-muted-foreground mt-0.5 truncate">{n.message}</p>
+                            <p className="text-[10px] text-muted-foreground/70 mt-1">{n.timestamp}</p>
+                          </div>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="pl-3 border-l border-border flex items-center gap-3">
-                <img src={teacherCtx.profile.avatar} alt={teacherCtx.profile.name} className="w-8 h-8 rounded-full object-cover" />
-                <div>
-                  <p className="text-sm font-semibold text-foreground leading-tight">{teacherCtx.profile.name}</p>
-                  <p className="text-[11px] text-muted-foreground leading-tight flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Verified Teacher</p>
-                </div>
-              </div>
+              <UserAvatarDropdown avatar={teacherCtx.profile.avatar} name={teacherCtx.profile.name} role="Giáo viên" profilePath="/teacher/profile" />
             </div>
           </header>
           <main className="flex-1 overflow-y-auto"><Outlet /></main>

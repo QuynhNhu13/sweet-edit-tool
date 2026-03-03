@@ -5,15 +5,27 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Settings, ShieldCheck, Sparkles } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Settings, ShieldCheck, Sparkles, AlertTriangle, Eye } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const difficultyLabels = { easy: "Dễ", medium: "Trung bình", hard: "Khó" };
 const modeLabels = { auto_generate: "Tự động generate mỗi lượt", fixed_set: "Bộ đề cố định" };
+const severityConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  low: { label: "Thấp", variant: "outline" },
+  medium: { label: "Trung bình", variant: "secondary" },
+  high: { label: "Cao", variant: "destructive" },
+};
+const typeLabels: Record<string, string> = {
+  tab_switch: "Chuyển tab",
+  copy_paste: "Copy/Paste",
+  screen_split: "Chia màn hình",
+  suspicious_time: "Thời gian bất thường",
+};
 
 const ExamManagerAIConfig = () => {
-  const { exams, updateExam } = useExamManager();
+  const { exams, updateExam, proctoringLogs } = useExamManager();
   const { toast } = useToast();
   const [selectedExam, setSelectedExam] = useState(exams[0]?.id || "");
   const [topicRatio, setTopicRatio] = useState([30, 25, 20, 15, 10]);
@@ -104,6 +116,42 @@ const ExamManagerAIConfig = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Proctoring Logs */}
+      <Card className="border-border">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Log AI Proctoring - Cảnh báo gian lận</CardTitle>
+            <Badge variant="destructive" className="text-[10px]">{proctoringLogs.filter(l => l.severity === "high").length} cảnh báo cao</Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Thí sinh</TableHead>
+                <TableHead>Loại vi phạm</TableHead>
+                <TableHead>Mô tả</TableHead>
+                <TableHead>Đề thi</TableHead>
+                <TableHead>Thời gian</TableHead>
+                <TableHead>Mức độ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {proctoringLogs.map(log => (
+                <TableRow key={log.id}>
+                  <TableCell className="font-medium text-sm">{log.userName}</TableCell>
+                  <TableCell><Badge variant="outline" className="text-[10px]">{typeLabels[log.type]}</Badge></TableCell>
+                  <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{log.description}</TableCell>
+                  <TableCell className="text-sm">{exams.find(e => e.id === log.examId)?.name?.split(" ").slice(3, 5).join(" ") || log.examId}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{log.timestamp}</TableCell>
+                  <TableCell><Badge variant={severityConfig[log.severity].variant}>{severityConfig[log.severity].label}</Badge></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 };
