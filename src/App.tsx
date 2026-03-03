@@ -83,11 +83,12 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AdminProvider>
-          <TutorProvider>
-          <TeacherProvider>
-          <StudentProvider>
-          <OfficeProvider>
-          <FinanceProvider>
+        <TutorProvider>
+        <TeacherProvider>
+        <StudentProvider>
+        <ParentProvider>
+        <OfficeProvider>
+        <FinanceProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
