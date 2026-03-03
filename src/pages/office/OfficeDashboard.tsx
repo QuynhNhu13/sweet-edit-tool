@@ -2,7 +2,7 @@ import { useOffice } from "@/contexts/OfficeContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, AlertTriangle, CalendarDays, Users, ClipboardCheck, Clock, UserPlus, Inbox } from "lucide-react";
+import { BookOpen, AlertTriangle, CalendarDays, Users, ClipboardCheck, Clock, UserPlus, Inbox, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const OfficeDashboard = () => {
@@ -18,9 +18,11 @@ const OfficeDashboard = () => {
   const upcomingSessions = attendance.filter(a => a.status === "upcoming");
 
   const quickActions = [
+    { label: "Quản lý đăng ký", icon: UserPlus, action: () => navigate("/office/registrations") },
     { label: "Điểm danh", icon: ClipboardCheck, action: () => navigate("/office/attendance") },
     { label: "Xử lý sự cố", icon: AlertTriangle, action: () => navigate("/office/incidents") },
     { label: "Quản lý lớp", icon: BookOpen, action: () => navigate("/office/classes") },
+    { label: "Lịch hẹn", icon: Calendar, action: () => navigate("/office/appointments") },
     { label: "Xếp lịch AI", icon: CalendarDays, action: () => navigate("/office/ai-schedule") },
   ];
 
@@ -104,7 +106,7 @@ const OfficeDashboard = () => {
           <CardTitle className="text-base">Hành động nhanh</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {quickActions.map(a => (
               <Button key={a.label} variant="outline" onClick={a.action} className="h-auto py-4 flex flex-col gap-2 rounded-xl">
                 <a.icon className="w-5 h-5" />

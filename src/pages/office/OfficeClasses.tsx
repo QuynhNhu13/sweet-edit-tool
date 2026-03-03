@@ -1,5 +1,5 @@
 import { useOffice } from "@/contexts/OfficeContext";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Eye, XCircle } from "lucide-react";
+import { Plus, Eye, XCircle, BookOpen, Users, CheckCircle2, Search, Clock } from "lucide-react";
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -30,7 +30,7 @@ const OfficeClasses = () => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
-  const [newClass, setNewClass] = useState({ name: "", subject: "", fee: "", tutor: "", student: "", schedule: "", totalSessions: "", description: "" });
+  const [newClass, setNewClass] = useState({ name: "", subject: "", fee: "", tutor: "", student: "", schedule: "", totalSessions: "", description: "", startDate: "", endDate: "", level: "" });
 
   const filtered = classes.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.tutor.toLowerCase().includes(search.toLowerCase()) || c.student.toLowerCase().includes(search.toLowerCase());
@@ -39,6 +39,10 @@ const OfficeClasses = () => {
   });
 
   const detail = classes.find(c => c.id === detailId);
+  const activeCount = classes.filter(c => c.status === "active").length;
+  const completedCount = classes.filter(c => c.status === "completed").length;
+  const searchingCount = classes.filter(c => c.status === "searching").length;
+  const totalFee = classes.filter(c => c.status === "active").reduce((s, c) => s + c.fee, 0);
 
   const handleCreate = () => {
     if (!newClass.name || !newClass.subject) return;
@@ -47,7 +51,7 @@ const OfficeClasses = () => {
       schedule: newClass.schedule || "Chưa xếp", fee: parseInt(newClass.fee) || 0, status: "searching", subject: newClass.subject,
       totalSessions: parseInt(newClass.totalSessions) || 0, completedSessions: 0,
     });
-    setNewClass({ name: "", subject: "", fee: "", tutor: "", student: "", schedule: "", totalSessions: "", description: "" });
+    setNewClass({ name: "", subject: "", fee: "", tutor: "", student: "", schedule: "", totalSessions: "", description: "", startDate: "", endDate: "", level: "" });
     setShowCreate(false);
     toast({ title: "Tạo lớp thành công" });
   };
@@ -61,9 +65,33 @@ const OfficeClasses = () => {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Overview Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><BookOpen className="w-5 h-5 text-blue-600" /></div>
+          <div><p className="text-xl font-bold text-foreground">{activeCount}</p><p className="text-xs text-muted-foreground">Đang hoạt động</p></div>
+        </CardContent></Card>
+        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-emerald-600" /></div>
+          <div><p className="text-xl font-bold text-foreground">{completedCount}</p><p className="text-xs text-muted-foreground">Hoàn thành</p></div>
+        </CardContent></Card>
+        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><Search className="w-5 h-5 text-amber-600" /></div>
+          <div><p className="text-xl font-bold text-foreground">{searchingCount}</p><p className="text-xs text-muted-foreground">Đang tìm GS</p></div>
+        </CardContent></Card>
+        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center"><Clock className="w-5 h-5 text-purple-600" /></div>
+          <div><p className="text-xl font-bold text-foreground">{totalFee.toLocaleString("vi-VN")}đ</p><p className="text-xs text-muted-foreground">Học phí/tháng</p></div>
+        </CardContent></Card>
+      </div>
+
+      {/* Toolbar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Input placeholder="Tìm kiếm lớp..." value={search} onChange={e => setSearch(e.target.value)} className="w-64 h-9 text-sm rounded-xl" />
+        <div className="flex items-center gap-2 flex-1">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder="Tìm kiếm lớp..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-sm rounded-xl" />
+          </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-36 h-9 text-sm rounded-xl"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -75,32 +103,43 @@ const OfficeClasses = () => {
           <DialogTrigger asChild><Button className="rounded-xl"><Plus className="w-4 h-4 mr-1" /> Tạo lớp mới</Button></DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader><DialogTitle>Tạo lớp học mới</DialogTitle></DialogHeader>
-            <div className="space-y-4 pt-2">
-              <div><Label>Tên lớp</Label><Input value={newClass.name} onChange={e => setNewClass(p => ({ ...p, name: e.target.value }))} placeholder="VD: Toán 12 - Nâng cao" className="rounded-xl mt-1" /></div>
+            <div className="space-y-4 pt-2 max-h-[70vh] overflow-y-auto">
+              <div><Label>Tên lớp <span className="text-destructive">*</span></Label><Input value={newClass.name} onChange={e => setNewClass(p => ({ ...p, name: e.target.value }))} placeholder="VD: Toán 12 - Nâng cao" className="rounded-xl mt-1" /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Môn học</Label>
+                <div><Label>Môn học <span className="text-destructive">*</span></Label>
                   <Select value={newClass.subject} onValueChange={v => setNewClass(p => ({ ...p, subject: v }))}>
                     <SelectTrigger className="rounded-xl mt-1"><SelectValue placeholder="Chọn môn" /></SelectTrigger>
-                    <SelectContent>{["Toán","Văn","Anh","Lý","Hóa","Sinh","Sử","Địa"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent>{["Toán","Văn","Anh","Lý","Hóa","Sinh","Sử","Địa","IELTS","SAT"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div><Label>Học phí (VNĐ)</Label><Input type="number" value={newClass.fee} onChange={e => setNewClass(p => ({ ...p, fee: e.target.value }))} placeholder="VD: 2000000" className="rounded-xl mt-1" /></div>
+                <div><Label>Trình độ</Label>
+                  <Select value={newClass.level} onValueChange={v => setNewClass(p => ({ ...p, level: v }))}>
+                    <SelectTrigger className="rounded-xl mt-1"><SelectValue placeholder="Chọn" /></SelectTrigger>
+                    <SelectContent><SelectItem value="basic">Cơ bản</SelectItem><SelectItem value="advanced">Nâng cao</SelectItem><SelectItem value="exam">Ôn thi</SelectItem></SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Gia sư</Label><Input value={newClass.tutor} onChange={e => setNewClass(p => ({ ...p, tutor: e.target.value }))} placeholder="Tên gia sư" className="rounded-xl mt-1" /></div>
+                <div><Label>Học phí (VNĐ/tháng)</Label><Input type="number" value={newClass.fee} onChange={e => setNewClass(p => ({ ...p, fee: e.target.value }))} placeholder="2000000" className="rounded-xl mt-1" /></div>
+                <div><Label>Tổng buổi</Label><Input type="number" value={newClass.totalSessions} onChange={e => setNewClass(p => ({ ...p, totalSessions: e.target.value }))} placeholder="24" className="rounded-xl mt-1" /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Gia sư / Giáo viên</Label><Input value={newClass.tutor} onChange={e => setNewClass(p => ({ ...p, tutor: e.target.value }))} placeholder="Tên gia sư" className="rounded-xl mt-1" /></div>
                 <div><Label>Học sinh</Label><Input value={newClass.student} onChange={e => setNewClass(p => ({ ...p, student: e.target.value }))} placeholder="Tên học sinh" className="rounded-xl mt-1" /></div>
               </div>
+              <div><Label>Lịch học</Label><Input value={newClass.schedule} onChange={e => setNewClass(p => ({ ...p, schedule: e.target.value }))} placeholder="VD: T2, T4, T6 - 19:00" className="rounded-xl mt-1" /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Lịch học</Label><Input value={newClass.schedule} onChange={e => setNewClass(p => ({ ...p, schedule: e.target.value }))} placeholder="VD: T2, T4, T6 - 19:00" className="rounded-xl mt-1" /></div>
-                <div><Label>Tổng buổi</Label><Input type="number" value={newClass.totalSessions} onChange={e => setNewClass(p => ({ ...p, totalSessions: e.target.value }))} placeholder="VD: 24" className="rounded-xl mt-1" /></div>
+                <div><Label>Ngày bắt đầu</Label><Input type="date" value={newClass.startDate} onChange={e => setNewClass(p => ({ ...p, startDate: e.target.value }))} className="rounded-xl mt-1" /></div>
+                <div><Label>Ngày kết thúc (dự kiến)</Label><Input type="date" value={newClass.endDate} onChange={e => setNewClass(p => ({ ...p, endDate: e.target.value }))} className="rounded-xl mt-1" /></div>
               </div>
-              <div><Label>Ghi chú</Label><Textarea value={newClass.description} onChange={e => setNewClass(p => ({ ...p, description: e.target.value }))} placeholder="Ghi chú thêm..." className="rounded-xl mt-1" rows={2} /></div>
+              <div><Label>Ghi chú</Label><Textarea value={newClass.description} onChange={e => setNewClass(p => ({ ...p, description: e.target.value }))} placeholder="Yêu cầu đặc biệt, mục tiêu học tập..." className="rounded-xl mt-1" rows={3} /></div>
               <Button onClick={handleCreate} className="w-full rounded-xl">Tạo lớp</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
+      {/* Table */}
       <Card className="border-border">
         <CardContent className="p-0">
           <Table>
@@ -134,31 +173,38 @@ const OfficeClasses = () => {
         </CardContent>
       </Card>
 
+      {/* Detail Dialog */}
       <Dialog open={!!detailId} onOpenChange={() => setDetailId(null)}>
         <DialogContent><DialogHeader><DialogTitle>Chi tiết lớp học</DialogTitle></DialogHeader>
           {detail && (
             <div className="space-y-4 pt-2">
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
+                <div><p className="text-base font-semibold text-foreground">{detail.name}</p><p className="text-xs text-muted-foreground">{detail.subject}</p></div>
+                <Badge variant={(statusMap[detail.status] || statusMap.active).variant}>{(statusMap[detail.status] || statusMap.active).label}</Badge>
+              </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><Label className="text-xs text-muted-foreground">Tên lớp</Label><p className="text-sm font-medium text-foreground">{detail.name}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Môn học</Label><p className="text-sm font-medium text-foreground">{detail.subject}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Gia sư</Label><p className="text-sm font-medium text-foreground">{detail.tutor}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Học sinh</Label><p className="text-sm font-medium text-foreground">{detail.student}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Lịch học</Label><p className="text-sm font-medium text-foreground">{detail.schedule}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Học phí</Label><p className="text-sm font-medium text-foreground">{detail.fee.toLocaleString("vi-VN")}đ</p></div>
-                <div><Label className="text-xs text-muted-foreground">Tiến độ</Label><p className="text-sm font-medium text-foreground">{detail.completedSessions}/{detail.totalSessions} buổi</p></div>
-                <div><Label className="text-xs text-muted-foreground">Trạng thái</Label><div className="mt-1"><Badge variant={(statusMap[detail.status] || statusMap.active).variant}>{(statusMap[detail.status] || statusMap.active).label}</Badge></div></div>
+                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Gia sư</Label><p className="text-sm font-medium text-foreground">{detail.tutor}</p></div>
+                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Học sinh</Label><p className="text-sm font-medium text-foreground">{detail.student}</p></div>
+                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Lịch học</Label><p className="text-sm font-medium text-foreground">{detail.schedule}</p></div>
+                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Học phí</Label><p className="text-sm font-medium text-foreground">{detail.fee.toLocaleString("vi-VN")}đ</p></div>
+              </div>
+              <div className="p-3 bg-muted/50 rounded-xl">
+                <Label className="text-[10px] text-muted-foreground">Tiến độ</Label>
+                <div className="mt-2"><Progress value={detail.totalSessions > 0 ? (detail.completedSessions / detail.totalSessions) * 100 : 0} className="h-3" /></div>
+                <p className="text-xs text-muted-foreground mt-1">{detail.completedSessions}/{detail.totalSessions} buổi đã hoàn thành</p>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
 
+      {/* Cancel Dialog */}
       <Dialog open={!!cancelId} onOpenChange={() => setCancelId(null)}>
-        <DialogContent><DialogHeader><DialogTitle>Hủy lớp học</DialogTitle></DialogHeader>
+        <DialogContent><DialogHeader><DialogTitle className="flex items-center gap-2"><XCircle className="w-5 h-5 text-destructive" /> Hủy lớp học</DialogTitle></DialogHeader>
           <div className="space-y-4 pt-2">
             <p className="text-sm text-muted-foreground">Vui lòng nhập lý do hủy lớp:</p>
-            <Textarea value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="Lý do hủy..." className="rounded-xl" rows={3} />
-            <Button onClick={handleCancel} variant="destructive" className="w-full rounded-xl">Xác nhận hủy lớp</Button>
+            <Textarea value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="VD: Học sinh chuyển trường, không tìm được gia sư phù hợp..." className="rounded-xl" rows={3} />
+            <Button onClick={handleCancel} variant="destructive" className="w-full rounded-xl" disabled={!cancelReason.trim()}>Xác nhận hủy lớp</Button>
           </div>
         </DialogContent>
       </Dialog>
