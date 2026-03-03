@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, ClipboardCheck, AlertTriangle, BookOpen, CalendarCog, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check } from "lucide-react";
+import { LayoutDashboard, ClipboardCheck, AlertTriangle, BookOpen, CalendarCog, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, UserPlus, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOffice } from "@/contexts/OfficeContext";
 import EduLogo from "@/components/EduLogo";
