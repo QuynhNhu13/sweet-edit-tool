@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useParent } from "@/contexts/ParentContext";
 import EduLogo from "@/components/EduLogo";
 import ThemeToggle from "@/components/ThemeToggle";
-import ChatWidget from "@/components/ChatWidget";
+import MessageBubble from "@/components/MessageBubble";
 import { useState, useRef, useEffect } from "react";
 
 const navItems = [
@@ -114,15 +114,12 @@ const ParentLayout = () => {
                     {unreadNotif > 0 && <button onClick={() => markAllNotificationsRead()} className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium"><Check className="w-3 h-3" /> Đọc tất cả</button>}
                   </div>
                   <div className="max-h-[400px] overflow-y-auto">
-                    {notifications.length === 0 ? <p className="text-sm text-muted-foreground text-center py-8">Không có thông báo</p> : notifications.map(n => (
+                    {notifications.map(n => (
                       <button key={n.id} onClick={() => { markNotificationRead(n.id); setShowNotif(false); }}
                         className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors flex gap-3", !n.read && "bg-primary/5")}>
                         <div className="mt-0.5 shrink-0">{notifIcon[n.type]}</div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>{n.title}</p>
-                            {!n.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                          </div>
+                          <p className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>{n.title}</p>
                           <p className="text-xs text-muted-foreground mt-0.5 truncate">{n.message}</p>
                           <p className="text-[10px] text-muted-foreground/70 mt-1">{n.timestamp}</p>
                         </div>
@@ -141,11 +138,9 @@ const ParentLayout = () => {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
+        <main className="flex-1 overflow-y-auto"><Outlet /></main>
       </div>
-      <ChatWidget />
+      <MessageBubble to="/parent/chat" unreadCount={unreadChat} />
     </div>
   );
 };

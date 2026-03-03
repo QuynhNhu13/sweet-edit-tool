@@ -2,7 +2,7 @@ import { useFinance } from "@/contexts/FinanceContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Download, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,52 +15,39 @@ const monthlyData = [
   { month: "T3", revenue: 42000000, expense: 31000000, profit: 11000000 },
 ];
 
+const revenueBreakdown = [
+  { name: "Học phí", value: 72 },
+  { name: "Phí thi thử", value: 12 },
+  { name: "Nạp ví", value: 10 },
+  { name: "Khác", value: 6 },
+];
+
 const expenseBreakdown = [
-  { name: "Lương gia sư", value: 65 },
+  { name: "Lương gia sư", value: 55 },
+  { name: "Lương giáo viên", value: 15 },
   { name: "Hoàn tiền", value: 8 },
-  { name: "Vận hành", value: 15 },
-  { name: "Marketing", value: 12 },
+  { name: "Vận hành", value: 12 },
+  { name: "Marketing", value: 10 },
 ];
 
 const topTutors = [
-  { name: "Nguyễn Văn An", revenue: 12800000, classes: 3 },
-  { name: "Trần Thị Bích", revenue: 9600000, classes: 2 },
-  { name: "Đỗ Quang Minh", revenue: 7200000, classes: 1 },
-  { name: "Vũ Thị Phương", revenue: 5100000, classes: 1 },
-  { name: "Hoàng Đức Em", revenue: 3600000, classes: 1 },
+  { name: "Nguyễn Văn An", role: "Gia sư", revenue: 12800000, classes: 3, students: 8 },
+  { name: "Trần Thị Bích", role: "Giáo viên", revenue: 9600000, classes: 2, students: 12 },
+  { name: "Đỗ Quang Minh", role: "Gia sư", revenue: 7200000, classes: 1, students: 3 },
+  { name: "Vũ Thị Phương", role: "Giáo viên", revenue: 5100000, classes: 1, students: 6 },
+  { name: "Hoàng Đức Em", role: "Gia sư", revenue: 3600000, classes: 1, students: 2 },
 ];
 
-const COLORS = ["hsl(160, 60%, 45%)", "hsl(350, 70%, 55%)", "hsl(220, 70%, 55%)", "hsl(35, 90%, 55%)"];
+const COLORS_REV = ["hsl(220, 70%, 55%)", "hsl(35, 90%, 55%)", "hsl(160, 60%, 45%)", "hsl(280, 60%, 55%)"];
+const COLORS_EXP = ["hsl(350, 70%, 55%)", "hsl(35, 90%, 55%)", "hsl(220, 70%, 55%)", "hsl(160, 60%, 45%)", "hsl(280, 60%, 55%)"];
 
 const FinanceReports = () => {
-  const { transactions } = useFinance();
   const { toast } = useToast();
-
   const totalRevenue = monthlyData[monthlyData.length - 1].revenue;
   const totalExpense = monthlyData[monthlyData.length - 1].expense;
   const totalProfit = monthlyData[monthlyData.length - 1].profit;
 
-  const exportReport = () => {
-    const lines = [
-      "BÁO CÁO TÀI CHÍNH - EDUCONNECT",
-      `Kỳ: T3/2026`,
-      "",
-      `Doanh thu: ${totalRevenue.toLocaleString("vi-VN")}đ`,
-      `Chi phí: ${totalExpense.toLocaleString("vi-VN")}đ`,
-      `Lợi nhuận: ${totalProfit.toLocaleString("vi-VN")}đ`,
-      "",
-      "TOP GIA SƯ:",
-      ...topTutors.map((t, i) => `  ${i + 1}. ${t.name}: ${t.revenue.toLocaleString("vi-VN")}đ (${t.classes} lớp)`),
-    ];
-    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "bao-cao-tai-chinh.txt";
-    a.click();
-    URL.revokeObjectURL(url);
-    toast({ title: "Đã xuất báo cáo tài chính" });
-  };
+  const exportReport = () => { toast({ title: "Đã xuất báo cáo tài chính" }); };
 
   return (
     <div className="p-6 space-y-6">
@@ -90,8 +77,9 @@ const FinanceReports = () => {
       <Tabs defaultValue="overview">
         <TabsList className="rounded-xl">
           <TabsTrigger value="overview" className="rounded-xl text-xs">Tổng quan</TabsTrigger>
-          <TabsTrigger value="expense" className="rounded-xl text-xs">Chi phí</TabsTrigger>
-          <TabsTrigger value="tutors" className="rounded-xl text-xs">Top gia sư</TabsTrigger>
+          <TabsTrigger value="revenue" className="rounded-xl text-xs">Cơ cấu nguồn thu</TabsTrigger>
+          <TabsTrigger value="expense" className="rounded-xl text-xs">Cơ cấu chi phí</TabsTrigger>
+          <TabsTrigger value="tutors" className="rounded-xl text-xs">Top gia sư/giáo viên</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -114,6 +102,22 @@ const FinanceReports = () => {
           </Card>
         </TabsContent>
 
+        <TabsContent value="revenue">
+          <Card className="border-border">
+            <CardHeader className="pb-2"><CardTitle className="text-base">Cơ cấu nguồn thu</CardTitle></CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={320}>
+                <PieChart>
+                  <Pie data={revenueBreakdown} cx="50%" cy="50%" outerRadius={120} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {revenueBreakdown.map((_, i) => <Cell key={i} fill={COLORS_REV[i % COLORS_REV.length]} />)}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="expense">
           <Card className="border-border">
             <CardHeader className="pb-2"><CardTitle className="text-base">Cơ cấu chi phí</CardTitle></CardHeader>
@@ -121,7 +125,7 @@ const FinanceReports = () => {
               <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
                   <Pie data={expenseBreakdown} cx="50%" cy="50%" outerRadius={120} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {expenseBreakdown.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    {expenseBreakdown.map((_, i) => <Cell key={i} fill={COLORS_EXP[i % COLORS_EXP.length]} />)}
                   </Pie>
                   <Tooltip />
                 </PieChart>
@@ -132,17 +136,15 @@ const FinanceReports = () => {
 
         <TabsContent value="tutors">
           <Card className="border-border">
-            <CardHeader className="pb-2"><CardTitle className="text-base">Top gia sư theo doanh thu</CardTitle></CardHeader>
+            <CardHeader className="pb-2"><CardTitle className="text-base">Top gia sư & giáo viên có doanh thu cao</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {topTutors.map((t, i) => (
                 <div key={t.name} className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
                   <div className="flex items-center gap-3">
-                    <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? "bg-amber-500/20 text-amber-600" : i === 1 ? "bg-gray-300/30 text-gray-600" : i === 2 ? "bg-orange-500/20 text-orange-600" : "bg-muted text-muted-foreground"}`}>
-                      {i + 1}
-                    </span>
+                    <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? "bg-amber-500/20 text-amber-600" : i === 1 ? "bg-gray-300/30 text-gray-600" : i === 2 ? "bg-orange-500/20 text-orange-600" : "bg-muted text-muted-foreground"}`}>{i + 1}</span>
                     <div>
                       <p className="text-sm font-medium text-foreground">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.classes} lớp</p>
+                      <p className="text-xs text-muted-foreground">{t.role} • {t.classes} lớp • {t.students} HS</p>
                     </div>
                   </div>
                   <p className="text-sm font-bold text-foreground">{t.revenue.toLocaleString("vi-VN")}đ</p>

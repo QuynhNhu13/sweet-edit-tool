@@ -10,7 +10,7 @@ import { TutorContext } from "@/contexts/TutorContext";
 import EduLogo from "@/components/EduLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useState, useRef, useEffect } from "react";
-import ChatWidget from "@/components/ChatWidget";
+import MessageBubble from "@/components/MessageBubble";
 
 const navItems = [
   { to: "/teacher", icon: LayoutDashboard, label: "Tổng quan", end: true },
@@ -192,7 +192,7 @@ const TeacherLayout = () => {
           </header>
           <main className="flex-1 overflow-y-auto"><Outlet /></main>
         </div>
-        <ChatWidget />
+        <MessageBubble to="/teacher/chat" unreadCount={unreadChat} />
       </div>
     </TutorContext.Provider>
   );

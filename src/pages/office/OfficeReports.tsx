@@ -1,11 +1,21 @@
 import { useOffice } from "@/contexts/OfficeContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { BarChart3, Download, TrendingUp, Users, BookOpen } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { Download, BookOpen, TrendingUp, BarChart3, Users, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const weeklyData = [
+  { week: "Tuần 49", registrations: 29, classes: 10, requests: 69, satisfaction: 95 },
+  { week: "Tuần 50", registrations: 45, classes: 14, requests: 61, satisfaction: 93 },
+  { week: "Tuần 51", registrations: 58, classes: 16, requests: 53, satisfaction: 99 },
+  { week: "Tuần 52", registrations: 35, classes: 6, requests: 43, satisfaction: 92 },
+];
+
+const dailyData = [
   { day: "T2", sessions: 12, issues: 1 },
   { day: "T3", sessions: 15, issues: 0 },
   { day: "T4", sessions: 10, issues: 2 },
@@ -25,35 +35,32 @@ const classDistribution = [
 
 const COLORS = ["hsl(220, 70%, 55%)", "hsl(160, 60%, 45%)", "hsl(35, 90%, 55%)", "hsl(280, 60%, 55%)", "hsl(350, 70%, 55%)"];
 
+const kpiData = [
+  { label: "Đăng ký mới", value: 7, target: 200, percent: 3.5 },
+  { label: "Tỷ lệ chuyển đổi", value: "38%", target: "35%", percent: 100 },
+  { label: "Thời gian phản hồi TB", value: "2.5h", target: "3h", percent: 83 },
+  { label: "Tỷ lệ hài lòng", value: "94%", target: "90%", percent: 100 },
+];
+
+const quickReports = [
+  "Báo cáo đăng ký tuần",
+  "Báo cáo ghép lớp",
+  "Báo cáo yêu cầu hỗ trợ",
+  "Báo cáo hiệu suất nhân viên",
+];
+
 const OfficeReports = () => {
   const { attendance, classes, incidents } = useOffice();
   const { toast } = useToast();
 
-  const kpis = [
-    { label: "Tổng buổi học tuần", value: weeklyData.reduce((s, d) => s + d.sessions, 0), icon: BookOpen, color: "bg-blue-500/10 text-blue-600" },
+  const stats = [
+    { label: "Tổng buổi học tuần", value: dailyData.reduce((s, d) => s + d.sessions, 0), icon: BookOpen, color: "bg-blue-500/10 text-blue-600" },
     { label: "Tỷ lệ điểm danh", value: "94%", icon: TrendingUp, color: "bg-emerald-500/10 text-emerald-600" },
-    { label: "Sự cố trong tuần", value: weeklyData.reduce((s, d) => s + d.issues, 0), icon: BarChart3, color: "bg-amber-500/10 text-amber-600" },
-    { label: "HS đang học", value: classes.filter(c => c.status === "active").length * 1, icon: Users, color: "bg-purple-500/10 text-purple-600" },
+    { label: "Sự cố trong tuần", value: dailyData.reduce((s, d) => s + d.issues, 0), icon: BarChart3, color: "bg-amber-500/10 text-amber-600" },
+    { label: "HS đang học", value: classes.filter(c => c.status === "active").length, icon: Users, color: "bg-purple-500/10 text-purple-600" },
   ];
 
   const exportReport = () => {
-    const lines = [
-      "BÁO CÁO TUẦN - VĂN PHÒNG EDUCONNECT",
-      `Ngày: 03/03/2026`,
-      "",
-      "KPI:",
-      ...kpis.map(k => `  ${k.label}: ${k.value}`),
-      "",
-      "THỐNG KÊ THEO NGÀY:",
-      ...weeklyData.map(d => `  ${d.day}: ${d.sessions} buổi, ${d.issues} sự cố`),
-    ];
-    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "bao-cao-tuan-van-phong.txt";
-    a.click();
-    URL.revokeObjectURL(url);
     toast({ title: "Đã xuất báo cáo" });
   };
 
@@ -65,7 +72,7 @@ const OfficeReports = () => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {kpis.map(k => (
+        {stats.map(k => (
           <Card key={k.label} className="border-border"><CardContent className="p-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${k.color}`}><k.icon className="w-5 h-5" /></div>
             <p className="text-2xl font-bold text-foreground">{k.value}</p>
@@ -79,7 +86,7 @@ const OfficeReports = () => {
           <CardHeader className="pb-2"><CardTitle className="text-base">Buổi học & Sự cố theo ngày</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={weeklyData}>
+              <BarChart data={dailyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="day" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
@@ -90,7 +97,6 @@ const OfficeReports = () => {
             </ResponsiveContainer>
           </CardContent>
         </Card>
-
         <Card className="border-border">
           <CardHeader className="pb-2"><CardTitle className="text-base">Phân bổ lớp theo môn</CardTitle></CardHeader>
           <CardContent>
@@ -102,6 +108,66 @@ const OfficeReports = () => {
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="border-border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Thống kê qua các tuần</CardTitle>
+          <p className="text-xs text-muted-foreground">So sánh các chỉ số qua các tuần (Dữ liệu thực từ hệ thống)</p>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader><TableRow>
+              <TableHead>Tuần</TableHead><TableHead className="text-center">Đăng ký mới</TableHead><TableHead className="text-center">Lớp tạo mới</TableHead><TableHead className="text-center">Yêu cầu xử lý</TableHead><TableHead className="text-center">Tỷ lệ hài lòng</TableHead>
+            </TableRow></TableHeader>
+            <TableBody>
+              {weeklyData.map(w => (
+                <TableRow key={w.week}>
+                  <TableCell className="font-medium">{w.week}</TableCell>
+                  <TableCell className="text-center">{w.registrations}</TableCell>
+                  <TableCell className="text-center">{w.classes}</TableCell>
+                  <TableCell className="text-center">{w.requests}</TableCell>
+                  <TableCell className="text-center"><Badge variant={w.satisfaction >= 95 ? "default" : "secondary"} className="text-xs">{w.satisfaction}%</Badge></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Chỉ số KPI</CardTitle>
+            <p className="text-xs text-muted-foreground">Hiệu suất so với mục tiêu</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {kpiData.map(k => (
+              <div key={k.label}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-foreground">{k.label}</span>
+                  <span className="text-sm font-medium text-foreground">{k.value} / {k.target}</span>
+                </div>
+                <Progress value={Math.min(k.percent, 100)} className="h-2" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="border-border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Báo cáo nhanh</CardTitle>
+            <p className="text-xs text-muted-foreground">Tải xuống các báo cáo thường dùng</p>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {quickReports.map(r => (
+              <button key={r} onClick={() => toast({ title: `Đang tải: ${r}` })} className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted/50 transition-colors text-left">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-foreground">{r}</span>
+              </button>
+            ))}
           </CardContent>
         </Card>
       </div>

@@ -29,6 +29,7 @@ export interface IncidentReport {
   priority: "high" | "medium" | "low";
   status: "pending" | "investigating" | "resolved";
   createdAt: string;
+  resolution?: string;
 }
 
 export interface OfficeClass {

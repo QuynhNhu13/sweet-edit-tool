@@ -20,7 +20,7 @@ const pageTitles: Record<string, string> = {
   "/office/attendance": "Quản lý điểm danh",
   "/office/incidents": "Cảnh báo & Sự cố",
   "/office/classes": "Quản lý lớp",
-  "/office/ai-schedule": "Xếp lịch AI",
+  "/office/ai-schedule": "Tự động xếp lịch thông minh",
   "/office/reports": "Báo cáo",
 };
 
@@ -45,46 +45,41 @@ const OfficeLayout = () => {
 
   return (
     <div className="flex h-screen bg-muted/30 overflow-hidden">
-      <aside className={cn("bg-[hsl(210,50%,20%)] flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
-        <div className="h-16 flex items-center gap-3 px-4 border-b border-white/10">
+      <aside className={cn("bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
+        <div className="h-16 flex items-center gap-3 px-4 border-b border-border">
           <EduLogo size={collapsed ? 28 : 36} />
           {!collapsed && (
             <div className="min-w-0">
-              <h1 className="text-base font-bold text-white leading-tight truncate">EduConnect</h1>
-              <p className="text-[11px] text-white/60 leading-tight">Văn phòng</p>
+              <h1 className="text-base font-bold text-foreground leading-tight truncate">EduConnect</h1>
+              <p className="text-[11px] text-muted-foreground leading-tight">Văn phòng</p>
             </div>
           )}
-          <button onClick={() => setCollapsed(!collapsed)} className={cn("p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/60", collapsed ? "mx-auto" : "ml-auto")}>
+          <button onClick={() => setCollapsed(!collapsed)} className={cn("p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground", collapsed ? "mx-auto" : "ml-auto")}>
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
         </div>
-
         <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
-          {!collapsed && <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider px-3 mb-3">Menu</p>}
+          {!collapsed && <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">Menu</p>}
           {navItems.map(item => (
             <NavLink key={item.to} to={item.to} end={item.end} title={collapsed ? item.label : undefined}
               className={({ isActive }) => cn(
                 "flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200",
                 collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
-                isActive ? "bg-white/20 text-white shadow-md" : "text-white/70 hover:bg-white/10 hover:text-white"
-              )}
-            >
+                isActive ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}>
               <item.icon className="w-[18px] h-[18px] shrink-0" />
               {!collapsed && <span className="flex-1">{item.label}</span>}
             </NavLink>
           ))}
         </nav>
-
-        <div className="px-2 py-3 border-t border-white/10">
+        <div className="px-2 py-3 border-t border-border">
           <button onClick={() => navigate("/")} title={collapsed ? "Đăng xuất" : undefined}
-            className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium text-white/60 hover:bg-red-500/20 hover:text-red-300 w-full transition-all duration-200", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
-          >
+            className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive w-full transition-all duration-200", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}>
             <LogOut className="w-[18px] h-[18px] shrink-0" />
             {!collapsed && <span>Đăng xuất</span>}
           </button>
         </div>
       </aside>
-
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between shrink-0">
           <h2 className="text-lg font-semibold text-foreground">{currentTitle}</h2>
@@ -104,8 +99,7 @@ const OfficeLayout = () => {
                   <div className="max-h-[400px] overflow-y-auto">
                     {notifications.map(n => (
                       <button key={n.id} onClick={() => { markNotificationRead(n.id); setShowNotif(false); }}
-                        className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors", !n.read && "bg-primary/5")}
-                      >
+                        className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors", !n.read && "bg-primary/5")}>
                         <p className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>{n.title}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">{n.message}</p>
                         <p className="text-[10px] text-muted-foreground/70 mt-1">{n.timestamp}</p>

@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import ChatWidget from "@/components/ChatWidget";
+import MessageBubble from "@/components/MessageBubble";
 import {
   LayoutDashboard, BookOpen, Search, CalendarDays, Clock, ClipboardCheck,
   FileText, BarChart3, Trophy, LogOut, PanelLeftClose, PanelLeft,
@@ -196,7 +196,7 @@ const StudentLayout = () => {
           <Outlet />
         </main>
       </div>
-      <ChatWidget />
+      <MessageBubble to="/student/chat" unreadCount={unreadChat} />
     </div>
   );
 };

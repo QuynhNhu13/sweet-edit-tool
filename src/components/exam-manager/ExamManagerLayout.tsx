@@ -1,35 +1,37 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, ArrowLeftRight, Banknote, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check } from "lucide-react";
+import { LayoutDashboard, FileText, Settings, BarChart3, Database, LogOut, PanelLeftClose, PanelLeft, Bell, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useFinance } from "@/contexts/FinanceContext";
+import { useExamManager } from "@/contexts/ExamManagerContext";
 import EduLogo from "@/components/EduLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useState, useRef, useEffect } from "react";
 
 const navItems = [
-  { to: "/finance", icon: LayoutDashboard, label: "Tổng quan", end: true },
-  { to: "/finance/transactions", icon: ArrowLeftRight, label: "Quản lý giao dịch" },
-  { to: "/finance/payouts", icon: Banknote, label: "Thanh toán gia sư" },
-  { to: "/finance/reports", icon: BarChart3, label: "Báo cáo tài chính" },
+  { to: "/exam-manager", icon: LayoutDashboard, label: "Tổng quan", end: true },
+  { to: "/exam-manager/exams", icon: FileText, label: "Quản lý đề thi" },
+  { to: "/exam-manager/ai-config", icon: Settings, label: "Cấu hình AI" },
+  { to: "/exam-manager/stats", icon: BarChart3, label: "Thống kê" },
+  { to: "/exam-manager/questions", icon: Database, label: "Ngân hàng câu hỏi" },
 ];
 
 const pageTitles: Record<string, string> = {
-  "/finance": "Tổng quan tài chính",
-  "/finance/transactions": "Quản lý giao dịch",
-  "/finance/payouts": "Thanh toán gia sư",
-  "/finance/reports": "Báo cáo tài chính",
+  "/exam-manager": "Tổng quan",
+  "/exam-manager/exams": "Quản lý đề thi",
+  "/exam-manager/ai-config": "Cấu hình AI Generate",
+  "/exam-manager/stats": "Thống kê đề thi",
+  "/exam-manager/questions": "Ngân hàng câu hỏi",
 };
 
-const FinanceLayout = () => {
+const ExamManagerLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { notifications, markNotificationRead, markAllNotificationsRead, profile } = useFinance();
+  const { notifications, markNotificationRead, markAllNotificationsRead, profile } = useExamManager();
   const [collapsed, setCollapsed] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
   const unreadNotif = notifications.filter(n => !n.read).length;
-  const currentTitle = pageTitles[location.pathname] || "Kế toán";
+  const currentTitle = pageTitles[location.pathname] || "Quản lý đề";
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -47,7 +49,7 @@ const FinanceLayout = () => {
           {!collapsed && (
             <div className="min-w-0">
               <h1 className="text-base font-bold text-foreground leading-tight truncate">EduConnect</h1>
-              <p className="text-[11px] text-muted-foreground leading-tight">Kế toán</p>
+              <p className="text-[11px] text-muted-foreground leading-tight">Quản lý đề thi</p>
             </div>
           )}
           <button onClick={() => setCollapsed(!collapsed)} className={cn("p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground", collapsed ? "mx-auto" : "ml-auto")}>
@@ -120,4 +122,4 @@ const FinanceLayout = () => {
   );
 };
 
-export default FinanceLayout;
+export default ExamManagerLayout;

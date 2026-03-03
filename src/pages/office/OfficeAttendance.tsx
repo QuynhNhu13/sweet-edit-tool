@@ -3,10 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, Clock, AlertTriangle, CalendarDays, ClipboardCheck } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CheckCircle2, Clock, AlertTriangle, CalendarDays, ClipboardCheck, Eye } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   pending: { label: "Chờ xác nhận", variant: "outline" },
@@ -18,8 +22,10 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 
 const OfficeAttendance = () => {
   const { attendance, confirmAttendance } = useOffice();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const filtered = attendance.filter(a => {
     const matchSearch = a.className.toLowerCase().includes(search.toLowerCase()) || a.student.toLowerCase().includes(search.toLowerCase()) || a.tutor.toLowerCase().includes(search.toLowerCase());
@@ -27,6 +33,7 @@ const OfficeAttendance = () => {
     return matchSearch && matchStatus;
   });
 
+  const detail = attendance.find(a => a.id === detailId);
   const pending = attendance.filter(a => a.status === "pending").length;
   const completed = attendance.filter(a => a.status === "completed").length;
   const reported = attendance.filter(a => a.status === "reported").length;
@@ -73,18 +80,9 @@ const OfficeAttendance = () => {
         </CardHeader>
         <CardContent>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Lớp học</TableHead>
-                <TableHead>Gia sư</TableHead>
-                <TableHead>Học sinh</TableHead>
-                <TableHead>Ngày</TableHead>
-                <TableHead>Giờ</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>PH xác nhận</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
+            <TableHeader><TableRow>
+              <TableHead>Lớp học</TableHead><TableHead>Gia sư</TableHead><TableHead>Học sinh</TableHead><TableHead>Ngày</TableHead><TableHead>Giờ</TableHead><TableHead>Trạng thái</TableHead><TableHead>PH xác nhận</TableHead><TableHead></TableHead>
+            </TableRow></TableHeader>
             <TableBody>
               {filtered.map(a => {
                 const cfg = statusConfig[a.status];
@@ -96,20 +94,13 @@ const OfficeAttendance = () => {
                     <TableCell>{a.date}</TableCell>
                     <TableCell>{a.time}</TableCell>
                     <TableCell><Badge variant={cfg.variant}>{cfg.label}</Badge></TableCell>
+                    <TableCell>{a.parentConfirmed ? <Badge variant="default">Đã xác nhận</Badge> : <Badge variant="outline">Chưa</Badge>}</TableCell>
                     <TableCell>
-                      {a.parentConfirmed ? <Badge variant="default">Đã xác nhận</Badge> : <Badge variant="outline">Chưa</Badge>}
-                    </TableCell>
-                    <TableCell>
-                      {a.status === "pending" && (
-                        <Button size="sm" variant="outline" className="text-xs rounded-xl" onClick={() => confirmAttendance(a.id)}>
-                          Xác nhận
-                        </Button>
-                      )}
-                      {a.status === "reported" && (
-                        <Button size="sm" variant="destructive" className="text-xs rounded-xl" onClick={() => confirmAttendance(a.id)}>
-                          Xử lý
-                        </Button>
-                      )}
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setDetailId(a.id)}><Eye className="w-3.5 h-3.5" /></Button>
+                        {a.status === "pending" && <Button size="sm" variant="outline" className="text-xs rounded-xl h-7" onClick={() => { confirmAttendance(a.id); toast({ title: "Đã xác nhận điểm danh" }); }}>Xác nhận</Button>}
+                        {a.status === "reported" && <Button size="sm" variant="destructive" className="text-xs rounded-xl h-7" onClick={() => { confirmAttendance(a.id); toast({ title: "Đã xử lý sự cố" }); }}>Xử lý</Button>}
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -118,6 +109,31 @@ const OfficeAttendance = () => {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={!!detailId} onOpenChange={() => setDetailId(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Chi tiết điểm danh</DialogTitle></DialogHeader>
+          {detail && (
+            <div className="space-y-4 pt-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label className="text-xs text-muted-foreground">Lớp học</Label><p className="text-sm font-medium text-foreground">{detail.className}</p></div>
+                <div><Label className="text-xs text-muted-foreground">Trạng thái</Label><div className="mt-1"><Badge variant={statusConfig[detail.status].variant}>{statusConfig[detail.status].label}</Badge></div></div>
+                <div><Label className="text-xs text-muted-foreground">Gia sư</Label><p className="text-sm font-medium text-foreground">{detail.tutor}</p></div>
+                <div><Label className="text-xs text-muted-foreground">Học sinh</Label><p className="text-sm font-medium text-foreground">{detail.student}</p></div>
+                <div><Label className="text-xs text-muted-foreground">Ngày</Label><p className="text-sm font-medium text-foreground">{detail.date}</p></div>
+                <div><Label className="text-xs text-muted-foreground">Giờ</Label><p className="text-sm font-medium text-foreground">{detail.time}</p></div>
+                <div><Label className="text-xs text-muted-foreground">PH xác nhận</Label><p className="text-sm font-medium text-foreground">{detail.parentConfirmed ? "Đã xác nhận" : "Chưa xác nhận"}</p></div>
+              </div>
+              {detail.issue && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
+                  <p className="text-xs font-medium text-red-700">Vấn đề báo cáo:</p>
+                  <p className="text-sm text-red-600 mt-1">{detail.issue}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

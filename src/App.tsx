@@ -11,6 +11,7 @@ import { StudentProvider } from "@/contexts/StudentContext";
 import { ParentProvider } from "@/contexts/ParentContext";
 import { OfficeProvider } from "@/contexts/OfficeContext";
 import { FinanceProvider } from "@/contexts/FinanceContext";
+import { ExamManagerProvider } from "@/contexts/ExamManagerContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
@@ -75,6 +76,12 @@ import FinanceDashboard from "./pages/finance/FinanceDashboard";
 import FinanceTransactions from "./pages/finance/FinanceTransactions";
 import FinancePayouts from "./pages/finance/FinancePayouts";
 import FinanceReports from "./pages/finance/FinanceReports";
+import ExamManagerLayout from "./components/exam-manager/ExamManagerLayout";
+import ExamManagerDashboard from "./pages/exam-manager/ExamManagerDashboard";
+import ExamManagerExams from "./pages/exam-manager/ExamManagerExams";
+import ExamManagerAIConfig from "./pages/exam-manager/ExamManagerAIConfig";
+import ExamManagerStats from "./pages/exam-manager/ExamManagerStats";
+import ExamManagerQuestions from "./pages/exam-manager/ExamManagerQuestions";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +96,7 @@ const App = () => (
         <ParentProvider>
         <OfficeProvider>
         <FinanceProvider>
+        <ExamManagerProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -173,6 +181,13 @@ const App = () => (
                   <Route path="payouts" element={<FinancePayouts />} />
                   <Route path="reports" element={<FinanceReports />} />
                 </Route>
+                <Route path="/exam-manager" element={<ExamManagerLayout />}>
+                  <Route index element={<ExamManagerDashboard />} />
+                  <Route path="exams" element={<ExamManagerExams />} />
+                  <Route path="ai-config" element={<ExamManagerAIConfig />} />
+                  <Route path="stats" element={<ExamManagerStats />} />
+                  <Route path="questions" element={<ExamManagerQuestions />} />
+                </Route>
                 <Route path="/pricing" element={<PlaceholderPage title="Bảng giá" description="Trang bảng giá đang được cập nhật." />} />
                 <Route path="/help" element={<PlaceholderPage title="Trung tâm trợ giúp" description="Trung tâm trợ giúp đang được xây dựng." />} />
                 <Route path="/faq" element={<PlaceholderPage title="Câu hỏi thường gặp" description="Trang FAQ đang được cập nhật." />} />
@@ -184,6 +199,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
+        </ExamManagerProvider>
         </FinanceProvider>
         </OfficeProvider>
         </ParentProvider>
