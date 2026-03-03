@@ -157,6 +157,19 @@ const App = () => (
                   <Route path="reports" element={<ParentReports />} />
                   <Route path="wallet" element={<ParentWallet />} />
                   <Route path="support" element={<ParentSupport />} />
+                <Route path="/office" element={<OfficeLayout />}>
+                  <Route index element={<OfficeDashboard />} />
+                  <Route path="attendance" element={<OfficeAttendance />} />
+                  <Route path="incidents" element={<OfficeIncidents />} />
+                  <Route path="classes" element={<OfficeClasses />} />
+                  <Route path="ai-schedule" element={<OfficeAISchedule />} />
+                  <Route path="reports" element={<OfficeReports />} />
+                </Route>
+                <Route path="/finance" element={<FinanceLayout />}>
+                  <Route index element={<FinanceDashboard />} />
+                  <Route path="transactions" element={<FinanceTransactions />} />
+                  <Route path="payouts" element={<FinancePayouts />} />
+                  <Route path="reports" element={<FinanceReports />} />
                 </Route>
                 <Route path="/pricing" element={<PlaceholderPage title="Bảng giá" description="Trang bảng giá đang được cập nhật." />} />
                 <Route path="/help" element={<PlaceholderPage title="Trung tâm trợ giúp" description="Trung tâm trợ giúp đang được xây dựng." />} />
