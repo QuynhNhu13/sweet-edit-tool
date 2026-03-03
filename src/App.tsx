@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { TutorProvider } from "@/contexts/TutorContext";
 import { TeacherProvider } from "@/contexts/TeacherContext";
+import { StudentProvider } from "@/contexts/StudentContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
@@ -39,6 +40,16 @@ import TutorClassDetail from "./pages/tutor/TutorClassDetail";
 import OnlineMeeting from "./pages/tutor/OnlineMeeting";
 import TutorPublicProfile from "./pages/TutorPublicProfile";
 import TeacherLayout from "./components/teacher/TeacherLayout";
+import StudentLayout from "./components/student/StudentLayout";
+import StudentDashboard from "./pages/student/StudentDashboard";
+import StudentFindTutor from "./pages/student/StudentFindTutor";
+import StudentClasses from "./pages/student/StudentClasses";
+import StudentSchedule from "./pages/student/StudentSchedule";
+import StudentAvailability from "./pages/student/StudentAvailability";
+import StudentTests from "./pages/student/StudentTests";
+import StudentMockExam from "./pages/student/StudentMockExam";
+import StudentResults from "./pages/student/StudentResults";
+import StudentReport from "./pages/student/StudentReport";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +60,7 @@ const App = () => (
         <AdminProvider>
           <TutorProvider>
           <TeacherProvider>
+          <StudentProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -96,6 +108,17 @@ const App = () => (
                   <Route path="profile" element={<TutorProfile />} />
                 </Route>
                 <Route path="/teacher/meeting/:sessionId" element={<OnlineMeeting />} />
+                <Route path="/student" element={<StudentLayout />}>
+                  <Route index element={<StudentDashboard />} />
+                  <Route path="find-tutor" element={<StudentFindTutor />} />
+                  <Route path="classes" element={<StudentClasses />} />
+                  <Route path="schedule" element={<StudentSchedule />} />
+                  <Route path="availability" element={<StudentAvailability />} />
+                  <Route path="tests" element={<StudentTests />} />
+                  <Route path="mock-exam" element={<StudentMockExam />} />
+                  <Route path="results" element={<StudentResults />} />
+                  <Route path="report" element={<StudentReport />} />
+                </Route>
                 <Route path="/pricing" element={<PlaceholderPage title="Bảng giá" description="Trang bảng giá đang được cập nhật." />} />
                 <Route path="/help" element={<PlaceholderPage title="Trung tâm trợ giúp" description="Trung tâm trợ giúp đang được xây dựng." />} />
                 <Route path="/faq" element={<PlaceholderPage title="Câu hỏi thường gặp" description="Trang FAQ đang được cập nhật." />} />
@@ -107,6 +130,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
+          </StudentProvider>
           </TeacherProvider>
           </TutorProvider>
         </AdminProvider>
