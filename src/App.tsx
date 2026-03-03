@@ -8,6 +8,7 @@ import { AdminProvider } from "@/contexts/AdminContext";
 import { TutorProvider } from "@/contexts/TutorContext";
 import { TeacherProvider } from "@/contexts/TeacherContext";
 import { StudentProvider } from "@/contexts/StudentContext";
+import { ParentProvider } from "@/contexts/ParentContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
@@ -52,6 +53,12 @@ import StudentResults from "./pages/student/StudentResults";
 import StudentReport from "./pages/student/StudentReport";
 import StudentChat from "./pages/student/StudentChat";
 import StudentWallet from "./pages/student/StudentWallet";
+import ParentLayout from "./components/parent/ParentLayout";
+import ParentDashboard from "./pages/parent/ParentDashboard";
+import ParentChat from "./pages/parent/ParentChat";
+import ParentChildren from "./pages/parent/ParentChildren";
+import ParentReports from "./pages/parent/ParentReports";
+import ParentWallet from "./pages/parent/ParentWallet";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +70,7 @@ const App = () => (
           <TutorProvider>
           <TeacherProvider>
           <StudentProvider>
+          <ParentProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -124,6 +132,13 @@ const App = () => (
                   <Route path="chat" element={<StudentChat />} />
                 </Route>
                 <Route path="/student/meeting/:sessionId" element={<OnlineMeeting />} />
+                <Route path="/parent" element={<ParentLayout />}>
+                  <Route index element={<ParentDashboard />} />
+                  <Route path="chat" element={<ParentChat />} />
+                  <Route path="children" element={<ParentChildren />} />
+                  <Route path="reports" element={<ParentReports />} />
+                  <Route path="wallet" element={<ParentWallet />} />
+                </Route>
                 <Route path="/pricing" element={<PlaceholderPage title="Bảng giá" description="Trang bảng giá đang được cập nhật." />} />
                 <Route path="/help" element={<PlaceholderPage title="Trung tâm trợ giúp" description="Trung tâm trợ giúp đang được xây dựng." />} />
                 <Route path="/faq" element={<PlaceholderPage title="Câu hỏi thường gặp" description="Trang FAQ đang được cập nhật." />} />
@@ -135,6 +150,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
+          </ParentProvider>
           </StudentProvider>
           </TeacherProvider>
           </TutorProvider>

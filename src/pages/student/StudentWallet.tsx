@@ -1,5 +1,5 @@
 import { useStudent } from "@/contexts/StudentContext";
-import { Wallet, ArrowDownLeft, ArrowUpRight, Plus, CreditCard, ShieldCheck, FileText, Search, Filter, Download } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, Plus, CreditCard, ShieldCheck, Search, Download, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -32,12 +32,24 @@ const CHART_COLORS = [
 ];
 
 const StudentWallet = () => {
-  const { walletBalance, walletTransactions, depositToWallet } = useStudent();
+  const { walletBalance, walletTransactions, depositToWallet, payTuition, classes } = useStudent();
   const [showDeposit, setShowDeposit] = useState(false);
+  const [showPayTuition, setShowPayTuition] = useState(false);
   const [amount, setAmount] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+
+  // Pending tuition: active classes that haven't been fully paid this month
+  const pendingTuitions = classes
+    .filter(c => c.status === "active")
+    .map(c => {
+      const paid = walletTransactions.some(
+        t => t.type === "tuition_payment" && t.relatedId === c.id && t.date >= "2026-03-01"
+      );
+      return { ...c, paid };
+    })
+    .filter(c => !c.paid);
 
   const filtered = walletTransactions
     .filter(t => typeFilter === "all" || t.type === typeFilter)
@@ -48,13 +60,11 @@ const StudentWallet = () => {
   const totalSpent = Math.abs(walletTransactions.filter(t => t.amount < 0 && t.status === "completed").reduce((s, t) => s + t.amount, 0));
   const totalRefunded = walletTransactions.filter(t => t.type === "refund" && t.status === "completed").reduce((s, t) => s + t.amount, 0);
 
-  // Chart data - spending by category
   const spendingByType = [
     { name: "Học phí", value: Math.abs(walletTransactions.filter(t => t.type === "tuition_payment").reduce((s, t) => s + t.amount, 0)) },
     { name: "Đề thi", value: Math.abs(walletTransactions.filter(t => t.type === "mock_exam_purchase").reduce((s, t) => s + t.amount, 0)) },
   ].filter(d => d.value > 0);
 
-  // Monthly spending chart
   const monthlyData = (() => {
     const map = new Map<string, number>();
     walletTransactions.filter(t => t.amount < 0).forEach(t => {
@@ -75,8 +85,17 @@ const StudentWallet = () => {
     setSelectedMethod("");
   };
 
+  const handlePayTuitionItem = (cls: typeof classes[0]) => {
+    if (walletBalance < cls.fee) {
+      toast.error("Số dư ví không đủ. Vui lòng nạp thêm tiền.");
+      return;
+    }
+    payTuition(cls.id, cls.fee, `Thanh toán học phí - ${cls.name}`);
+    toast.success(`Đã thanh toán ${cls.fee.toLocaleString("vi-VN")}đ cho ${cls.name}`);
+  };
+
   const handleExportPDF = () => {
-    toast.success("Đang xuất file PDF lịch sử giao dịch...");
+    toast.success("Đang xuất file lịch sử giao dịch...");
     setTimeout(() => {
       const content = [
         "LỊCH SỬ GIAO DỊCH - VÍ HỌC PHÍ EDUCONNECT",
@@ -107,9 +126,14 @@ const StudentWallet = () => {
             <span className="text-xs text-muted-foreground">Số dư ví</span>
           </div>
           <p className="text-2xl font-bold text-foreground">{walletBalance.toLocaleString("vi-VN")}đ</p>
-          <Button onClick={() => setShowDeposit(true)} className="w-full mt-3 rounded-xl gap-1" size="sm">
-            <Plus className="w-3.5 h-3.5" /> Nạp tiền
-          </Button>
+          <div className="flex gap-2 mt-3">
+            <Button onClick={() => setShowDeposit(true)} className="flex-1 rounded-xl gap-1" size="sm">
+              <Plus className="w-3.5 h-3.5" /> Nạp tiền
+            </Button>
+            <Button onClick={() => setShowPayTuition(true)} variant="outline" className="flex-1 rounded-xl gap-1" size="sm">
+              <Receipt className="w-3.5 h-3.5" /> Thanh toán
+            </Button>
+          </div>
         </div>
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-3">
@@ -198,7 +222,6 @@ const StudentWallet = () => {
             <Download className="w-3.5 h-3.5" /> Xuất file
           </Button>
         </div>
-
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -210,7 +233,6 @@ const StudentWallet = () => {
             ))}
           </div>
         </div>
-
         <div className="space-y-2">
           {filtered.map(t => (
             <div key={t.id} className="flex items-center gap-3 p-3 hover:bg-muted/30 rounded-xl transition-colors">
@@ -233,7 +255,6 @@ const StudentWallet = () => {
         </div>
       </div>
 
-      {/* Secure Badge */}
       <div className="flex items-center justify-center gap-3 py-4">
         <ShieldCheck className="w-5 h-5 text-muted-foreground" />
         <span className="text-xs text-muted-foreground">Secure Payment • MoMo • VNPay • Ngân hàng</span>
@@ -270,6 +291,38 @@ const StudentWallet = () => {
             <Button onClick={handleDeposit} disabled={!amount || parseInt(amount) <= 0 || !selectedMethod} className="w-full rounded-xl">
               Xác nhận nạp tiền
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pay Tuition Dialog */}
+      <Dialog open={showPayTuition} onOpenChange={setShowPayTuition}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Thanh toán học phí</DialogTitle></DialogHeader>
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground mb-3">Số dư ví: <span className="font-semibold text-foreground">{walletBalance.toLocaleString("vi-VN")}đ</span></p>
+            {pendingTuitions.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">Không có học phí nào cần thanh toán tháng này.</p>
+            ) : (
+              pendingTuitions.map(cls => (
+                <div key={cls.id} className="flex items-center gap-3 p-3 border border-border rounded-xl">
+                  <img src={cls.tutorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{cls.name}</p>
+                    <p className="text-[11px] text-muted-foreground">{cls.tutorName} • {cls.schedule}</p>
+                    <p className="text-xs font-semibold text-foreground mt-0.5">{cls.fee.toLocaleString("vi-VN")}đ</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="rounded-xl text-xs"
+                    disabled={walletBalance < cls.fee}
+                    onClick={() => handlePayTuitionItem(cls)}
+                  >
+                    Thanh toán
+                  </Button>
+                </div>
+              ))
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -1,0 +1,157 @@
+import { useParent } from "@/contexts/ParentContext";
+import { Wallet, CreditCard, ArrowDownLeft, ArrowUpRight, Plus, Download } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+
+const ParentWallet = () => {
+  const { children, transactions, walletBalance, payChildTuition, depositWallet } = useParent();
+  const [tab, setTab] = useState<"pending" | "history">("pending");
+  const [showDeposit, setShowDeposit] = useState(false);
+  const [depositAmt, setDepositAmt] = useState("");
+
+  const pendingClasses = children.flatMap(child =>
+    child.classes.filter(c => c.status === "active" && !c.paid).map(c => ({ ...c, childId: child.id, childName: child.name }))
+  );
+
+  const totalPending = pendingClasses.reduce((s, c) => s + c.fee, 0);
+  const paidThisMonth = Math.abs(transactions.filter(t => t.type === "tuition_payment" && t.date >= "2026-03-01").reduce((s, t) => s + t.amount, 0));
+
+  const handlePay = (cls: typeof pendingClasses[0]) => {
+    if (walletBalance < cls.fee) {
+      toast.error("Số dư ví không đủ. Vui lòng nạp thêm tiền.");
+      return;
+    }
+    payChildTuition(cls.id, cls.childId, cls.fee, `Thanh toán - ${cls.name} (${cls.childName})`);
+    toast.success(`Đã thanh toán ${cls.fee.toLocaleString("vi-VN")}đ cho ${cls.name}`);
+  };
+
+  const handleDeposit = () => {
+    const amt = parseInt(depositAmt);
+    if (!amt || amt <= 0) return;
+    depositWallet(amt);
+    toast.success(`Nạp ${amt.toLocaleString("vi-VN")}đ thành công!`);
+    setShowDeposit(false);
+    setDepositAmt("");
+  };
+
+  const handleExport = () => {
+    toast.success("Đang xuất lịch sử giao dịch...");
+    setTimeout(() => {
+      const content = [
+        "LỊCH SỬ GIAO DỊCH - PHỤ HUYNH EDUCONNECT",
+        `Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
+        `Số dư: ${walletBalance.toLocaleString("vi-VN")}đ`,
+        "",
+        ...transactions.map((t, i) => `${i + 1}. ${t.date} | ${t.description} | ${t.amount > 0 ? "+" : ""}${t.amount.toLocaleString("vi-VN")}đ`),
+      ].join("\n");
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `giao-dich-phu-huynh-${new Date().toISOString().split("T")[0]}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Đã xuất file thành công!");
+    }, 1000);
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { icon: CreditCard, label: "Cần thanh toán", value: `${totalPending.toLocaleString("vi-VN")}đ` },
+          { icon: ArrowUpRight, label: "Đã thanh toán tháng này", value: `${paidThisMonth.toLocaleString("vi-VN")}đ` },
+          { icon: Wallet, label: "Số dư ví", value: `${walletBalance.toLocaleString("vi-VN")}đ` },
+        ].map((s, i) => (
+          <div key={i} className="bg-card border border-border rounded-2xl p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center"><s.icon className="w-4 h-4 text-foreground" /></div>
+              <span className="text-xs text-muted-foreground">{s.label}</span>
+            </div>
+            <p className="text-xl font-bold text-foreground">{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Button onClick={() => setShowDeposit(true)} size="sm" className="rounded-xl gap-1"><Plus className="w-3.5 h-3.5" /> Nạp tiền</Button>
+        <Button variant="outline" size="sm" className="rounded-xl gap-1" onClick={handleExport}><Download className="w-3.5 h-3.5" /> Xuất file</Button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 bg-muted rounded-xl p-1 w-fit">
+        {[{ key: "pending", label: "Cần thanh toán" }, { key: "history", label: "Lịch sử" }].map(t => (
+          <button key={t.key} onClick={() => setTab(t.key as any)}
+            className={cn("px-4 py-2 rounded-lg text-sm font-medium transition-colors", tab === t.key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "pending" ? (
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+          {pendingClasses.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">Không có học phí nào cần thanh toán.</p>
+          ) : (
+            pendingClasses.map(cls => (
+              <div key={cls.id} className="flex items-center gap-3 p-3 border border-border rounded-xl">
+                <img src={cls.tutorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground">{cls.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{cls.tutorName} • {cls.childName}</p>
+                  <p className="text-[11px] text-muted-foreground">{cls.completedSessions}/{cls.totalSessions} buổi{cls.dueDate ? ` • Hạn: ${cls.dueDate}` : ""}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-bold text-foreground">{cls.fee.toLocaleString("vi-VN")}đ</p>
+                  <Button size="sm" className="rounded-xl text-xs mt-1" disabled={walletBalance < cls.fee} onClick={() => handlePay(cls)}>Thanh toán</Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      ) : (
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-2">
+          {transactions.sort((a, b) => b.date.localeCompare(a.date)).map(t => (
+            <div key={t.id} className="flex items-center gap-3 p-3 hover:bg-muted/30 rounded-xl transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                {t.amount > 0 ? <ArrowDownLeft className="w-4 h-4 text-foreground" /> : <ArrowUpRight className="w-4 h-4 text-muted-foreground" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-foreground">{t.description}</p>
+                <p className="text-[11px] text-muted-foreground">{t.date}</p>
+              </div>
+              <p className={cn("text-sm font-semibold", t.amount > 0 ? "text-foreground" : "text-muted-foreground")}>
+                {t.amount > 0 ? "+" : ""}{t.amount.toLocaleString("vi-VN")}đ
+              </p>
+              <Badge variant="outline" className="text-[10px]">{t.status === "completed" ? "Hoàn thành" : "Đang xử lý"}</Badge>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Deposit Dialog */}
+      <Dialog open={showDeposit} onOpenChange={setShowDeposit}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Nạp tiền vào ví</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <Input type="number" value={depositAmt} onChange={e => setDepositAmt(e.target.value)} placeholder="Nhập số tiền" className="rounded-xl" />
+            <div className="flex gap-2">
+              {[500000, 1000000, 2000000, 5000000].map(v => (
+                <button key={v} onClick={() => setDepositAmt(String(v))} className="px-2 py-1 bg-muted text-muted-foreground rounded-lg text-xs hover:bg-primary/10 hover:text-primary transition-colors">{(v / 1000000).toFixed(1)}tr</button>
+              ))}
+            </div>
+            <Button onClick={handleDeposit} disabled={!depositAmt || parseInt(depositAmt) <= 0} className="w-full rounded-xl">Xác nhận nạp tiền</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default ParentWallet;
