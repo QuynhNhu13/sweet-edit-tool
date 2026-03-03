@@ -60,6 +60,7 @@ const App = () => (
         <AdminProvider>
           <TutorProvider>
           <TeacherProvider>
+          <StudentProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
