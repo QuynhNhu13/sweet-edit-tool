@@ -51,6 +51,7 @@ import StudentMockExam from "./pages/student/StudentMockExam";
 import StudentResults from "./pages/student/StudentResults";
 import StudentReport from "./pages/student/StudentReport";
 import StudentChat from "./pages/student/StudentChat";
+import StudentWallet from "./pages/student/StudentWallet";
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,7 @@ const App = () => (
                   <Route path="mock-exam" element={<StudentMockExam />} />
                   <Route path="results" element={<StudentResults />} />
                   <Route path="report" element={<StudentReport />} />
+                  <Route path="wallet" element={<StudentWallet />} />
                   <Route path="chat" element={<StudentChat />} />
                 </Route>
                 <Route path="/student/meeting/:sessionId" element={<OnlineMeeting />} />

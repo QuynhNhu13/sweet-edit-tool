@@ -3,7 +3,7 @@ import ChatWidget from "@/components/ChatWidget";
 import {
   LayoutDashboard, BookOpen, Search, CalendarDays, Clock, ClipboardCheck,
   FileText, BarChart3, Trophy, LogOut, PanelLeftClose, PanelLeft,
-  Bell, Check, ChevronRight, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare
+  Bell, Check, ChevronRight, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStudent } from "@/contexts/StudentContext";
@@ -21,6 +21,7 @@ const navItems = [
   { to: "/student/mock-exam", icon: FileText, label: "Thi thử" },
   { to: "/student/results", icon: Trophy, label: "Kết quả" },
   { to: "/student/report", icon: BarChart3, label: "Báo cáo" },
+  { to: "/student/wallet", icon: Wallet, label: "Ví học phí" },
   { to: "/student/chat", icon: MessageSquare, label: "Tin nhắn" },
 ];
 
@@ -34,6 +35,7 @@ const pageTitles: Record<string, string> = {
   "/student/mock-exam": "Thi thử",
   "/student/results": "Kết quả thi",
   "/student/report": "Báo cáo học tập",
+  "/student/wallet": "Ví học phí",
   "/student/chat": "Tin nhắn",
 };
 

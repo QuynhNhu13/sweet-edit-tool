@@ -3,7 +3,16 @@ import { TrendingUp, Target, Clock, Trophy, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, AreaChart, Area } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, AreaChart, Area, Cell, RadialBarChart, RadialBar, ResponsiveContainer, Legend } from "recharts";
+
+const COLORS = [
+  "hsl(224, 76%, 48%)",
+  "hsl(142, 71%, 45%)",
+  "hsl(38, 92%, 50%)",
+  "hsl(280, 68%, 55%)",
+  "hsl(0, 84%, 60%)",
+  "hsl(190, 90%, 42%)",
+];
 
 const StudentReport = () => {
   const { profile, classes, examResults, monthlyProgress } = useStudent();
@@ -56,52 +65,62 @@ const StudentReport = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* GPA Chart */}
+        {/* GPA Chart - colorful */}
         <div className="bg-card border border-border rounded-2xl p-6">
           <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-muted-foreground" /> Tiến độ GPA theo tháng
           </h3>
-          <ChartContainer config={{ gpa: { label: "GPA", color: "hsl(var(--primary))" } }} className="h-[200px] w-full">
-            <LineChart data={gpaData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+          <ChartContainer config={{ gpa: { label: "GPA", color: COLORS[0] } }} className="h-[220px] w-full">
+            <AreaChart data={gpaData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+              <defs>
+                <linearGradient id="gpaGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={COLORS[0]} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={COLORS[0]} stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
               <XAxis dataKey="month" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
               <YAxis domain={[6, 10]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Line type="monotone" dataKey="gpa" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 5, fill: "hsl(var(--primary))" }} />
-            </LineChart>
+              <Area type="monotone" dataKey="gpa" stroke={COLORS[0]} strokeWidth={3} fill="url(#gpaGradient)" dot={{ r: 5, fill: COLORS[0] }} />
+            </AreaChart>
           </ChartContainer>
         </div>
 
-        {/* Study Hours Chart */}
+        {/* Study Hours Chart - colorful bars */}
         <div className="bg-card border border-border rounded-2xl p-6">
           <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
             <Clock className="w-4 h-4 text-muted-foreground" /> Giờ học theo tháng
           </h3>
-          <ChartContainer config={{ hours: { label: "Giờ học", color: "hsl(var(--primary))" } }} className="h-[200px] w-full">
-            <AreaChart data={hoursData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+          <ChartContainer config={{ hours: { label: "Giờ học", color: COLORS[1] } }} className="h-[220px] w-full">
+            <BarChart data={hoursData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
               <XAxis dataKey="month" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
               <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Area type="monotone" dataKey="hours" fill="hsl(var(--primary) / 0.1)" stroke="hsl(var(--primary))" strokeWidth={2} />
-            </AreaChart>
+              <Bar dataKey="hours" radius={[6, 6, 0, 0]}>
+                {hoursData.map((_, i) => (
+                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
           </ChartContainer>
         </div>
       </div>
 
-      {/* Sessions & Tests Chart */}
+      {/* Sessions & Tests Chart - dual color */}
       <div className="bg-card border border-border rounded-2xl p-6">
         <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-muted-foreground" /> Buổi học & Bài test theo tháng
         </h3>
-        <ChartContainer config={{ sessions: { label: "Buổi học", color: "hsl(var(--primary))" }, tests: { label: "Bài test", color: "hsl(var(--muted-foreground))" } }} className="h-[200px] w-full">
+        <ChartContainer config={{ sessions: { label: "Buổi học", color: COLORS[0] }, tests: { label: "Bài test", color: COLORS[2] } }} className="h-[220px] w-full">
           <BarChart data={sessionsData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
             <XAxis dataKey="month" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
             <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="sessions" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-            <Bar dataKey="tests" fill="hsl(var(--muted-foreground) / 0.3)" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="sessions" fill={COLORS[0]} radius={[6, 6, 0, 0]} />
+            <Bar dataKey="tests" fill={COLORS[2]} radius={[6, 6, 0, 0]} />
           </BarChart>
         </ChartContainer>
       </div>

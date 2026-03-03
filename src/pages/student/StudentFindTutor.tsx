@@ -1,11 +1,13 @@
 import { useStudent } from "@/contexts/StudentContext";
-import { Search, Star, MapPin, CheckCircle2, BookOpen, Clock, Filter, ShieldCheck, CalendarDays, X } from "lucide-react";
+import { Search, Star, MapPin, CheckCircle2, BookOpen, Clock, Filter, ShieldCheck, CalendarDays, X, Award, Play, GraduationCap, Video } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const allSubjects = ["Tất cả", "Toán", "Lý", "Hóa", "Sinh", "Anh văn", "IELTS", "Văn", "Sử", "Tin học"];
 
@@ -22,11 +24,9 @@ const StudentFindTutor = () => {
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
   const [bookingModal, setBookingModal] = useState<{ tutorId: string; subject: string } | null>(null);
   const [trialModal, setTrialModal] = useState<string | null>(null);
-  // Booking form state
   const [bookStartDate, setBookStartDate] = useState("");
   const [bookSessions, setBookSessions] = useState(12);
   const [bookSchedule, setBookSchedule] = useState("");
-  // Trial form state
   const [selectedTrialSlot, setSelectedTrialSlot] = useState<{ day: string; time: string } | null>(null);
 
   const filtered = tutorListings.filter(t => {
@@ -113,101 +113,179 @@ const StudentFindTutor = () => {
       </div>
 
       {/* Booking Modal */}
-      {bookingModal && (
-        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setBookingModal(null)}>
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
-            <h3 className="text-sm font-semibold text-foreground mb-4">Đăng ký học - {tutorListings.find(t => t.id === bookingModal.tutorId)?.name}</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Môn học</label>
-                <Input value={bookingModal.subject} disabled className="rounded-xl" />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Ngày bắt đầu</label>
-                <Input type="date" value={bookStartDate} onChange={e => setBookStartDate(e.target.value)} className="rounded-xl" />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Số buổi</label>
-                <Input type="number" min={4} max={48} value={bookSessions} onChange={e => setBookSessions(Number(e.target.value))} className="rounded-xl" />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Lịch học mong muốn</label>
-                <Input placeholder="VD: T2, T4, T6 - 19:00-21:00" value={bookSchedule} onChange={e => setBookSchedule(e.target.value)} className="rounded-xl" />
-              </div>
-              <div className="p-3 bg-muted/50 rounded-xl">
-                <p className="text-xs text-muted-foreground">Tạm tính học phí</p>
-                <p className="text-sm font-bold text-foreground">{((tutorListings.find(t => t.id === bookingModal.tutorId)?.hourlyRate || 0) * bookSessions).toLocaleString("vi-VN")}đ</p>
-              </div>
+      <Dialog open={!!bookingModal} onOpenChange={() => setBookingModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Đăng ký học - {bookingModal && tutorListings.find(t => t.id === bookingModal.tutorId)?.name}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Môn học</label>
+              <Input value={bookingModal?.subject || ""} disabled className="rounded-xl" />
             </div>
-            <div className="flex gap-2 mt-6">
-              <Button className="flex-1 rounded-xl" onClick={handleBook} disabled={!bookStartDate || !bookSchedule}>Xác nhận đăng ký</Button>
-              <Button variant="outline" className="rounded-xl" onClick={() => setBookingModal(null)}>Hủy</Button>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Ngày bắt đầu</label>
+              <Input type="date" value={bookStartDate} onChange={e => setBookStartDate(e.target.value)} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Số buổi</label>
+              <Input type="number" min={4} max={48} value={bookSessions} onChange={e => setBookSessions(Number(e.target.value))} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Lịch học mong muốn</label>
+              <Input placeholder="VD: T2, T4, T6 - 19:00-21:00" value={bookSchedule} onChange={e => setBookSchedule(e.target.value)} className="rounded-xl" />
+            </div>
+            <div className="p-3 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground">Tạm tính học phí</p>
+              <p className="text-sm font-bold text-foreground">{((bookingModal ? tutorListings.find(t => t.id === bookingModal.tutorId)?.hourlyRate || 0 : 0) * bookSessions).toLocaleString("vi-VN")}đ</p>
             </div>
           </div>
-        </div>
-      )}
+          <div className="flex gap-2 mt-2">
+            <Button className="flex-1 rounded-xl" onClick={handleBook} disabled={!bookStartDate || !bookSchedule}>Xác nhận đăng ký</Button>
+            <Button variant="outline" className="rounded-xl" onClick={() => setBookingModal(null)}>Hủy</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Trial Modal */}
-      {trialTutor && (
-        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setTrialModal(null)}>
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
-            <h3 className="text-sm font-semibold text-foreground mb-2">Đăng ký học thử - {trialTutor.name}</h3>
-            <p className="text-xs text-muted-foreground mb-4">Chọn lịch rảnh của {trialTutor.type === "teacher" ? "giáo viên" : "gia sư"} để học thử</p>
-            <div className="space-y-2 mb-6">
-              {(trialTutor.availableSlots || []).map((slot, i) => (
-                <button key={i} onClick={() => setSelectedTrialSlot(slot)} className={cn("w-full text-left p-3 rounded-xl border text-sm transition-all flex items-center gap-3", selectedTrialSlot?.day === slot.day && selectedTrialSlot?.time === slot.time ? "border-primary bg-primary/5 font-medium" : "border-border hover:border-primary/50")}>
-                  <CalendarDays className="w-4 h-4 text-muted-foreground" />
-                  <span>{slot.day} - {slot.time}</span>
-                </button>
-              ))}
-              {(!trialTutor.availableSlots || trialTutor.availableSlots.length === 0) && <p className="text-xs text-muted-foreground text-center py-4">Chưa có lịch rảnh</p>}
-            </div>
-            <div className="flex gap-2">
-              <Button className="flex-1 rounded-xl" onClick={handleTrial} disabled={!selectedTrialSlot}>Gửi yêu cầu</Button>
-              <Button variant="outline" className="rounded-xl" onClick={() => { setTrialModal(null); setSelectedTrialSlot(null); }}>Hủy</Button>
-            </div>
+      <Dialog open={!!trialTutor} onOpenChange={() => { setTrialModal(null); setSelectedTrialSlot(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Đăng ký học thử - {trialTutor?.name}</DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">Chọn lịch rảnh của {trialTutor?.type === "teacher" ? "giáo viên" : "gia sư"} để học thử</p>
+          <div className="space-y-2">
+            {(trialTutor?.availableSlots || []).map((slot, i) => (
+              <button key={i} onClick={() => setSelectedTrialSlot(slot)} className={cn("w-full text-left p-3 rounded-xl border text-sm transition-all flex items-center gap-3", selectedTrialSlot?.day === slot.day && selectedTrialSlot?.time === slot.time ? "border-primary bg-primary/5 font-medium" : "border-border hover:border-primary/50")}>
+                <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                <span>{slot.day} - {slot.time}</span>
+              </button>
+            ))}
+            {(!trialTutor?.availableSlots || trialTutor.availableSlots.length === 0) && <p className="text-xs text-muted-foreground text-center py-4">Chưa có lịch rảnh</p>}
           </div>
-        </div>
-      )}
+          <div className="flex gap-2">
+            <Button className="flex-1 rounded-xl" onClick={handleTrial} disabled={!selectedTrialSlot}>Gửi yêu cầu</Button>
+            <Button variant="outline" className="rounded-xl" onClick={() => { setTrialModal(null); setSelectedTrialSlot(null); }}>Hủy</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-      {/* Profile Modal */}
-      {profileTutor && (
-        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setSelectedProfile(null)}>
-          <div className="bg-card border border-border rounded-2xl p-8 max-w-lg w-full shadow-elevated" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center gap-4 mb-6">
-              <img src={profileTutor.avatar} alt="" className="w-20 h-20 rounded-2xl object-cover" />
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-foreground">{profileTutor.name}</h2>
-                  {profileTutor.verified && <CheckCircle2 className="w-4 h-4 text-muted-foreground" />}
-                  {profileTutor.type === "teacher" && (
-                    <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-muted text-foreground text-[10px] font-medium">
-                      <ShieldCheck className="w-3 h-3" /> Verified Teacher
-                    </span>
+      {/* Profile Modal - Enhanced */}
+      <Dialog open={!!profileTutor} onOpenChange={() => setSelectedProfile(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {profileTutor && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-4">
+                  <img src={profileTutor.avatar} alt="" className="w-20 h-20 rounded-2xl object-cover" />
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <DialogTitle className="text-lg">{profileTutor.name}</DialogTitle>
+                      {profileTutor.verified && <CheckCircle2 className="w-4 h-4 text-muted-foreground" />}
+                      {profileTutor.type === "teacher" && (
+                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-muted text-foreground text-[10px] font-medium">
+                          <ShieldCheck className="w-3 h-3" /> Verified Teacher
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{profileTutor.degree} • {profileTutor.school}</p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="w-3.5 h-3.5 fill-current text-foreground" />
+                      <span className="text-sm font-semibold text-foreground">{profileTutor.rating}</span>
+                      <span className="text-xs text-muted-foreground">({profileTutor.totalReviews} đánh giá)</span>
+                    </div>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <Tabs defaultValue="overview" className="mt-4">
+                <TabsList className="w-full">
+                  <TabsTrigger value="overview" className="flex-1 text-xs">Tổng quan</TabsTrigger>
+                  <TabsTrigger value="credentials" className="flex-1 text-xs">Bằng cấp</TabsTrigger>
+                  <TabsTrigger value="video" className="flex-1 text-xs">Video</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview" className="space-y-4 mt-4">
+                  <p className="text-sm text-muted-foreground">{profileTutor.bio}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Kinh nghiệm</p><p className="text-sm font-semibold text-foreground">{profileTutor.yearsExperience} năm</p></div>
+                    <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Buổi dạy</p><p className="text-sm font-semibold text-foreground">{profileTutor.totalSessions}</p></div>
+                    <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Môn dạy</p><p className="text-sm font-semibold text-foreground">{profileTutor.subjects.join(", ")}</p></div>
+                    <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Giá / giờ</p><p className="text-sm font-semibold text-foreground">{profileTutor.hourlyRate.toLocaleString("vi-VN")}đ</p></div>
+                  </div>
+                  {profileTutor.teachingStyle && (
+                    <div className="p-4 bg-muted/30 rounded-xl border border-border">
+                      <p className="text-xs font-semibold text-foreground mb-1 flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5" /> Phong cách giảng dạy</p>
+                      <p className="text-sm text-muted-foreground">{profileTutor.teachingStyle}</p>
+                    </div>
                   )}
-                </div>
-                <p className="text-sm text-muted-foreground">{profileTutor.degree} • {profileTutor.school}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <Star className="w-3.5 h-3.5 fill-current text-foreground" />
-                  <span className="text-sm font-semibold text-foreground">{profileTutor.rating}</span>
-                  <span className="text-xs text-muted-foreground">({profileTutor.totalReviews} đánh giá)</span>
-                </div>
+                  {profileTutor.achievements && profileTutor.achievements.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-foreground mb-2 flex items-center gap-1.5"><Award className="w-3.5 h-3.5" /> Thành tích nổi bật</p>
+                      <div className="space-y-1.5">
+                        {profileTutor.achievements.map((a, i) => (
+                          <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            {a}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="credentials" className="space-y-4 mt-4">
+                  <div className="p-4 bg-muted/30 rounded-xl border border-border">
+                    <p className="text-xs font-semibold text-foreground mb-1 flex items-center gap-1.5"><GraduationCap className="w-3.5 h-3.5" /> Học vấn</p>
+                    <p className="text-sm text-foreground font-medium">{profileTutor.degree}</p>
+                    <p className="text-xs text-muted-foreground">{profileTutor.school}</p>
+                  </div>
+                  {profileTutor.certificates && profileTutor.certificates.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-foreground mb-3 flex items-center gap-1.5"><Award className="w-3.5 h-3.5" /> Chứng chỉ & Bằng cấp</p>
+                      <div className="space-y-2">
+                        {profileTutor.certificates.map((cert, i) => (
+                          <div key={i} className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
+                            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                              <Award className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                            <p className="text-sm text-foreground">{cert}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="video" className="mt-4">
+                  {profileTutor.introVideoUrl ? (
+                    <div className="space-y-3">
+                      <div className="aspect-video bg-muted rounded-xl flex items-center justify-center border border-border relative overflow-hidden group cursor-pointer">
+                        <div className="absolute inset-0 bg-foreground/5 group-hover:bg-foreground/10 transition-colors" />
+                        <div className="flex flex-col items-center gap-2 z-10">
+                          <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center">
+                            <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
+                          </div>
+                          <p className="text-sm font-medium text-foreground">Video giới thiệu</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground text-center">Video giới thiệu phương pháp giảng dạy của {profileTutor.name}</p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Video className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-sm text-muted-foreground">Chưa có video giới thiệu</p>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+
+              <div className="flex gap-3 mt-4">
+                <Button className="flex-1 rounded-xl" onClick={() => { setBookingModal({ tutorId: profileTutor.id, subject: profileTutor.subjects[0] }); setSelectedProfile(null); }}>Đăng ký học</Button>
+                <Button variant="outline" className="flex-1 rounded-xl" onClick={() => { setTrialModal(profileTutor.id); setSelectedProfile(null); }}>Học thử</Button>
               </div>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">{profileTutor.bio}</p>
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Kinh nghiệm</p><p className="text-sm font-semibold text-foreground">{profileTutor.yearsExperience} năm</p></div>
-              <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Buổi dạy</p><p className="text-sm font-semibold text-foreground">{profileTutor.totalSessions}</p></div>
-              <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Môn dạy</p><p className="text-sm font-semibold text-foreground">{profileTutor.subjects.join(", ")}</p></div>
-              <div className="p-3 bg-muted/50 rounded-xl"><p className="text-[10px] text-muted-foreground">Giá / giờ</p><p className="text-sm font-semibold text-foreground">{profileTutor.hourlyRate.toLocaleString("vi-VN")}đ</p></div>
-            </div>
-            <div className="flex gap-3">
-              <Button className="flex-1 rounded-xl" onClick={() => { setBookingModal({ tutorId: profileTutor.id, subject: profileTutor.subjects[0] }); setSelectedProfile(null); }}>Đăng ký học</Button>
-              <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setSelectedProfile(null)}>Đóng</Button>
-            </div>
-          </div>
-        </div>
-      )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Tutor Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -246,6 +324,13 @@ const StudentFindTutor = () => {
               <div className="flex items-center gap-1.5 text-muted-foreground"><MapPin className="w-3 h-3" />{tutor.location}</div>
               <div className="flex items-center gap-1.5 font-semibold text-foreground">{tutor.hourlyRate.toLocaleString("vi-VN")}đ/h</div>
             </div>
+
+            {tutor.certificates && tutor.certificates.length > 0 && (
+              <div className="mb-3 flex items-center gap-1 text-[10px] text-muted-foreground">
+                <Award className="w-3 h-3 shrink-0" />
+                <span className="truncate">{tutor.certificates[0]}{tutor.certificates.length > 1 ? ` +${tutor.certificates.length - 1}` : ""}</span>
+              </div>
+            )}
 
             <div className="flex gap-2">
               {bookedTutors.has(tutor.id) ? (

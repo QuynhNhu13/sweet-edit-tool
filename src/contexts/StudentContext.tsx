@@ -84,6 +84,10 @@ export interface TutorListing {
   degree: string;
   type: "tutor" | "teacher";
   availableSlots?: { day: string; time: string }[];
+  certificates?: string[];
+  introVideoUrl?: string;
+  teachingStyle?: string;
+  achievements?: string[];
 }
 
 export interface AvailabilitySlot {
@@ -172,6 +176,17 @@ export interface StudentChatMessage {
   read: boolean;
 }
 
+export interface WalletTransaction {
+  id: string;
+  type: "deposit" | "tuition_payment" | "mock_exam_purchase" | "refund";
+  amount: number;
+  description: string;
+  date: string;
+  status: "completed" | "pending";
+  paymentMethod?: string;
+  relatedId?: string;
+}
+
 // ========== SEED DATA ==========
 
 const studentProfile: StudentProfile = {
@@ -190,12 +205,12 @@ const studentProfile: StudentProfile = {
 };
 
 const tutorListings: TutorListing[] = [
-  { id: "t1", name: "Nguyễn Văn An", avatar: tutor1, subjects: ["Toán", "Lý"], rating: 4.8, totalReviews: 47, totalSessions: 312, yearsExperience: 5, hourlyRate: 250000, location: "Quận 3, TP.HCM", verified: true, bio: "Gia sư Toán - Lý với 5 năm kinh nghiệm dạy ôn thi đại học.", school: "ĐH Sư Phạm TP.HCM", degree: "Cử nhân Sư phạm Toán", type: "tutor", availableSlots: [{ day: "Thứ 2", time: "19:00-21:00" }, { day: "Thứ 4", time: "19:00-21:00" }, { day: "Thứ 6", time: "19:00-21:00" }] },
-  { id: "t2", name: "Trần Thị Bích Ngọc", avatar: tutor2, subjects: ["Hóa", "Sinh"], rating: 4.9, totalReviews: 62, totalSessions: 450, yearsExperience: 12, hourlyRate: 300000, location: "Quận 1, TP.HCM", verified: true, bio: "Giáo viên trường Lê Hồng Phong, thạc sĩ Hóa hữu cơ.", school: "THPT Lê Hồng Phong", degree: "Thạc sĩ Hóa học", type: "teacher", availableSlots: [{ day: "Thứ 3", time: "17:00-18:30" }, { day: "Thứ 5", time: "19:00-20:30" }] },
-  { id: "t3", name: "Phạm Đức Huy", avatar: tutor3, subjects: ["Anh văn", "IELTS"], rating: 4.7, totalReviews: 35, totalSessions: 198, yearsExperience: 4, hourlyRate: 350000, location: "Quận 7, TP.HCM", verified: true, bio: "IELTS 8.5, chuyên luyện thi IELTS cho học sinh cấp 3.", school: "ĐH Ngoại Thương", degree: "Cử nhân Anh văn", type: "tutor", availableSlots: [{ day: "Thứ 7", time: "9:00-10:30" }, { day: "Chủ nhật", time: "9:00-10:30" }] },
-  { id: "t4", name: "Lê Thị Hồng Nhung", avatar: tutor4, subjects: ["Văn", "Sử"], rating: 4.6, totalReviews: 28, totalSessions: 156, yearsExperience: 6, hourlyRate: 200000, location: "Quận Bình Thạnh, TP.HCM", verified: false, bio: "Giáo viên Văn - Sử, đam mê truyền cảm hứng cho học sinh.", school: "ĐH KHXH&NV", degree: "Cử nhân Ngữ Văn", type: "teacher", availableSlots: [{ day: "Thứ 2", time: "17:00-18:30" }, { day: "Thứ 4", time: "17:00-18:30" }] },
-  { id: "t5", name: "Võ Minh Tuấn", avatar: tutor5, subjects: ["Toán", "Tin học"], rating: 4.9, totalReviews: 55, totalSessions: 380, yearsExperience: 8, hourlyRate: 280000, location: "Quận Tân Bình, TP.HCM", verified: true, bio: "Chuyên gia lập trình và toán ứng dụng, phong cách giảng dạy hiện đại.", school: "ĐH Bách Khoa", degree: "Kỹ sư CNTT", type: "tutor", availableSlots: [{ day: "Thứ 3", time: "17:00-18:30" }, { day: "Thứ 5", time: "17:00-18:30" }] },
-  { id: "t6", name: "Nguyễn Thị Mai Anh", avatar: tutor6, subjects: ["Toán", "Hóa"], rating: 4.5, totalReviews: 19, totalSessions: 95, yearsExperience: 3, hourlyRate: 180000, location: "Quận 9, TP.HCM", verified: false, bio: "Sinh viên năm cuối ĐH Sư Phạm, nhiệt tình và kiên nhẫn.", school: "ĐH Sư Phạm TP.HCM", degree: "SV Sư phạm Toán", type: "tutor", availableSlots: [{ day: "Thứ 2", time: "18:00-20:00" }, { day: "Thứ 6", time: "18:00-20:00" }] },
+  { id: "t1", name: "Nguyễn Văn An", avatar: tutor1, subjects: ["Toán", "Lý"], rating: 4.8, totalReviews: 47, totalSessions: 312, yearsExperience: 5, hourlyRate: 250000, location: "Quận 3, TP.HCM", verified: true, bio: "Gia sư Toán - Lý với 5 năm kinh nghiệm dạy ôn thi đại học. Phương pháp giảng dạy hiện đại, tập trung vào tư duy logic.", school: "ĐH Sư Phạm TP.HCM", degree: "Cử nhân Sư phạm Toán", type: "tutor", certificates: ["Chứng chỉ Sư phạm", "TESOL (Cambridge)"], introVideoUrl: "https://example.com/intro-an.mp4", teachingStyle: "Tập trung tư duy logic, giải bài từ cơ bản đến nâng cao. Sử dụng bảng trắng online và bài tập tương tác.", achievements: ["Top 10 gia sư Toán TP.HCM 2025", "100% học sinh đạt 7+ THPTQG"], availableSlots: [{ day: "Thứ 2", time: "19:00-21:00" }, { day: "Thứ 4", time: "19:00-21:00" }, { day: "Thứ 6", time: "19:00-21:00" }] },
+  { id: "t2", name: "Trần Thị Bích Ngọc", avatar: tutor2, subjects: ["Hóa", "Sinh"], rating: 4.9, totalReviews: 62, totalSessions: 450, yearsExperience: 12, hourlyRate: 300000, location: "Quận 1, TP.HCM", verified: true, bio: "Giáo viên trường Lê Hồng Phong, thạc sĩ Hóa hữu cơ. 12 năm kinh nghiệm giảng dạy chuyên.", school: "THPT Lê Hồng Phong", degree: "Thạc sĩ Hóa học", type: "teacher", certificates: ["Thạc sĩ Hóa Hữu cơ - ĐH KHTN", "Giáo viên Giỏi cấp Thành phố 2024", "Chứng chỉ Nghiệp vụ Sư phạm"], introVideoUrl: "https://example.com/intro-ngoc.mp4", teachingStyle: "Giảng dạy có hệ thống, kết hợp thí nghiệm minh họa qua video. Kiểm tra đầu giờ mỗi buổi.", achievements: ["Giáo viên Giỏi cấp TP 3 năm liên tiếp", "15 học sinh đạt giải HSG Quốc gia"], availableSlots: [{ day: "Thứ 3", time: "17:00-18:30" }, { day: "Thứ 5", time: "19:00-20:30" }] },
+  { id: "t3", name: "Phạm Đức Huy", avatar: tutor3, subjects: ["Anh văn", "IELTS"], rating: 4.7, totalReviews: 35, totalSessions: 198, yearsExperience: 4, hourlyRate: 350000, location: "Quận 7, TP.HCM", verified: true, bio: "IELTS 8.5, chuyên luyện thi IELTS cho học sinh cấp 3. Phương pháp immersion hiệu quả.", school: "ĐH Ngoại Thương", degree: "Cử nhân Anh văn", type: "tutor", certificates: ["IELTS 8.5 (British Council)", "CELTA (Cambridge)", "TKT Module 1-3"], introVideoUrl: "https://example.com/intro-huy.mp4", teachingStyle: "100% tiếng Anh trong giờ học, tập trung kỹ năng Writing & Speaking. Chấm bài và feedback chi tiết trong 24h.", achievements: ["95% học sinh đạt IELTS 6.5+", "Mentor chương trình English Camp 2025"], availableSlots: [{ day: "Thứ 7", time: "9:00-10:30" }, { day: "Chủ nhật", time: "9:00-10:30" }] },
+  { id: "t4", name: "Lê Thị Hồng Nhung", avatar: tutor4, subjects: ["Văn", "Sử"], rating: 4.6, totalReviews: 28, totalSessions: 156, yearsExperience: 6, hourlyRate: 200000, location: "Quận Bình Thạnh, TP.HCM", verified: false, bio: "Giáo viên Văn - Sử, đam mê truyền cảm hứng cho học sinh yêu thích văn chương.", school: "ĐH KHXH&NV", degree: "Cử nhân Ngữ Văn", type: "teacher", certificates: ["Cử nhân Ngữ Văn - ĐH KHXH&NV", "Chứng chỉ Tâm lý Giáo dục"], teachingStyle: "Kết hợp phân tích tác phẩm với bối cảnh lịch sử. Luyện viết essay mỗi buổi.", achievements: ["5 học sinh đạt 9+ môn Văn THPTQG"], availableSlots: [{ day: "Thứ 2", time: "17:00-18:30" }, { day: "Thứ 4", time: "17:00-18:30" }] },
+  { id: "t5", name: "Võ Minh Tuấn", avatar: tutor5, subjects: ["Toán", "Tin học"], rating: 4.9, totalReviews: 55, totalSessions: 380, yearsExperience: 8, hourlyRate: 280000, location: "Quận Tân Bình, TP.HCM", verified: true, bio: "Chuyên gia lập trình và toán ứng dụng, 8 năm kinh nghiệm giảng dạy.", school: "ĐH Bách Khoa", degree: "Kỹ sư CNTT", type: "tutor", certificates: ["Kỹ sư CNTT - ĐH Bách Khoa", "AWS Cloud Practitioner", "Google Data Analytics"], introVideoUrl: "https://example.com/intro-tuan.mp4", teachingStyle: "Giảng dạy qua dự án thực tế, kết hợp coding và toán ứng dụng. Sử dụng Jupyter Notebook.", achievements: ["3 học sinh đạt giải Tin học Quốc gia", "Top 5 gia sư Tin học 2025"], availableSlots: [{ day: "Thứ 3", time: "17:00-18:30" }, { day: "Thứ 5", time: "17:00-18:30" }] },
+  { id: "t6", name: "Nguyễn Thị Mai Anh", avatar: tutor6, subjects: ["Toán", "Hóa"], rating: 4.5, totalReviews: 19, totalSessions: 95, yearsExperience: 3, hourlyRate: 180000, location: "Quận 9, TP.HCM", verified: false, bio: "Sinh viên năm cuối ĐH Sư Phạm, nhiệt tình và kiên nhẫn với từng học sinh.", school: "ĐH Sư Phạm TP.HCM", degree: "SV Sư phạm Toán", type: "tutor", certificates: ["SV năm 4 Sư phạm Toán", "Giải 3 Olympic Toán SV 2024"], teachingStyle: "Giảng dạy nhẹ nhàng, kiên nhẫn. Chia nhỏ bài tập, luyện từng dạng.", achievements: ["Giải 3 Olympic Toán SV 2024"], availableSlots: [{ day: "Thứ 2", time: "18:00-20:00" }, { day: "Thứ 6", time: "18:00-20:00" }] },
 ];
 
 const seedSessions: StudentSession[] = [
@@ -207,7 +222,7 @@ const seedSessions: StudentSession[] = [
   { id: "ss6", classId: "sc1", date: "2026-02-14", time: "19:00-21:00", status: "completed", content: "Hình học không gian", format: "online" },
   { id: "ss7", classId: "sc1", date: "2026-02-17", time: "19:00-21:00", status: "completed", content: "Hình học giải tích", format: "online" },
   { id: "ss8", classId: "sc1", date: "2026-02-19", time: "19:00-21:00", status: "completed", content: "Xác suất thống kê", rating: 5, format: "online" },
-  { id: "ss9", classId: "sc1", date: "2026-02-21", time: "19:00-21:00", status: "completed", content: "Tổ hợp chỉnh hợp", format: "online" },
+  { id: "ss9", classId: "sc1", date: "2026-02-21", time: "19:00-21:00", status: "missed", content: "Tổ hợp chỉnh hợp", format: "online" },
   { id: "ss10", classId: "sc1", date: "2026-02-24", time: "19:00-21:00", status: "completed", content: "Ôn tập tổng hợp", format: "online" },
   { id: "ss11", classId: "sc1", date: "2026-02-26", time: "19:00-21:00", status: "completed", content: "Chữa đề thi thử 1", format: "online" },
   { id: "ss12", classId: "sc1", date: "2026-02-28", time: "19:00-21:00", status: "completed", content: "Chữa đề thi thử 2", rating: 5, format: "online" },
@@ -341,6 +356,18 @@ const seedChatMessages: StudentChatMessage[] = [
   { id: "scm7", classId: "sc1", sender: "tutor", senderName: "Nguyễn Văn An", message: "Chị yên tâm, em Châu tiến bộ rất nhanh, phần đạo hàm đã vững rồi ạ.", timestamp: "28/02 20:15", read: true },
 ];
 
+const seedWalletTransactions: WalletTransaction[] = [
+  { id: "wt1", type: "deposit", amount: 5000000, description: "Nạp tiền vào ví", date: "2026-01-15", status: "completed", paymentMethod: "MoMo" },
+  { id: "wt2", type: "tuition_payment", amount: -2000000, description: "Thanh toán học phí - Toán 12 Ôn thi ĐH", date: "2026-01-16", status: "completed", relatedId: "sc1" },
+  { id: "wt3", type: "tuition_payment", amount: -1500000, description: "Thanh toán học phí - Lý 12 Nâng cao", date: "2026-01-20", status: "completed", relatedId: "sc2" },
+  { id: "wt4", type: "deposit", amount: 3000000, description: "Nạp tiền vào ví", date: "2026-02-01", status: "completed", paymentMethod: "VNPay" },
+  { id: "wt5", type: "tuition_payment", amount: -3000000, description: "Thanh toán học phí - IELTS Writing", date: "2026-02-05", status: "completed", relatedId: "sc3" },
+  { id: "wt6", type: "mock_exam_purchase", amount: -10000, description: "Mua đề thi thử THPTQG Toán - Đề 1", date: "2026-02-20", status: "completed", relatedId: "me1" },
+  { id: "wt7", type: "mock_exam_purchase", amount: -10000, description: "Mua đề thi thử Vật lý - Đề 1", date: "2026-02-24", status: "completed", relatedId: "me3" },
+  { id: "wt8", type: "deposit", amount: 2000000, description: "Nạp tiền vào ví", date: "2026-02-28", status: "completed", paymentMethod: "Vietcombank" },
+  { id: "wt9", type: "refund", amount: 500000, description: "Hoàn tiền 5 buổi chưa học - Hóa 11", date: "2026-02-10", status: "completed", relatedId: "sc4" },
+];
+
 // ========== CONTEXT ==========
 
 interface StudentContextType {
@@ -355,6 +382,8 @@ interface StudentContextType {
   weeklyGoal: { target: number; current: number };
   notifications: StudentNotification[];
   chatMessages: StudentChatMessage[];
+  walletBalance: number;
+  walletTransactions: WalletTransaction[];
   // Actions
   bookTutor: (tutorId: string, subject: string, startDate: string, totalSessions: number, schedule: string) => void;
   requestTrial: (tutorId: string, selectedSlot: { day: string; time: string }) => void;
@@ -367,6 +396,8 @@ interface StudentContextType {
   sendChatMessage: (classId: string, message: string) => void;
   markChatRead: (classId: string) => void;
   purchaseMockExam: (examId: string) => void;
+  depositToWallet: (amount: number, method: string) => void;
+  payTuition: (classId: string, amount: number, description: string) => void;
 }
 
 const StudentContext = createContext<StudentContextType | undefined>(undefined);
@@ -386,6 +417,9 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
   const [results, setResults] = useState(examResults);
   const [notifications, setNotifications] = useState(seedNotifications);
   const [chatMsgs, setChatMsgs] = useState(seedChatMessages);
+  const [walletTxns, setWalletTxns] = useState(seedWalletTransactions);
+
+  const walletBalance = walletTxns.filter(t => t.status === "completed").reduce((s, t) => s + t.amount, 0);
 
   const bookTutor = useCallback((tutorId: string, subject: string, startDate: string, totalSessions: number, schedule: string) => {
     const tutor = tutorListings.find(t => t.id === tutorId);
@@ -479,17 +513,30 @@ export const StudentProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const purchaseMockExam = useCallback((examId: string) => {
+    const exam = mockExamsState.find(e => e.id === examId);
+    if (!exam) return;
     setMockExams(prev => prev.map(e => e.id === examId ? { ...e, purchased: true } : e));
+    setWalletTxns(prev => [...prev, { id: `wt${Date.now()}`, type: "mock_exam_purchase", amount: -exam.price, description: `Mua đề thi thử - ${exam.title}`, date: new Date().toISOString().split("T")[0], status: "completed", relatedId: examId }]);
     setNotifications(prev => [{ id: `sn${Date.now()}`, type: "success", title: "Mua đề thành công", message: "Bạn đã mua đề thi thử thành công. Bắt đầu làm bài ngay!", timestamp: new Date().toLocaleString("vi-VN"), read: false }, ...prev]);
+  }, [mockExamsState]);
+
+  const depositToWallet = useCallback((amount: number, method: string) => {
+    setWalletTxns(prev => [...prev, { id: `wt${Date.now()}`, type: "deposit", amount, description: `Nạp tiền vào ví`, date: new Date().toISOString().split("T")[0], status: "completed", paymentMethod: method }]);
+    setNotifications(prev => [{ id: `sn${Date.now()}`, type: "success", title: "Nạp tiền thành công", message: `Đã nạp ${amount.toLocaleString("vi-VN")}đ vào ví qua ${method}.`, timestamp: new Date().toLocaleString("vi-VN"), read: false }, ...prev]);
+  }, []);
+
+  const payTuition = useCallback((classId: string, amount: number, description: string) => {
+    setWalletTxns(prev => [...prev, { id: `wt${Date.now()}`, type: "tuition_payment", amount: -amount, description, date: new Date().toISOString().split("T")[0], status: "completed", relatedId: classId }]);
   }, []);
 
   return (
     <StudentContext.Provider value={{
       profile, classes, tutorListings, availability, tests, mockExams: mockExamsState,
       examResults: results, monthlyProgress, weeklyGoal: { target: 15, current: 11 },
-      notifications, chatMessages: chatMsgs,
+      notifications, chatMessages: chatMsgs, walletBalance, walletTransactions: walletTxns,
       bookTutor, requestTrial, updateAvailability, submitTest, submitMockExam, rateSession,
       markNotificationRead, markAllNotificationsRead, sendChatMessage, markChatRead, purchaseMockExam,
+      depositToWallet, payTuition,
     }}>
       {children}
     </StudentContext.Provider>

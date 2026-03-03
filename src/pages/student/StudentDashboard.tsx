@@ -1,14 +1,21 @@
 import { useStudent } from "@/contexts/StudentContext";
-import { BookOpen, CheckCircle2, Clock, TrendingUp, Target, CalendarDays, ArrowUpRight, ChevronRight, Search, ClipboardCheck, BarChart3 } from "lucide-react";
+import { BookOpen, CheckCircle2, Clock, TrendingUp, Target, CalendarDays, ArrowUpRight, ChevronRight, Search, ClipboardCheck, BarChart3, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
+
+const COLORS = [
+  "hsl(224, 76%, 48%)",
+  "hsl(142, 71%, 45%)",
+  "hsl(38, 92%, 50%)",
+  "hsl(280, 68%, 55%)",
+];
 
 const StudentDashboard = () => {
-  const { profile, classes, examResults, monthlyProgress, weeklyGoal } = useStudent();
+  const { profile, classes, examResults, monthlyProgress, weeklyGoal, walletBalance } = useStudent();
   const navigate = useNavigate();
 
   const activeClasses = classes.filter(c => c.status === "active");
@@ -94,18 +101,12 @@ const StudentDashboard = () => {
             <div className="space-y-3">
               {upcomingSessions.map(s => (
                 <div key={s.id} className="flex items-center gap-4 p-3 bg-muted/50 rounded-xl hover:bg-muted transition-colors">
-                  <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center">
-                    <CalendarDays className="w-5 h-5 text-foreground" />
-                  </div>
+                  <img src={s.tutorAvatar} alt="" className="w-10 h-10 rounded-xl object-cover" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground">{s.className}</p>
-                    <p className="text-xs text-muted-foreground">{s.date} • {s.time}</p>
+                    <p className="text-xs text-muted-foreground">{s.tutorName} • {s.date} • {s.time}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <img src={s.tutorAvatar} alt="" className="w-7 h-7 rounded-full object-cover" />
-                    <span className="text-xs text-muted-foreground">{s.tutorName}</span>
-                  </div>
-                  <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", s.format === "online" ? "bg-muted text-foreground" : "bg-muted text-foreground")}>
+                  <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-foreground")}>
                     {s.format === "online" ? "Online" : "Offline"}
                   </span>
                   {s.format === "online" && s.meetingLink && (
@@ -117,25 +118,41 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          {/* GPA Progress Chart */}
+          {/* GPA Progress Chart - colorful */}
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-muted-foreground" /> Tiến độ GPA
             </h3>
-            <ChartContainer config={{ gpa: { label: "GPA", color: "hsl(var(--primary))" } }} className="h-[200px] w-full">
-              <LineChart data={gpaData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+            <ChartContainer config={{ gpa: { label: "GPA", color: COLORS[0] } }} className="h-[200px] w-full">
+              <AreaChart data={gpaData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="dashGpaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={COLORS[0]} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={COLORS[0]} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                 <XAxis dataKey="month" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                 <YAxis domain={[6, 10]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Line type="monotone" dataKey="gpa" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 5, fill: "hsl(var(--primary))" }} />
-              </LineChart>
+                <Area type="monotone" dataKey="gpa" stroke={COLORS[0]} strokeWidth={3} fill="url(#dashGpaGrad)" dot={{ r: 5, fill: COLORS[0] }} />
+              </AreaChart>
             </ChartContainer>
           </div>
         </div>
 
         {/* Right column */}
         <div className="space-y-4">
+          {/* Wallet quick view */}
+          <button onClick={() => navigate("/student/wallet")} className="w-full bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all group">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Wallet className="w-4 h-4 text-muted-foreground" /> Ví học phí</h3>
+              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
+            </div>
+            <p className="text-2xl font-bold text-foreground">{walletBalance.toLocaleString("vi-VN")}đ</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Nhấn để xem chi tiết</p>
+          </button>
+
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="text-sm font-semibold text-foreground mb-3">Tiến độ lớp học</h3>
             <div className="space-y-3">
@@ -180,6 +197,7 @@ const StudentDashboard = () => {
               { label: "Tìm gia sư mới", link: "/student/find-tutor", icon: Search },
               { label: "Thi thử THPTQG", link: "/student/mock-exam", icon: ClipboardCheck },
               { label: "Xem báo cáo", link: "/student/report", icon: BarChart3 },
+              { label: "Ví học phí", link: "/student/wallet", icon: Wallet },
             ].map((item, i) => (
               <button key={i} onClick={() => navigate(item.link)} className="w-full flex items-center gap-3 p-3 bg-muted/50 rounded-xl mb-2 last:mb-0 text-left hover:bg-muted transition-colors group">
                 <item.icon className="w-4 h-4 text-muted-foreground" />
