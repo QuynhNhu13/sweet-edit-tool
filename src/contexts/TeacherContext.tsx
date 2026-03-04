@@ -411,6 +411,7 @@ interface TeacherContextType {
   chatMessages: ChatMessage[];
   studentProgress: StudentProgress[];
   reviews: TutorReview[];
+  refundRequests: RefundRequest[];
   testQuestions: TestQuestion[];
   testResults: TestResult[];
   walletBalance: number;
@@ -424,7 +425,7 @@ interface TeacherContextType {
   requestAbsence: (sessionId: string, classId: string, reason: string, requestedBy: "tutor" | "student") => void;
   sendMessage: (classId: string, message: string) => void;
   markMessagesRead: (classId: string) => void;
-  requestRefund: (classId: string) => void;
+  requestRefund: (classId: string, reason: string, amount: number) => void;
   requestWithdrawal: (amount: number, method: string) => void;
   requestDeposit: (amount: number, method: string) => void;
   updateAvailability: (availability: TutorProfile["availability"]) => void;
