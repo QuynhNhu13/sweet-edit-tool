@@ -19,6 +19,7 @@ const pageTitles: Record<string, string> = {
   "/finance": "Tổng quan tài chính",
   "/finance/transactions": "Quản lý giao dịch",
   "/finance/payouts": "Thanh toán gia sư",
+  "/finance/refunds": "Yêu cầu hoàn tiền",
   "/finance/reports": "Báo cáo tài chính",
 };
 

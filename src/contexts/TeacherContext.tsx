@@ -590,7 +590,7 @@ export const TeacherProvider = ({ children }: { children: ReactNode }) => {
   return (
     <TeacherContext.Provider value={{
       profile, classes, trials, wallet, chatMessages, studentProgress, reviews,
-      testQuestions: teacherTestQuestions, testResults, walletBalance, escrowBalance,
+      refundRequests, testQuestions: teacherTestQuestions, testResults, walletBalance, escrowBalance,
       updateProfile, confirmTrial, rejectTrial,
       startSession, endSession, confirmSessionByParent, requestAbsence,
       sendMessage, markMessagesRead,

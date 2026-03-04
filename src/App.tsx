@@ -190,6 +190,7 @@ const App = () => (
                   <Route index element={<FinanceDashboard />} />
                   <Route path="transactions" element={<FinanceTransactions />} />
                   <Route path="payouts" element={<FinancePayouts />} />
+                  <Route path="refunds" element={<FinanceRefunds />} />
                   <Route path="reports" element={<FinanceReports />} />
                 </Route>
                 <Route path="/exam-manager" element={<ExamManagerLayout />}>

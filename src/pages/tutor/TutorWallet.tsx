@@ -1,5 +1,5 @@
 import { useTutor } from "@/contexts/TutorContext";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ShieldCheck, DollarSign, Plus, CreditCard, Building2 } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ShieldCheck, DollarSign, Plus, CreditCard, AlertTriangle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,15 +22,35 @@ const paymentMethods = [
   { id: "bidv", name: "BIDV", icon: "🔴", desc: "****9012" },
 ];
 
+const refundReasons = [
+  "Lớp học bị hủy do học sinh không tham gia",
+  "Phụ huynh yêu cầu dừng lớp",
+  "Gia sư không thể tiếp tục giảng dạy",
+  "Chất lượng không đạt yêu cầu - đồng thuận hoàn tiền",
+  "Lịch học không phù hợp, không thể sắp xếp lại",
+];
+
 const TutorWallet = () => {
-  const { wallet, walletBalance, escrowBalance, classes, requestRefund, requestWithdrawal, requestDeposit } = useTutor();
+  const { wallet, walletBalance, escrowBalance, classes, refundRequests, requestRefund, requestWithdrawal, requestDeposit } = useTutor();
   const [dialogType, setDialogType] = useState<"withdraw" | "deposit" | null>(null);
   const [amount, setAmount] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
   const [filter, setFilter] = useState<string>("all");
 
+  // Refund modal state
+  const [refundClassId, setRefundClassId] = useState<string | null>(null);
+  const [refundReason, setRefundReason] = useState("");
+  const [refundCustomReason, setRefundCustomReason] = useState("");
+  const [refundAmount, setRefundAmount] = useState("");
+  const [refundFullAmount, setRefundFullAmount] = useState(true);
+
   const filtered = filter === "all" ? wallet : wallet.filter(w => w.type === filter);
   const totalIncome = wallet.filter(w => w.type === "escrow_release" && w.status === "completed").reduce((s, w) => s + w.amount, 0);
+
+  const refundClass = classes.find(c => c.id === refundClassId);
+  const refundMax = refundClass ? refundClass.escrowAmount - refundClass.escrowReleased : 0;
+
+  const hasExistingRefund = (classId: string) => refundRequests.some(r => r.classId === classId && r.status === "pending");
 
   const handleSubmit = () => {
     const amt = parseInt(amount);
@@ -47,6 +67,26 @@ const TutorWallet = () => {
     setDialogType(null);
     setAmount("");
     setSelectedMethod("");
+  };
+
+  const openRefundModal = (classId: string) => {
+    setRefundClassId(classId);
+    setRefundReason("");
+    setRefundCustomReason("");
+    setRefundFullAmount(true);
+    const cls = classes.find(c => c.id === classId);
+    if (cls) setRefundAmount(String(cls.escrowAmount - cls.escrowReleased));
+  };
+
+  const handleRefundSubmit = () => {
+    if (!refundClassId) return;
+    const finalReason = refundReason === "custom" ? refundCustomReason.trim() : refundReason;
+    if (!finalReason) { toast.error("Vui lòng nhập lý do hoàn tiền"); return; }
+    const amt = parseInt(refundAmount);
+    if (!amt || amt <= 0 || amt > refundMax) { toast.error("Số tiền không hợp lệ"); return; }
+    requestRefund(refundClassId, finalReason, amt);
+    toast.success("Yêu cầu hoàn tiền đã được gửi đến Kế toán");
+    setRefundClassId(null);
   };
 
   return (
@@ -110,12 +150,44 @@ const TutorWallet = () => {
               </div>
               {c.escrowStatus === "completed" && <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg">Released</span>}
               {(c.escrowStatus === "pending" || c.escrowStatus === "in_progress") && (
-                <button onClick={() => { requestRefund(c.id); toast.info("Yêu cầu hoàn tiền đã gửi"); }} className="text-[10px] font-medium text-destructive hover:underline">Hoàn tiền</button>
+                hasExistingRefund(c.id) ? (
+                  <span className="text-[10px] font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg">Chờ duyệt</span>
+                ) : (
+                  <button onClick={() => openRefundModal(c.id)} className="text-[10px] font-medium text-destructive hover:underline">Hoàn tiền</button>
+                )
               )}
             </div>
           ))}
         </div>
       </div>
+
+      {/* Refund Requests History */}
+      {refundRequests.length > 0 && (
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-foreground mb-4">Yêu cầu hoàn tiền</h3>
+          <div className="space-y-2">
+            {refundRequests.map(r => (
+              <div key={r.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl">
+                <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                  <AlertTriangle className="w-4 h-4 text-destructive" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-foreground">{r.className} — {r.amount.toLocaleString("vi-VN")}đ</p>
+                  <p className="text-[11px] text-muted-foreground truncate">{r.reason}</p>
+                  <p className="text-[10px] text-muted-foreground/70">{r.createdAt}</p>
+                </div>
+                <span className={cn("text-[10px] px-2 py-0.5 rounded-lg font-medium",
+                  r.status === "pending" && "bg-amber-50 text-amber-600 dark:bg-amber-900/20",
+                  r.status === "approved" && "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20",
+                  r.status === "rejected" && "bg-destructive/10 text-destructive",
+                )}>
+                  {r.status === "pending" ? "Chờ duyệt" : r.status === "approved" ? "Đã duyệt" : "Từ chối"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Transaction History */}
       <div className="bg-card border border-border rounded-2xl p-5">
@@ -188,6 +260,90 @@ const TutorWallet = () => {
             </div>
             <button onClick={handleSubmit} disabled={!amount || parseInt(amount) <= 0 || !selectedMethod} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium disabled:opacity-50">
               {dialogType === "withdraw" ? "Xác nhận rút tiền" : "Xác nhận nạp tiền"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Refund Request Dialog */}
+      <Dialog open={!!refundClassId} onOpenChange={() => setRefundClassId(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-amber-500" /> Yêu cầu hoàn tiền</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            {/* Explanation */}
+            <div className="flex gap-3 p-3 bg-primary/5 border border-primary/20 rounded-xl">
+              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Hoàn tiền là yêu cầu gửi đến bộ phận Kế toán để xử lý hoàn trả phần học phí chưa giải ngân cho phụ huynh/học sinh. Yêu cầu sẽ được xem xét và phê duyệt trước khi thực hiện.
+              </p>
+            </div>
+
+            {/* Class info */}
+            {refundClass && (
+              <div className="p-3 bg-muted/50 rounded-xl">
+                <p className="text-sm font-medium text-foreground">{refundClass.name}</p>
+                <p className="text-xs text-muted-foreground">Học sinh: {refundClass.studentName} • Escrow chưa giải ngân: <strong>{refundMax.toLocaleString("vi-VN")}đ</strong></p>
+              </div>
+            )}
+
+            {/* Reason */}
+            <div>
+              <label className="text-xs font-medium text-foreground">Lý do hoàn tiền <span className="text-destructive">*</span></label>
+              <div className="space-y-2 mt-2">
+                {refundReasons.map(r => (
+                  <button key={r} onClick={() => { setRefundReason(r); setRefundCustomReason(""); }}
+                    className={cn("w-full text-left px-3 py-2 rounded-xl border text-sm transition-all",
+                      refundReason === r ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/50"
+                    )}>
+                    {r}
+                  </button>
+                ))}
+                <button onClick={() => setRefundReason("custom")}
+                  className={cn("w-full text-left px-3 py-2 rounded-xl border text-sm transition-all",
+                    refundReason === "custom" ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/50"
+                  )}>
+                  Lý do khác...
+                </button>
+              </div>
+              {refundReason === "custom" && (
+                <textarea
+                  value={refundCustomReason}
+                  onChange={e => setRefundCustomReason(e.target.value)}
+                  placeholder="Nhập lý do cụ thể..."
+                  className="w-full mt-2 px-3 py-2 bg-muted/50 border border-border rounded-xl text-sm min-h-[80px] resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  maxLength={500}
+                />
+              )}
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="text-xs font-medium text-foreground">Số tiền hoàn</label>
+              <div className="flex gap-3 mt-2">
+                <button onClick={() => { setRefundFullAmount(true); setRefundAmount(String(refundMax)); }}
+                  className={cn("flex-1 py-2 rounded-xl text-sm font-medium border transition-all",
+                    refundFullAmount ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                  )}>Toàn bộ ({refundMax.toLocaleString("vi-VN")}đ)</button>
+                <button onClick={() => { setRefundFullAmount(false); setRefundAmount(""); }}
+                  className={cn("flex-1 py-2 rounded-xl text-sm font-medium border transition-all",
+                    !refundFullAmount ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                  )}>Một phần</button>
+              </div>
+              {!refundFullAmount && (
+                <div className="mt-2">
+                  <input type="number" value={refundAmount} onChange={e => setRefundAmount(e.target.value)}
+                    placeholder={`Tối đa ${refundMax.toLocaleString("vi-VN")}đ`}
+                    className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    max={refundMax} min={1}
+                  />
+                </div>
+              )}
+            </div>
+
+            <button onClick={handleRefundSubmit}
+              disabled={!refundReason || (refundReason === "custom" && !refundCustomReason.trim()) || !refundAmount || parseInt(refundAmount) <= 0}
+              className="w-full py-2.5 bg-destructive text-destructive-foreground rounded-xl font-medium disabled:opacity-50 transition-colors">
+              Gửi yêu cầu hoàn tiền
             </button>
           </div>
         </DialogContent>
