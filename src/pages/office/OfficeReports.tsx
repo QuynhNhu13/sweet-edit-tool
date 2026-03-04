@@ -108,8 +108,8 @@ const OfficeReports = () => {
                 <XAxis dataKey="day" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip contentStyle={{ borderRadius: "1rem", border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", color: "hsl(var(--foreground))" }} />
-                <Bar dataKey="sessions" name="Buổi học" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="issues" name="Sự cố" fill="hsl(var(--destructive))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="sessions" name="Buổi học" fill="hsl(224, 76%, 48%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="issues" name="Sự cố" fill="hsl(0, 84%, 60%)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
