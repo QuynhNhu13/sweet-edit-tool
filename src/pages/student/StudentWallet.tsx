@@ -33,9 +33,10 @@ const CHART_COLORS = [
 ];
 
 const StudentWallet = () => {
-  const { walletBalance, walletTransactions, depositToWallet, payTuition, classes } = useStudent();
+  const { walletBalance, walletTransactions, depositToWallet, payTuition, classes, withdrawFromWallet } = useStudent();
   const [showDeposit, setShowDeposit] = useState(false);
   const [showPayTuition, setShowPayTuition] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
   const [amount, setAmount] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
   const [search, setSearch] = useState("");
