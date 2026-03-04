@@ -679,19 +679,31 @@ export const TutorProvider = ({ children }: { children: ReactNode }) => {
     setChatMessages(prev => prev.map(m => m.classId === classId ? { ...m, read: true } : m));
   }, []);
 
-  const requestRefund = useCallback((classId: string) => {
-    setClasses(prev => prev.map(c =>
-      c.id === classId && (c.escrowStatus === "pending" || c.escrowStatus === "in_progress")
-        ? { ...c, escrowStatus: "refunded" as EscrowStatus }
-        : c
-    ));
+  const requestRefund = useCallback((classId: string, reason: string, amount: number) => {
+    const cls = classes.find(c => c.id === classId);
+    if (!cls) return;
+    const req: RefundRequest = {
+      id: genId("rf"),
+      classId,
+      className: cls.name,
+      tutorId: profile.id,
+      tutorName: profile.name,
+      amount,
+      maxAmount: cls.escrowAmount - cls.escrowReleased,
+      reason,
+      status: "pending",
+      createdAt: new Date().toLocaleString("vi-VN"),
+      studentName: cls.studentName,
+      subject: cls.subject,
+    };
+    setRefundRequests(prev => [...prev, req]);
     setWallet(prev => [...prev, {
       id: genId("w"), type: "refund", amount: 0,
       date: new Date().toISOString().slice(0, 10),
-      description: `Yêu cầu hoàn tiền lớp ${classId} - đang chờ Admin xử lý`,
+      description: `Yêu cầu hoàn tiền ${amount.toLocaleString("vi-VN")}đ - ${cls.name} - Chờ duyệt`,
       classId, status: "pending",
     }]);
-  }, []);
+  }, [classes, profile.id, profile.name]);
 
   const requestWithdrawal = useCallback((amount: number, method: string) => {
     setWallet(prev => [...prev, {
