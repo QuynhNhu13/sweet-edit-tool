@@ -8,6 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+const typeLabels: Record<string, string> = {
+  deposit: "Nạp tiền",
+  tuition_payment: "Học phí",
+  refund: "Hoàn tiền",
+  withdrawal: "Rút tiền",
+};
+
 const paymentMethods = [
   { id: "momo", name: "MoMo", desc: "Ví điện tử MoMo" },
   { id: "vnpay", name: "VNPay", desc: "Cổng thanh toán VNPay" },
