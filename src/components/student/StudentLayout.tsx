@@ -3,7 +3,7 @@ import MessageBubble from "@/components/MessageBubble";
 import {
   LayoutDashboard, BookOpen, Search, CalendarDays, Clock, ClipboardCheck,
   FileText, BarChart3, Trophy, LogOut, PanelLeftClose, PanelLeft,
-  Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet
+  Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStudent } from "@/contexts/StudentContext";
