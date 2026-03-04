@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, ClipboardCheck, AlertTriangle, BookOpen, CalendarCog, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, UserPlus, CalendarDays } from "lucide-react";
+import { LayoutDashboard, ClipboardCheck, AlertTriangle, BookOpen, CalendarCog, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, UserPlus, CalendarDays, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOffice } from "@/contexts/OfficeContext";
 import EduLogo from "@/components/EduLogo";
@@ -15,6 +15,7 @@ const navItems = [
   { to: "/office/classes", icon: BookOpen, label: "Quản lý lớp" },
   { to: "/office/appointments", icon: CalendarDays, label: "Lịch hẹn" },
   { to: "/office/ai-schedule", icon: CalendarCog, label: "Xếp lịch AI" },
+  { to: "/office/reviews", icon: Star, label: "Đánh giá gia sư" },
   { to: "/office/reports", icon: BarChart3, label: "Báo cáo" },
 ];
 
@@ -26,6 +27,7 @@ const pageTitles: Record<string, string> = {
   "/office/classes": "Quản lý lớp",
   "/office/appointments": "Lịch hẹn văn phòng",
   "/office/ai-schedule": "Tự động xếp lịch thông minh",
+  "/office/reviews": "Quản lý đánh giá gia sư",
   "/office/reports": "Báo cáo",
 };
 

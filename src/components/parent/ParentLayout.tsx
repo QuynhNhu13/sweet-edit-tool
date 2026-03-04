@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, MessageSquare, Users, BarChart3, Wallet, LogOut, Search,
+  LayoutDashboard, MessageSquare, Users, BarChart3, Wallet, LogOut, Search, Star,
   PanelLeftClose, PanelLeft, Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ const navItems = [
   { to: "/parent/chat", icon: MessageSquare, label: "Tin nhắn" },
   { to: "/parent/children", icon: Users, label: "Con em" },
   { to: "/parent/reports", icon: BarChart3, label: "Báo cáo học tập" },
+  { to: "/parent/reviews", icon: Star, label: "Đánh giá gia sư" },
   { to: "/parent/wallet", icon: Wallet, label: "Ví & Thanh toán" },
   { to: "/parent/support", icon: HelpCircle, label: "Hỗ trợ" },
 ];
@@ -26,6 +27,7 @@ const pageTitles: Record<string, string> = {
   "/parent/find-tutor": "Tìm gia sư",
   "/parent/chat": "Tin nhắn",
   "/parent/children": "Con em",
+  "/parent/reviews": "Đánh giá gia sư",
   "/parent/reports": "Báo cáo học tập",
   "/parent/wallet": "Ví & Thanh toán",
   "/parent/support": "Hỗ trợ",

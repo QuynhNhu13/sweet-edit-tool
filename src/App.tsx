@@ -56,6 +56,7 @@ import StudentResults from "./pages/student/StudentResults";
 import StudentReport from "./pages/student/StudentReport";
 import StudentChat from "./pages/student/StudentChat";
 import StudentWallet from "./pages/student/StudentWallet";
+import StudentReviews from "./pages/student/StudentReviews";
 import ParentLayout from "./components/parent/ParentLayout";
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import ParentChat from "./pages/parent/ParentChat";
@@ -64,6 +65,7 @@ import ParentReports from "./pages/parent/ParentReports";
 import ParentWallet from "./pages/parent/ParentWallet";
 import ParentFindTutor from "./pages/parent/ParentFindTutor";
 import ParentSupport from "./pages/parent/ParentSupport";
+import ParentReviews from "./pages/parent/ParentReviews";
 import OfficeLayout from "./components/office/OfficeLayout";
 import OfficeDashboard from "./pages/office/OfficeDashboard";
 import OfficeAttendance from "./pages/office/OfficeAttendance";
@@ -73,6 +75,7 @@ import OfficeAISchedule from "./pages/office/OfficeAISchedule";
 import OfficeRegistrations from "./pages/office/OfficeRegistrations";
 import OfficeAppointments from "./pages/office/OfficeAppointments";
 import OfficeReports from "./pages/office/OfficeReports";
+import OfficeReviews from "./pages/office/OfficeReviews";
 import FinanceLayout from "./components/finance/FinanceLayout";
 import FinanceDashboard from "./pages/finance/FinanceDashboard";
 import FinanceTransactions from "./pages/finance/FinanceTransactions";
@@ -156,6 +159,7 @@ const App = () => (
                   <Route path="mock-exam" element={<StudentMockExam />} />
                   <Route path="results" element={<StudentResults />} />
                   <Route path="report" element={<StudentReport />} />
+                  <Route path="reviews" element={<StudentReviews />} />
                   <Route path="wallet" element={<StudentWallet />} />
                   <Route path="chat" element={<StudentChat />} />
                 </Route>
@@ -166,6 +170,7 @@ const App = () => (
                   <Route path="chat" element={<ParentChat />} />
                   <Route path="children" element={<ParentChildren />} />
                   <Route path="reports" element={<ParentReports />} />
+                  <Route path="reviews" element={<ParentReviews />} />
                   <Route path="wallet" element={<ParentWallet />} />
                   <Route path="support" element={<ParentSupport />} />
                 </Route>
@@ -177,6 +182,7 @@ const App = () => (
                   <Route path="classes" element={<OfficeClasses />} />
                   <Route path="appointments" element={<OfficeAppointments />} />
                   <Route path="ai-schedule" element={<OfficeAISchedule />} />
+                  <Route path="reviews" element={<OfficeReviews />} />
                   <Route path="reports" element={<OfficeReports />} />
                 </Route>
                 <Route path="/finance" element={<FinanceLayout />}>

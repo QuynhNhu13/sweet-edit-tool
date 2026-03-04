@@ -3,7 +3,7 @@ import MessageBubble from "@/components/MessageBubble";
 import {
   LayoutDashboard, BookOpen, Search, CalendarDays, Clock, ClipboardCheck,
   FileText, BarChart3, Trophy, LogOut, PanelLeftClose, PanelLeft,
-  Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet
+  Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStudent } from "@/contexts/StudentContext";
@@ -39,6 +39,7 @@ const navGroups = [
   {
     items: [
       { to: "/student/wallet", icon: Wallet, label: "Ví học phí" },
+      { to: "/student/reviews", icon: Star, label: "Đánh giá" },
       { to: "/student/chat", icon: MessageSquare, label: "Tin nhắn" },
     ],
   },
@@ -54,6 +55,7 @@ const pageTitles: Record<string, string> = {
   "/student/mock-exam": "Thi thử",
   "/student/results": "Kết quả thi",
   "/student/report": "Báo cáo học tập",
+  "/student/reviews": "Đánh giá gia sư",
   "/student/wallet": "Ví học phí",
   "/student/chat": "Tin nhắn",
 };
