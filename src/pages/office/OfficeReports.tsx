@@ -33,7 +33,13 @@ const classDistribution = [
   { name: "Hóa", value: 8 },
 ];
 
-const COLORS = ["hsl(var(--primary))", "hsl(var(--ring))", "hsl(var(--muted-foreground))", "hsl(var(--foreground))", "hsl(var(--destructive))"];
+const COLORS = [
+  "hsl(224, 76%, 48%)",
+  "hsl(142, 71%, 45%)",
+  "hsl(38, 92%, 50%)",
+  "hsl(280, 68%, 55%)",
+  "hsl(0, 84%, 60%)",
+];
 
 const kpiData = [
   { label: "Đăng ký mới", value: 7, target: 200, percent: 3.5 },
@@ -102,8 +108,8 @@ const OfficeReports = () => {
                 <XAxis dataKey="day" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip contentStyle={{ borderRadius: "1rem", border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", color: "hsl(var(--foreground))" }} />
-                <Bar dataKey="sessions" name="Buổi học" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="issues" name="Sự cố" fill="hsl(var(--destructive))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="sessions" name="Buổi học" fill="hsl(224, 76%, 48%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="issues" name="Sự cố" fill="hsl(0, 84%, 60%)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
