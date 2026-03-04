@@ -453,6 +453,7 @@ export const TeacherProvider = ({ children }: { children: ReactNode }) => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(teacherChat);
   const [studentProgress] = useState<StudentProgress[]>(teacherStudentProgress);
   const [reviews] = useState<TutorReview[]>(teacherReviews);
+  const [refundRequests, setRefundRequests] = useState<RefundRequest[]>([]);
   const [testResults, setTestResults] = useState<TestResult[]>(teacherTestResults);
 
   const walletBalance = wallet
