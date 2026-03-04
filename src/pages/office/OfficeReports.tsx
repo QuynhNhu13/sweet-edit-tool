@@ -33,7 +33,13 @@ const classDistribution = [
   { name: "Hóa", value: 8 },
 ];
 
-const COLORS = ["hsl(var(--primary))", "hsl(var(--ring))", "hsl(var(--muted-foreground))", "hsl(var(--foreground))", "hsl(var(--destructive))"];
+const COLORS = [
+  "hsl(224, 76%, 48%)",
+  "hsl(142, 71%, 45%)",
+  "hsl(38, 92%, 50%)",
+  "hsl(280, 68%, 55%)",
+  "hsl(0, 84%, 60%)",
+];
 
 const kpiData = [
   { label: "Đăng ký mới", value: 7, target: 200, percent: 3.5 },
