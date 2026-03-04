@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, MessageSquare, Users, BarChart3, Wallet, LogOut, Search,
+  LayoutDashboard, MessageSquare, Users, BarChart3, Wallet, LogOut, Search, Star,
   PanelLeftClose, PanelLeft, Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
