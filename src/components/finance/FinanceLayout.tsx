@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, ArrowLeftRight, Banknote, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Banknote, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFinance } from "@/contexts/FinanceContext";
 import EduLogo from "@/components/EduLogo";
