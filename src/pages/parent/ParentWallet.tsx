@@ -23,10 +23,12 @@ const paymentMethods = [
 ];
 
 const ParentWallet = () => {
-  const { children, transactions, walletBalance, payChildTuition, depositWallet } = useParent();
+  const { children, transactions, walletBalance, payChildTuition, depositWallet, withdrawWallet } = useParent();
   const [tab, setTab] = useState<"pending" | "history">("pending");
   const [showDeposit, setShowDeposit] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
   const [depositAmt, setDepositAmt] = useState("");
+  const [withdrawAmt, setWithdrawAmt] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
   const [search, setSearch] = useState("");
 
