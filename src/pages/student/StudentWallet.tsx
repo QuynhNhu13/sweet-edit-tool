@@ -15,6 +15,7 @@ const typeLabels: Record<string, string> = {
   tuition_payment: "Học phí",
   mock_exam_purchase: "Mua đề thi",
   refund: "Hoàn tiền",
+  withdrawal: "Rút tiền",
 };
 
 const paymentMethods = [
