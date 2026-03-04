@@ -182,6 +182,24 @@ export interface TutorReview {
   tags?: string[];
 }
 
+export interface RefundRequest {
+  id: string;
+  classId: string;
+  className: string;
+  tutorId: string;
+  tutorName: string;
+  amount: number;
+  maxAmount: number;
+  reason: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  processedAt?: string;
+  processedBy?: string;
+  processNote?: string;
+  studentName: string;
+  subject: string;
+}
+
 export interface TestQuestion {
   id: string;
   subject: string;
