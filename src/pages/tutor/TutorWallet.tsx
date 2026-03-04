@@ -148,7 +148,7 @@ const TutorWallet = () => {
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-0.5 text-right">{c.escrowReleased.toLocaleString("vi-VN")}/{c.escrowAmount.toLocaleString("vi-VN")}đ</p>
               </div>
-              {c.escrowStatus === "completed" && <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg">Released</span>}
+              {c.escrowStatus === "completed" && <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg">Đã giải ngân</span>}
               {(c.escrowStatus === "pending" || c.escrowStatus === "in_progress") && (
                 hasExistingRefund(c.id) ? (
                   <span className="text-[10px] font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg">Chờ duyệt</span>
