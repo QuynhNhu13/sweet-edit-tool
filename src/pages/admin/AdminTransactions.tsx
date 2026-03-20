@@ -3,8 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreditCard, TrendingUp, Wallet, Receipt, Search } from "lucide-react";
+import { CreditCard, TrendingUp, Wallet, Receipt, Search, Download } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const typeLabel: Record<string, string> = { tuition: "Học phí", salary: "Lương gia sư", "exam-fee": "Phí thi thử" };
 const typeColor: Record<string, string> = {
@@ -25,6 +26,8 @@ const AdminTransactions = () => {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [period, setPeriod] = useState("month");
+  const { toast } = useToast();
 
   const totalRevenue = transactions.filter(t => t.status === "completed").reduce((s, t) => s + t.amount, 0);
   const escrowProfit = Math.round(totalRevenue * settings.escrowPercent / 100);
@@ -97,6 +100,20 @@ const AdminTransactions = () => {
             <SelectItem value="refunded">Hoàn tiền</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={period} onValueChange={setPeriod}>
+          <SelectTrigger className="w-40 h-10 rounded-xl"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="month">Theo tháng</SelectItem>
+            <SelectItem value="year">Theo năm</SelectItem>
+            <SelectItem value="custom">Khoảng tùy chọn</SelectItem>
+          </SelectContent>
+        </Select>
+        <button
+          onClick={() => toast({ title: "Đã xuất dữ liệu giao dịch" })}
+          className="h-10 px-4 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors inline-flex items-center gap-2"
+        >
+          <Download className="w-4 h-4" /> Export
+        </button>
       </div>
 
       {/* Table */}

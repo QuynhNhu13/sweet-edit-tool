@@ -1,8 +1,11 @@
 import { useAdmin } from "@/contexts/AdminContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, GraduationCap, BookOpen, CreditCard, Clock, FileText, UserCheck, ArrowUpRight, ArrowDownRight, ChevronRight, Plus } from "lucide-react";
+import { Users, GraduationCap, BookOpen, CreditCard, Clock, FileText, UserCheck, ArrowUpRight, ArrowDownRight, ChevronRight, Plus, BarChart3, PieChart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Pie, Cell } from "recharts";
+
+const COLORS = ["hsl(var(--primary))", "hsl(var(--muted-foreground))", "hsl(var(--secondary-foreground))", "hsl(var(--destructive))"];
 
 const AdminDashboard = () => {
   const { users, classes, tests, transactions, settings } = useAdmin();
@@ -37,6 +40,21 @@ const AdminDashboard = () => {
 
   const recentClasses = classes.filter(c => c.status === "searching" || c.status === "active").slice(0, 4);
   const recentTransactions = transactions.slice(0, 5);
+
+  const monthlyData = Array.from({ length: 6 }).map((_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - (5 - i));
+    const month = `${d.getMonth() + 1}`;
+    const revenue = transactions
+      .filter((t) => t.status === "completed" && new Date(t.date).getMonth() === d.getMonth())
+      .reduce((s, t) => s + t.amount, 0);
+    return { month, revenue };
+  });
+
+  const usersByRole = ["tutor", "teacher", "student", "parent"].map((role) => ({
+    name: role,
+    value: users.filter((u) => u.role === role).length,
+  }));
 
   const getUserName = (id: string) => users.find(u => u.id === id)?.name || "—";
 
@@ -137,6 +155,39 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <Card className="lg:col-span-2 border-0 shadow-soft">
+          <CardContent className="p-5">
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Doanh thu theo tháng</h3>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(v) => `${Math.round(v / 1000000)}M`} />
+                <Tooltip formatter={(v: number) => `${v.toLocaleString("vi-VN")}đ`} />
+                <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-soft">
+          <CardContent className="p-5">
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2"><PieChart className="w-4 h-4" /> Cơ cấu người dùng</h3>
+            <div className="h-[240px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <recharts.PieChart>
+                  <Pie data={usersByRole} dataKey="value" nameKey="name" outerRadius={85} label>
+                    {usersByRole.map((entry, index) => <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip />
+                </recharts.PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Classes + Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Card className="border-0 shadow-soft">
@@ -185,7 +236,7 @@ const AdminDashboard = () => {
                   <div key={tx.id} className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-muted/30 transition-colors">
                     {user?.avatar && <img src={user.avatar} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{tx.description}</p>
+                <p className="text-sm font-medium text-foreground truncate">{tx.description}</p>
                       <p className="text-xs text-muted-foreground">{user?.name || "—"} · {tx.date}</p>
                     </div>
                     <div className="text-right shrink-0">
