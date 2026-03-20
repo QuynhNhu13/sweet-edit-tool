@@ -1,9 +1,9 @@
 import { useAdmin } from "@/contexts/AdminContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, GraduationCap, BookOpen, CreditCard, Clock, FileText, UserCheck, ArrowUpRight, ArrowDownRight, ChevronRight, Plus, BarChart3, PieChart } from "lucide-react";
+import { Users, GraduationCap, BookOpen, CreditCard, Clock, FileText, UserCheck, ArrowUpRight, ArrowDownRight, ChevronRight, Plus, BarChart3, PieChart as PieChartIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Pie, Cell } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Pie, Cell, PieChart } from "recharts";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--muted-foreground))", "hsl(var(--secondary-foreground))", "hsl(var(--destructive))"];
 
@@ -173,15 +173,15 @@ const AdminDashboard = () => {
 
         <Card className="border-0 shadow-soft">
           <CardContent className="p-5">
-            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2"><PieChart className="w-4 h-4" /> Cơ cấu người dùng</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2"><PieChartIcon className="w-4 h-4" /> Cơ cấu người dùng</h3>
             <div className="h-[240px]">
               <ResponsiveContainer width="100%" height="100%">
-                <recharts.PieChart>
+                <PieChart>
                   <Pie data={usersByRole} dataKey="value" nameKey="name" outerRadius={85} label>
                     {usersByRole.map((entry, index) => <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />)}
                   </Pie>
                   <Tooltip />
-                </recharts.PieChart>
+                </PieChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
