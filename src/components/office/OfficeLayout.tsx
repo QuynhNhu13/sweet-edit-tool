@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, ClipboardCheck, AlertTriangle, BookOpen, CalendarCog, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, UserPlus, CalendarDays, Star } from "lucide-react";
+import { LayoutDashboard, ClipboardCheck, AlertTriangle, BookOpen, CalendarCog, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, UserPlus, CalendarDays, Star, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOffice } from "@/contexts/OfficeContext";
 import EduLogo from "@/components/EduLogo";
@@ -9,25 +9,21 @@ import { useState, useRef, useEffect } from "react";
 
 const navItems = [
   { to: "/office", icon: LayoutDashboard, label: "Tổng quan", end: true },
-  { to: "/office/registrations", icon: UserPlus, label: "Quản lý đăng ký" },
-  { to: "/office/attendance", icon: ClipboardCheck, label: "Quản lý điểm danh" },
-  { to: "/office/incidents", icon: AlertTriangle, label: "Cảnh báo & Sự cố" },
+  { to: "/office/registrations", icon: ShieldCheck, label: "Đăng ký & Xác minh" },
   { to: "/office/classes", icon: BookOpen, label: "Quản lý lớp" },
-  { to: "/office/appointments", icon: CalendarDays, label: "Lịch hẹn" },
-  { to: "/office/ai-schedule", icon: CalendarCog, label: "Xếp lịch AI" },
-  { to: "/office/reviews", icon: Star, label: "Đánh giá gia sư" },
+  { to: "/office/appointments", icon: CalendarDays, label: "Lịch & Xếp lịch" },
+  { to: "/office/attendance", icon: ClipboardCheck, label: "Điểm danh & Sự cố" },
+  { to: "/office/reviews", icon: Star, label: "Đánh giá" },
   { to: "/office/reports", icon: BarChart3, label: "Báo cáo" },
 ];
 
 const pageTitles: Record<string, string> = {
   "/office": "Tổng quan",
-  "/office/registrations": "Quản lý đăng ký",
-  "/office/attendance": "Quản lý điểm danh",
-  "/office/incidents": "Cảnh báo & Sự cố",
+  "/office/registrations": "Đăng ký & Xác minh",
+  "/office/attendance": "Điểm danh & Sự cố",
   "/office/classes": "Quản lý lớp",
-  "/office/appointments": "Lịch hẹn văn phòng",
-  "/office/ai-schedule": "Tự động xếp lịch thông minh",
-  "/office/reviews": "Quản lý đánh giá gia sư",
+  "/office/appointments": "Lịch & Xếp lịch",
+  "/office/reviews": "Đánh giá",
   "/office/reports": "Báo cáo",
 };
 

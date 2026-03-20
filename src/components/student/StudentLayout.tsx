@@ -1,8 +1,7 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import MessageBubble from "@/components/MessageBubble";
 import {
-  LayoutDashboard, BookOpen, Search, CalendarDays, Clock, ClipboardCheck,
-  FileText, BarChart3, Trophy, LogOut, PanelLeftClose, PanelLeft,
+  LayoutDashboard, BookOpen, CalendarDays, LogOut, PanelLeftClose, PanelLeft,
   Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,28 +15,7 @@ const navGroups = [
   {
     items: [
       { to: "/student", icon: LayoutDashboard, label: "Tổng quan", end: true },
-      { to: "/student/find-tutor", icon: Search, label: "Tìm gia sư" },
-    ],
-  },
-  {
-    label: "Học tập",
-    items: [
-      { to: "/student/classes", icon: BookOpen, label: "Lớp học" },
-      { to: "/student/schedule", icon: CalendarDays, label: "Lịch học" },
-      { to: "/student/availability", icon: Clock, label: "Khung giờ rảnh" },
-    ],
-  },
-  {
-    label: "Thi cử",
-    items: [
-      { to: "/student/tests", icon: ClipboardCheck, label: "Bài kiểm tra" },
-      { to: "/student/mock-exam", icon: FileText, label: "Thi thử" },
-      { to: "/student/results", icon: Trophy, label: "Kết quả" },
-      { to: "/student/report", icon: BarChart3, label: "Báo cáo" },
-    ],
-  },
-  {
-    items: [
+      { to: "/student/classes", icon: BookOpen, label: "Học tập" },
       { to: "/student/wallet", icon: Wallet, label: "Ví học phí" },
       { to: "/student/reviews", icon: Star, label: "Đánh giá" },
       { to: "/student/chat", icon: MessageSquare, label: "Tin nhắn" },
@@ -47,14 +25,9 @@ const navGroups = [
 
 const pageTitles: Record<string, string> = {
   "/student": "Tổng quan",
-  "/student/find-tutor": "Tìm gia sư",
-  "/student/classes": "Lớp học của tôi",
-  "/student/schedule": "Lịch học",
-  "/student/availability": "Khung giờ rảnh",
-  "/student/tests": "Bài kiểm tra",
-  "/student/mock-exam": "Thi thử",
-  "/student/results": "Kết quả thi",
-  "/student/report": "Báo cáo học tập",
+  "/student/classes": "Học tập",
+  "/student/schedule": "Học tập",
+  "/student/availability": "Học tập",
   "/student/reviews": "Đánh giá gia sư",
   "/student/wallet": "Ví học phí",
   "/student/chat": "Tin nhắn",
@@ -109,8 +82,8 @@ const StudentLayout = () => {
         <nav className="flex-1 px-2 py-4 overflow-y-auto">
           {navGroups.map((group, gi) => (
             <div key={gi} className={gi > 0 ? "mt-4" : ""}>
-              {!collapsed && group.label && (
-                <p className="text-[10px] font-semibold uppercase tracking-wider px-3 mb-2 opacity-50">{group.label}</p>
+              {!collapsed && gi === 0 && (
+                <p className="text-[10px] font-semibold uppercase tracking-wider px-3 mb-2 opacity-50">Menu</p>
               )}
               {collapsed && gi > 0 && <div className="border-t border-border my-2 mx-2" />}
               <div className="space-y-0.5">

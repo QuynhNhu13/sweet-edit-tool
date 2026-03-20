@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { TutorProvider } from "@/contexts/TutorContext";
@@ -82,6 +82,7 @@ import FinanceTransactions from "./pages/finance/FinanceTransactions";
 import FinancePayouts from "./pages/finance/FinancePayouts";
 import FinanceReports from "./pages/finance/FinanceReports";
 import FinanceRefunds from "./pages/finance/FinanceRefunds";
+import FinanceReconciliation from "./pages/finance/FinanceReconciliation";
 import ExamManagerLayout from "./components/exam-manager/ExamManagerLayout";
 import ExamManagerDashboard from "./pages/exam-manager/ExamManagerDashboard";
 import ExamManagerExams from "./pages/exam-manager/ExamManagerExams";
@@ -117,12 +118,12 @@ const App = () => (
                 <Route path="/tutor-profile" element={<TutorPublicProfile />} />
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
-                  <Route path="approvals" element={<AdminApprovals />} />
+                  <Route path="approvals" element={<Navigate to="/admin/users" replace />} />
                   <Route path="users" element={<AdminUsers />} />
                   <Route path="classes" element={<AdminClasses />} />
-                  <Route path="tests" element={<AdminTests />} />
+                  <Route path="tests" element={<Navigate to="/admin/classes" replace />} />
                   <Route path="transactions" element={<AdminTransactions />} />
-                  <Route path="reports" element={<AdminReports />} />
+                  <Route path="reports" element={<Navigate to="/admin" replace />} />
                   <Route path="audit" element={<AdminAudit />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
@@ -152,14 +153,14 @@ const App = () => (
                 <Route path="/teacher/meeting/:sessionId" element={<OnlineMeeting />} />
                 <Route path="/student" element={<StudentLayout />}>
                   <Route index element={<StudentDashboard />} />
-                  <Route path="find-tutor" element={<StudentFindTutor />} />
                   <Route path="classes" element={<StudentClasses />} />
-                  <Route path="schedule" element={<StudentSchedule />} />
-                  <Route path="availability" element={<StudentAvailability />} />
-                  <Route path="tests" element={<StudentTests />} />
-                  <Route path="mock-exam" element={<StudentMockExam />} />
-                  <Route path="results" element={<StudentResults />} />
-                  <Route path="report" element={<StudentReport />} />
+                  <Route path="schedule" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="availability" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="tests" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="mock-exam" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="results" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="report" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="find-tutor" element={<Navigate to="/find-tutor" replace />} />
                   <Route path="reviews" element={<StudentReviews />} />
                   <Route path="wallet" element={<StudentWallet />} />
                   <Route path="chat" element={<StudentChat />} />
@@ -167,10 +168,10 @@ const App = () => (
                 <Route path="/student/meeting/:sessionId" element={<OnlineMeeting />} />
                 <Route path="/parent" element={<ParentLayout />}>
                   <Route index element={<ParentDashboard />} />
-                  <Route path="find-tutor" element={<ParentFindTutor />} />
+                  <Route path="find-tutor" element={<Navigate to="/find-tutor" replace />} />
                   <Route path="chat" element={<ParentChat />} />
                   <Route path="children" element={<ParentChildren />} />
-                  <Route path="reports" element={<ParentReports />} />
+                  <Route path="reports" element={<Navigate to="/parent/children" replace />} />
                   <Route path="reviews" element={<ParentReviews />} />
                   <Route path="wallet" element={<ParentWallet />} />
                   <Route path="support" element={<ParentSupport />} />
@@ -179,10 +180,10 @@ const App = () => (
                   <Route index element={<OfficeDashboard />} />
                   <Route path="registrations" element={<OfficeRegistrations />} />
                   <Route path="attendance" element={<OfficeAttendance />} />
-                  <Route path="incidents" element={<OfficeIncidents />} />
+                  <Route path="incidents" element={<Navigate to="/office/attendance" replace />} />
                   <Route path="classes" element={<OfficeClasses />} />
                   <Route path="appointments" element={<OfficeAppointments />} />
-                  <Route path="ai-schedule" element={<OfficeAISchedule />} />
+                  <Route path="ai-schedule" element={<Navigate to="/office/appointments" replace />} />
                   <Route path="reviews" element={<OfficeReviews />} />
                   <Route path="reports" element={<OfficeReports />} />
                 </Route>
@@ -191,6 +192,7 @@ const App = () => (
                   <Route path="transactions" element={<FinanceTransactions />} />
                   <Route path="payouts" element={<FinancePayouts />} />
                   <Route path="refunds" element={<FinanceRefunds />} />
+                  <Route path="reconciliation" element={<FinanceReconciliation />} />
                   <Route path="reports" element={<FinanceReports />} />
                 </Route>
                 <Route path="/exam-manager" element={<ExamManagerLayout />}>

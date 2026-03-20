@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, ArrowLeftRight, Banknote, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, RotateCcw } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, HandCoins, BarChart3, LogOut, PanelLeftClose, PanelLeft, Bell, Check, RotateCcw, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFinance } from "@/contexts/FinanceContext";
 import EduLogo from "@/components/EduLogo";
@@ -9,17 +9,19 @@ import { useState, useRef, useEffect } from "react";
 
 const navItems = [
   { to: "/finance", icon: LayoutDashboard, label: "Tổng quan", end: true },
-  { to: "/finance/transactions", icon: ArrowLeftRight, label: "Quản lý giao dịch" },
-  { to: "/finance/payouts", icon: Banknote, label: "Thanh toán gia sư" },
+  { to: "/finance/transactions", icon: ArrowLeftRight, label: "Giao dịch" },
+  { to: "/finance/payouts", icon: HandCoins, label: "Chi trả gia sư" },
   { to: "/finance/refunds", icon: RotateCcw, label: "Yêu cầu hoàn tiền" },
+  { to: "/finance/reconciliation", icon: Scale, label: "Đối soát" },
   { to: "/finance/reports", icon: BarChart3, label: "Báo cáo tài chính" },
 ];
 
 const pageTitles: Record<string, string> = {
   "/finance": "Tổng quan tài chính",
-  "/finance/transactions": "Quản lý giao dịch",
-  "/finance/payouts": "Thanh toán gia sư",
+  "/finance/transactions": "Giao dịch",
+  "/finance/payouts": "Chi trả gia sư",
   "/finance/refunds": "Yêu cầu hoàn tiền",
+  "/finance/reconciliation": "Đối soát",
   "/finance/reports": "Báo cáo tài chính",
 };
 

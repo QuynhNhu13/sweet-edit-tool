@@ -1,5 +1,5 @@
 import { useParent } from "@/contexts/ParentContext";
-import { Wallet, Users, Bell, Star, Search, CreditCard, MessageSquare, HelpCircle, CalendarDays, TrendingUp, BookOpen, CheckCircle2 } from "lucide-react";
+import { Wallet, Users, Bell, Star, CreditCard, MessageSquare, HelpCircle, CalendarDays, TrendingUp, BookOpen, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -15,10 +15,10 @@ const ParentDashboard = () => {
   const avgAttendance = children.length > 0 ? Math.round(children.reduce((s, c) => s + c.attendance, 0) / children.length) : 0;
 
   const quickActions = [
-    { label: "Tìm gia sư mới", icon: Search, action: () => navigate("/parent/find-tutor"), desc: "Tìm kiếm gia sư phù hợp" },
-    { label: "Thanh toán học phí", icon: CreditCard, action: () => navigate("/parent/wallet"), desc: "Quản lý ví và thanh toán" },
-    { label: "Xem báo cáo", icon: TrendingUp, action: () => navigate("/parent/reports"), desc: "Theo dõi tiến độ học tập" },
-    { label: "Hỗ trợ", icon: HelpCircle, action: () => navigate("/parent/support"), desc: "Giải đáp thắc mắc" },
+    { label: "Con em & tiến độ", icon: Users, action: () => navigate("/parent/children"), desc: "Theo dõi lớp học, lịch học, báo cáo" },
+    { label: "Thanh toán học phí", icon: CreditCard, action: () => navigate("/parent/wallet"), desc: "Quản lý học phí và lịch sử giao dịch" },
+    { label: "Tin nhắn", icon: MessageSquare, action: () => navigate("/parent/chat"), desc: "Trao đổi với gia sư và trung tâm" },
+    { label: "Hỗ trợ & khiếu nại", icon: HelpCircle, action: () => navigate("/parent/support"), desc: "Tạo yêu cầu hỗ trợ hoặc khiếu nại" },
   ];
 
   return (

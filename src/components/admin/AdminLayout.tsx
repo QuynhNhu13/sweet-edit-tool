@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, CheckCircle, BookOpen, FileText, CreditCard, BarChart3, ScrollText, Settings, LogOut, Bell, Check, ChevronRight, AlertTriangle, Info, CheckCircle2, XCircle, PanelLeftClose, PanelLeft } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, CreditCard, ScrollText, Settings, LogOut, Bell, Check, ChevronRight, AlertTriangle, Info, CheckCircle2, XCircle, PanelLeftClose, PanelLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/contexts/AdminContext";
 import EduLogo from "@/components/EduLogo";
@@ -9,24 +9,18 @@ import { useState, useRef, useEffect } from "react";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Tổng quan", end: true },
-  { to: "/admin/approvals", icon: CheckCircle, label: "Phê duyệt" },
   { to: "/admin/users", icon: Users, label: "Người dùng" },
   { to: "/admin/classes", icon: BookOpen, label: "Lớp học" },
-  { to: "/admin/tests", icon: FileText, label: "Bài test" },
   { to: "/admin/transactions", icon: CreditCard, label: "Giao dịch" },
-  { to: "/admin/reports", icon: BarChart3, label: "Báo cáo" },
   { to: "/admin/audit", icon: ScrollText, label: "Audit Log" },
   { to: "/admin/settings", icon: Settings, label: "Cài đặt" },
 ];
 
 const pageTitles: Record<string, string> = {
   "/admin": "Tổng quan",
-  "/admin/approvals": "Phê duyệt tài khoản",
   "/admin/users": "Quản lý người dùng",
   "/admin/classes": "Quản lý lớp học",
-  "/admin/tests": "Quản lý bài test",
   "/admin/transactions": "Giao dịch",
-  "/admin/reports": "Báo cáo & Phân tích",
   "/admin/audit": "Audit Log",
   "/admin/settings": "Cài đặt hệ thống",
 };
@@ -99,12 +93,12 @@ const AdminLayout = () => {
             >
               <item.icon className="w-[18px] h-[18px] shrink-0" />
               {!collapsed && <span className="flex-1">{item.label}</span>}
-              {!collapsed && item.to === "/admin/approvals" && pendingCount > 0 && (
+              {!collapsed && item.to === "/admin/users" && pendingCount > 0 && (
                 <span className="min-w-[20px] h-5 flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground px-1.5">
                   {pendingCount}
                 </span>
               )}
-              {collapsed && item.to === "/admin/approvals" && pendingCount > 0 && (
+              {collapsed && item.to === "/admin/users" && pendingCount > 0 && (
                 <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center text-[9px] font-bold rounded-full bg-destructive text-destructive-foreground px-1">
                   {pendingCount}
                 </span>
@@ -171,7 +165,7 @@ const AdminLayout = () => {
                           onClick={() => {
                             markNotificationRead(n.id);
                             if (n.type === "warning" && n.title.includes("chờ duyệt")) {
-                              navigate("/admin/approvals");
+                              navigate("/admin/users");
                               setShowNotif(false);
                             }
                           }}

@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, MessageSquare, Users, BarChart3, Wallet, LogOut, Search, Star,
+  LayoutDashboard, MessageSquare, Users, Wallet, LogOut, Star,
   PanelLeftClose, PanelLeft, Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,23 +13,20 @@ import { useState, useRef, useEffect } from "react";
 
 const navItems = [
   { to: "/parent", icon: LayoutDashboard, label: "Tổng quan", end: true },
-  { to: "/parent/find-tutor", icon: Search, label: "Tìm gia sư" },
   { to: "/parent/chat", icon: MessageSquare, label: "Tin nhắn" },
-  { to: "/parent/children", icon: Users, label: "Con em" },
-  { to: "/parent/reports", icon: BarChart3, label: "Báo cáo học tập" },
+  { to: "/parent/children", icon: Users, label: "Con em & Tiến độ" },
   { to: "/parent/reviews", icon: Star, label: "Đánh giá gia sư" },
-  { to: "/parent/wallet", icon: Wallet, label: "Ví & Thanh toán" },
+  { to: "/parent/wallet", icon: Wallet, label: "Thanh toán" },
   { to: "/parent/support", icon: HelpCircle, label: "Hỗ trợ" },
 ];
 
 const pageTitles: Record<string, string> = {
   "/parent": "Tổng quan",
-  "/parent/find-tutor": "Tìm gia sư",
   "/parent/chat": "Tin nhắn",
-  "/parent/children": "Con em",
+  "/parent/children": "Con em & Tiến độ",
   "/parent/reviews": "Đánh giá gia sư",
-  "/parent/reports": "Báo cáo học tập",
-  "/parent/wallet": "Ví & Thanh toán",
+  "/parent/reports": "Con em & Tiến độ",
+  "/parent/wallet": "Thanh toán",
   "/parent/support": "Hỗ trợ",
 };
 

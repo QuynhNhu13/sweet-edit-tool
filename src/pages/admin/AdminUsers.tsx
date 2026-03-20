@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Eye, Search, Star, Users, UserCheck, GraduationCap, UserPlus } from "lucide-react";
+import { Trash2, Eye, Search, Star, Users, UserCheck, GraduationCap, UserPlus, CheckCircle2, XCircle } from "lucide-react";
 import type { AdminUser, UserStatus } from "@/contexts/AdminContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -77,6 +77,8 @@ const AdminUsers = () => {
     pending: users.filter(u => u.status === "pending").length,
   }), [users]);
 
+  const pendingApprovals = users.filter(u => u.status === "pending");
+
   return (
     <div className="p-6 space-y-6">
       {/* Stats row */}
@@ -128,6 +130,35 @@ const AdminUsers = () => {
       </div>
 
       <p className="text-sm text-muted-foreground">Tìm thấy <span className="font-semibold text-foreground">{filtered.length}</span> người dùng</p>
+
+      <Card className="border-0 shadow-soft">
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-foreground">Yêu cầu phê duyệt ({pendingApprovals.length})</h3>
+          </div>
+          {pendingApprovals.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Không có yêu cầu chờ duyệt.</p>
+          ) : (
+            <div className="space-y-2">
+              {pendingApprovals.slice(0, 5).map((u) => (
+                <div key={u.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/40">
+                  <div className="flex items-center gap-3">
+                    <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full object-cover" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{u.name}</p>
+                      <p className="text-xs text-muted-foreground">{roleLabel[u.role] || u.role} · {u.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" onClick={() => handleStatusChange(u.id, "approved")} className="rounded-lg h-8"><CheckCircle2 className="w-3.5 h-3.5 mr-1" />Duyệt</Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleStatusChange(u.id, "rejected")} className="rounded-lg h-8"><XCircle className="w-3.5 h-3.5 mr-1" />Từ chối</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Table */}
       <Card className="border-0 shadow-soft overflow-hidden">
