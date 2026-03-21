@@ -3,9 +3,14 @@ import { useFinance } from "@/contexts/FinanceContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Scale, Wallet, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { useState } from "react";
 
 const FinanceReconciliation = () => {
   const { transactions, withdrawals } = useFinance();
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const summary = useMemo(() => {
     const totalIn = transactions
@@ -21,6 +26,10 @@ const FinanceReconciliation = () => {
     return { totalIn, totalOut, pending, pendingWithdraw, delta };
   }, [transactions, withdrawals]);
 
+  const pageCount = Math.max(1, Math.ceil(transactions.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pagedTransactions = transactions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -35,19 +44,43 @@ const FinanceReconciliation = () => {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2"><Scale className="w-4 h-4" /> Nhật ký đối soát</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {transactions.slice(0, 10).map((tx) => (
-            <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/40">
-              <div>
-                <p className="text-sm font-medium text-foreground">{tx.description}</p>
-                <p className="text-xs text-muted-foreground">{tx.user} · {tx.date}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {tx.status === "completed" ? <CheckCircle2 className="w-4 h-4 text-success" /> : <AlertTriangle className="w-4 h-4 text-warning" />}
-                <Badge variant={tx.status === "completed" ? "success" : "warning"}>{tx.status === "completed" ? "Khớp" : "Cần kiểm tra"}</Badge>
-              </div>
-            </div>
-          ))}
+        <CardContent className="space-y-4">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Mô tả</TableHead>
+                <TableHead>Người dùng</TableHead>
+                <TableHead>Ngày</TableHead>
+                <TableHead>Số tiền</TableHead>
+                <TableHead>Trạng thái đối soát</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pagedTransactions.map((tx) => (
+                <TableRow key={tx.id}>
+                  <TableCell className="text-sm font-medium">{tx.description}</TableCell>
+                  <TableCell className="text-sm">{tx.user}</TableCell>
+                  <TableCell className="text-sm">{tx.date}</TableCell>
+                  <TableCell className="text-sm">{tx.amount.toLocaleString("vi-VN")}đ</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {tx.status === "completed" ? <CheckCircle2 className="w-4 h-4 text-success" /> : <AlertTriangle className="w-4 h-4 text-warning" />}
+                      <Badge variant={tx.status === "completed" ? "success" : "warning"}>{tx.status === "completed" ? "Khớp" : "Cần kiểm tra"}</Badge>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem><PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)); }} /></PaginationItem>
+              {Array.from({ length: pageCount }).map((_, idx) => (
+                <PaginationItem key={idx}><PaginationLink href="#" isActive={currentPage === idx + 1} onClick={(e) => { e.preventDefault(); setPage(idx + 1); }}>{idx + 1}</PaginationLink></PaginationItem>
+              ))}
+              <PaginationItem><PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(pageCount, p + 1)); }} /></PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </CardContent>
       </Card>
     </div>

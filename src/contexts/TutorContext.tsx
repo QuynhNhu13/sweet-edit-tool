@@ -288,6 +288,11 @@ const seedSessions: TutorSession[] = [
   // Class c3 sessions
   { id: "s20", classId: "c3", date: "2026-03-01", time: "9:00-12:00", status: "scheduled", format: "online", meetingLink: "/tutor/meeting/s20" },
   { id: "s21", classId: "c3", date: "2026-03-08", time: "9:00-12:00", status: "scheduled", format: "online", meetingLink: "/tutor/meeting/s21" },
+  // Class c4 completed sessions
+  { id: "s22", classId: "c4", date: "2025-11-04", time: "17:00-19:00", status: "completed", startedAt: "17:00", endedAt: "18:55", content: "Động học chất điểm", notes: "Nắm chắc công thức cơ bản", homework: "Bài tập 1-10 chương 1", parentConfirmed: true, format: "online" },
+  { id: "s23", classId: "c4", date: "2025-11-11", time: "17:00-19:00", status: "completed", startedAt: "17:02", endedAt: "19:00", content: "Định luật Newton", notes: "Tiến bộ tốt", homework: "Bài tập ứng dụng định luật", parentConfirmed: true, format: "online" },
+  { id: "s24", classId: "c4", date: "2025-12-02", time: "17:00-19:00", status: "completed", startedAt: "17:00", endedAt: "18:58", content: "Công - Năng lượng", notes: "Hiểu nhanh phần lý thuyết", homework: "Đề luyện số 2", parentConfirmed: true, format: "online" },
+  { id: "s25", classId: "c4", date: "2026-01-07", time: "17:00-19:00", status: "completed", startedAt: "17:05", endedAt: "19:00", content: "Ôn tập tổng hợp", notes: "Đạt mục tiêu khóa học", homework: "Tổng kết dạng bài", parentConfirmed: true, rating: 5, ratingComment: "Rất hài lòng", format: "online" },
 ];
 
 const seedClasses: TutorClass[] = [
@@ -331,8 +336,11 @@ const seedClasses: TutorClass[] = [
     totalSessions: 20, completedSessions: 20,
     escrowStatus: "completed", escrowAmount: 1800000, escrowReleased: 1800000, releaseMilestone: 5,
     schedule: "T2, T6 - 17:00-19:00", createdAt: "2025-11-01",
-    sessions: [],
-    materials: [],
+    sessions: seedSessions.filter(s => s.classId === "c4"),
+    materials: [
+      { id: "mat-c4-1", name: "Đề cương ôn tập Lý 10", type: "pdf", url: "#", uploadedAt: "2025-12-20", size: "1.8 MB" },
+      { id: "mat-c4-2", name: "Bộ đề luyện cuối khóa", type: "doc", url: "#", uploadedAt: "2026-01-08", size: "950 KB" },
+    ],
     monthlyFee: 1800000,
   },
 ];

@@ -24,6 +24,13 @@ const tutors = [
 
 const FindTutor = () => {
   const [search, setSearch] = useState("");
+  const [demoBooking] = useState({
+    studentName: "Lê Minh Châu",
+    subject: "Toán 12",
+    tutor: "Nguyễn Minh Tuấn",
+    requestedAt: "03/03/2026 10:30",
+    status: "Đang chờ xác nhận lịch",
+  });
   const filtered = tutors.filter(
     (t) => t.name.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase())
   );
@@ -48,6 +55,12 @@ const FindTutor = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+          </div>
+
+          <div className="max-w-3xl mx-auto mb-8 bg-card border border-border rounded-3xl p-5">
+            <p className="text-xs text-muted-foreground mb-1">Demo đặt lịch đang diễn ra</p>
+            <p className="text-sm font-semibold text-foreground">{demoBooking.studentName} • {demoBooking.subject} • Gia sư {demoBooking.tutor}</p>
+            <p className="text-xs text-muted-foreground mt-1">Gửi lúc {demoBooking.requestedAt} • Trạng thái: {demoBooking.status}</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

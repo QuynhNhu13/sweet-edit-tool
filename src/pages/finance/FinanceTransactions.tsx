@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeftRight, Download, Eye, Search, ArrowUpRight, ArrowDownRight, DollarSign, Calendar } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const typeLabels: Record<string, string> = {
   tuition: "Học phí", salary: "Lương", withdrawal: "Rút tiền", deposit: "Nạp tiền", "exam-fee": "Phí thi", refund: "Hoàn tiền",
@@ -30,6 +31,8 @@ const FinanceTransactions = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const filtered = transactions.filter(t => {
     const matchSearch = t.description.toLowerCase().includes(search.toLowerCase()) || t.user.toLowerCase().includes(search.toLowerCase());
@@ -44,6 +47,9 @@ const FinanceTransactions = () => {
   const pendingCount = transactions.filter(t => t.status === "pending").length;
 
   const detail = transactions.find(t => t.id === detailId);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pagedTransactions = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const exportTransactions = (format: string) => {
     toast({ title: `Đã xuất danh sách giao dịch (${format})` });
@@ -132,7 +138,7 @@ const FinanceTransactions = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map(t => {
+                {pagedTransactions.map(t => {
                   const sCfg = statusConfig[t.status];
                   const isIncome = t.type === "tuition" || t.type === "deposit" || t.type === "exam-fee";
                   return (
@@ -162,6 +168,27 @@ const FinanceTransactions = () => {
               </TableBody>
             </Table>
           </div>
+          {filtered.length > 0 && (
+            <div className="pt-4">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)); }} />
+                  </PaginationItem>
+                  {Array.from({ length: pageCount }).map((_, idx) => (
+                    <PaginationItem key={idx}>
+                      <PaginationLink href="#" isActive={currentPage === idx + 1} onClick={(e) => { e.preventDefault(); setPage(idx + 1); }}>
+                        {idx + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(pageCount, p + 1)); }} />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </CardContent>
       </Card>
 

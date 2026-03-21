@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { AlertTriangle, Check, X, Clock, Search, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface ModerationLog { id: string; refundId: string; action: "approved" | "rejected"; by: string; reason: string; timestamp: string; }
 
@@ -38,10 +39,15 @@ const FinanceRefunds = () => {
   const [logs, setLogs] = useState<ModerationLog[]>(MOCK_LOGS);
   const [showLogs, setShowLogs] = useState(false);
   const [localOverrides, setLocalOverrides] = useState<Record<string, { status: "approved" | "rejected"; note: string; processedAt: string }>>({});
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const allRefundRequests = [...MOCK_DATA, ...live];
   const gs = (r: RefundRequest) => localOverrides[r.id]?.status || r.status;
   const filtered = allRefundRequests.filter(r => filterStatus === "all" || gs(r) === filterStatus).filter(r => !search || r.tutorName.toLowerCase().includes(search.toLowerCase()) || r.className.toLowerCase().includes(search.toLowerCase()));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pagedRefunds = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const pendingCount = allRefundRequests.filter(r => gs(r) === "pending").length;
 
   const handleProcess = () => {
@@ -90,7 +96,7 @@ const FinanceRefunds = () => {
         </div>
         {filtered.length === 0 ? <p className="text-sm text-muted-foreground text-center py-8">Không có yêu cầu hoàn tiền nào</p> : (
           <div className="space-y-3">
-            {filtered.map(r => {
+            {pagedRefunds.map(r => {
               const st = gs(r); const ov = localOverrides[r.id];
               const pNote = ov?.note || r.processNote; const pAt = ov?.processedAt || r.processedAt; const pBy = ov ? profile.name : r.processedBy;
               return (
@@ -122,6 +128,17 @@ const FinanceRefunds = () => {
                 </div>
               );
             })}
+            {filtered.length > 0 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem><PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)); }} /></PaginationItem>
+                  {Array.from({ length: pageCount }).map((_, idx) => (
+                    <PaginationItem key={idx}><PaginationLink href="#" isActive={currentPage === idx + 1} onClick={(e) => { e.preventDefault(); setPage(idx + 1); }}>{idx + 1}</PaginationLink></PaginationItem>
+                  ))}
+                  <PaginationItem><PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(pageCount, p + 1)); }} /></PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
         )}
       </div>

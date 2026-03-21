@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 const StudentClasses = () => {
   const { classes, rateSession } = useStudent();
   const navigate = useNavigate();
-  const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [ratingModal, setRatingModal] = useState<{ sessionId: string } | null>(null);
   const [ratingValue, setRatingValue] = useState(5);
   const [ratingComment, setRatingComment] = useState("");
@@ -26,7 +25,6 @@ const StudentClasses = () => {
 
   const activeClasses = filtered.filter(c => c.status === "active");
   const completedClasses = filtered.filter(c => c.status === "completed");
-  const detail = selectedClass ? classes.find(c => c.id === selectedClass) : null;
 
   const handleRate = () => {
     if (ratingModal) {
@@ -70,67 +68,6 @@ const StudentClasses = () => {
             <div className="flex gap-2">
               <Button className="flex-1 rounded-xl" onClick={handleRate}>Gửi đánh giá</Button>
               <Button variant="outline" className="rounded-xl" onClick={() => setRatingModal(null)}>Hủy</Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Class Detail Modal */}
-      {detail && (
-        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4" onClick={() => setSelectedClass(null)}>
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-lg font-bold text-foreground">{detail.name}</h2>
-                <p className="text-sm text-muted-foreground">{detail.tutorName} • {detail.schedule}</p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedClass(null)}><X className="w-4 h-4" /></Button>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="p-3 bg-muted/50 rounded-xl text-center">
-                <p className="text-xs text-muted-foreground">Hoàn thành</p>
-                <p className="text-lg font-bold text-foreground">{detail.completedSessions}/{detail.totalSessions}</p>
-              </div>
-              <div className="p-3 bg-muted/50 rounded-xl text-center">
-                <p className="text-xs text-muted-foreground">Hình thức</p>
-                <p className="text-sm font-semibold text-foreground">{detail.format === "online" ? "Online" : "Tại nhà"}</p>
-              </div>
-              <div className="p-3 bg-muted/50 rounded-xl text-center">
-                <p className="text-xs text-muted-foreground">Học phí</p>
-                <p className="text-sm font-semibold text-foreground">{detail.fee.toLocaleString("vi-VN")}đ</p>
-              </div>
-            </div>
-
-            <h3 className="text-sm font-semibold text-foreground mb-3">Lịch sử buổi học</h3>
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {detail.sessions.map(s => (
-                <div key={s.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl">
-                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center bg-muted")}>
-                    {s.status === "completed" ? <CheckCircle2 className="w-4 h-4 text-foreground" /> :
-                     s.status === "scheduled" ? <Clock className="w-4 h-4 text-muted-foreground" /> :
-                     <X className="w-4 h-4 text-destructive" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-foreground">{s.content || "Buổi học"}</p>
-                    <p className="text-[10px] text-muted-foreground">{s.date} • {s.time} • {s.status === "missed" ? "Vắng" : s.status === "completed" ? "Hoàn thành" : "Sắp tới"}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {s.status === "completed" && !s.rating && (
-                      <button onClick={() => setRatingModal({ sessionId: s.id })} className="text-xs text-primary font-medium hover:underline">Đánh giá</button>
-                    )}
-                    {s.rating && (
-                      <div className="flex items-center gap-0.5">
-                        {[...Array(s.rating)].map((_, i) => <Star key={i} className="w-3 h-3 fill-current text-foreground" />)}
-                      </div>
-                    )}
-                    {s.status === "scheduled" && s.format === "online" && s.meetingLink && (
-                      <Button size="sm" className="rounded-lg text-xs h-7" onClick={() => navigate(s.meetingLink!)}>Vào lớp</Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {detail.sessions.length === 0 && <p className="text-xs text-muted-foreground text-center py-4">Chưa có buổi học nào</p>}
             </div>
           </div>
         </div>
@@ -181,7 +118,7 @@ const StudentClasses = () => {
                     </div>
                   )}
 
-                  <Button variant="outline" className="w-full rounded-xl text-xs gap-1" size="sm" onClick={() => setSelectedClass(c.id)}>
+                  <Button variant="outline" className="w-full rounded-xl text-xs gap-1" size="sm" onClick={() => navigate(`/student/classes/${c.id}`)}>
                     Chi tiết <ChevronRight className="w-3 h-3" />
                   </Button>
                 </div>
@@ -208,7 +145,7 @@ const StudentClasses = () => {
                   </div>
                   <Badge variant="outline" className="text-[10px]">Hoàn thành</Badge>
                 </div>
-                <Button variant="outline" className="w-full rounded-xl text-xs gap-1 mt-3" size="sm" onClick={() => setSelectedClass(c.id)}>
+                 <Button variant="outline" className="w-full rounded-xl text-xs gap-1 mt-3" size="sm" onClick={() => navigate(`/student/classes/${c.id}`)}>
                   Chi tiết <ChevronRight className="w-3 h-3" />
                 </Button>
               </div>

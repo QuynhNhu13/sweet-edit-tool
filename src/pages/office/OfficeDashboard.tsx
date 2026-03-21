@@ -34,6 +34,11 @@ const OfficeDashboard = () => {
     { label: "Yêu cầu chờ", value: pendingRequests, icon: Inbox },
   ];
 
+  const schedulingQueue = [
+    { id: "sq1", tutor: "Nguyễn Văn An", className: "Toán 12 - Ôn thi ĐH", testScore: 84, acceptedAt: "03/03/2026 09:10", status: "Chờ xếp lịch" },
+    { id: "sq2", tutor: "Võ Minh Tuấn", className: "Lý 11 - Nâng cao", testScore: 78, acceptedAt: "03/03/2026 11:25", status: "Chờ xếp lịch" },
+  ];
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -99,6 +104,23 @@ const OfficeDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="border-border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Queue xếp lịch sau khi gia sư đạt test tháng</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {schedulingQueue.map((item) => (
+            <div key={item.id} className="p-3 rounded-xl border border-border bg-muted/30 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">{item.className}</p>
+                <p className="text-xs text-muted-foreground">{item.tutor} • Test tháng: {item.testScore}% • Nhận lớp: {item.acceptedAt}</p>
+              </div>
+              <Button size="sm" onClick={() => navigate("/office/appointments")}>Xếp lịch ngay</Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       <Card className="border-border">
         <CardHeader className="pb-3">

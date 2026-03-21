@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Banknote, CheckCircle2, XCircle, Clock, Eye, Search, Shield, Wallet, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   pending: { label: "Chờ duyệt", variant: "outline" },
@@ -25,6 +26,9 @@ const FinancePayouts = () => {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [pendingPage, setPendingPage] = useState(1);
+  const [processedPage, setProcessedPage] = useState(1);
+  const pageSize = 10;
 
   const allFiltered = withdrawals.filter(w => {
     const matchSearch = w.tutorName.toLowerCase().includes(search.toLowerCase());
@@ -34,6 +38,10 @@ const FinancePayouts = () => {
 
   const pending = allFiltered.filter(w => w.status === "pending");
   const processed = allFiltered.filter(w => w.status !== "pending");
+  const pendingPageCount = Math.max(1, Math.ceil(pending.length / pageSize));
+  const processedPageCount = Math.max(1, Math.ceil(processed.length / pageSize));
+  const pagedPending = pending.slice((Math.min(pendingPage, pendingPageCount) - 1) * pageSize, Math.min(pendingPage, pendingPageCount) * pageSize);
+  const pagedProcessed = processed.slice((Math.min(processedPage, processedPageCount) - 1) * pageSize, Math.min(processedPage, processedPageCount) * pageSize);
   const detail = withdrawals.find(w => w.id === detailId);
 
   const totalEscrow = withdrawals.reduce((s, w) => s + (w.totalEarned - w.totalWithdrawn), 0);
@@ -97,7 +105,7 @@ const FinancePayouts = () => {
         <Card className="border-border border-l-4 border-l-primary">
           <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-muted-foreground" /> Yêu cầu chờ duyệt ({pending.length})</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            {pending.map(w => (
+            {pagedPending.map(w => (
               <div key={w.id} className="p-4 bg-muted/50 rounded-xl border border-border">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -122,6 +130,17 @@ const FinancePayouts = () => {
                 </div>
               </div>
             ))}
+            {pending.length > 0 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem><PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPendingPage((p) => Math.max(1, p - 1)); }} /></PaginationItem>
+                  {Array.from({ length: pendingPageCount }).map((_, idx) => (
+                    <PaginationItem key={idx}><PaginationLink href="#" isActive={Math.min(pendingPage, pendingPageCount) === idx + 1} onClick={(e) => { e.preventDefault(); setPendingPage(idx + 1); }}>{idx + 1}</PaginationLink></PaginationItem>
+                  ))}
+                  <PaginationItem><PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPendingPage((p) => Math.min(pendingPageCount, p + 1)); }} /></PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </CardContent>
         </Card>
       )}
@@ -131,7 +150,7 @@ const FinancePayouts = () => {
         <Card className="border-border">
           <CardHeader className="pb-3"><CardTitle className="text-base">Đã xử lý ({processed.length})</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            {processed.map(w => {
+            {pagedProcessed.map(w => {
               const cfg = statusConfig[w.status];
               return (
                 <div key={w.id} className="p-4 bg-muted/30 rounded-xl border border-border">
@@ -161,6 +180,17 @@ const FinancePayouts = () => {
                 </div>
               );
             })}
+            {processed.length > 0 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem><PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setProcessedPage((p) => Math.max(1, p - 1)); }} /></PaginationItem>
+                  {Array.from({ length: processedPageCount }).map((_, idx) => (
+                    <PaginationItem key={idx}><PaginationLink href="#" isActive={Math.min(processedPage, processedPageCount) === idx + 1} onClick={(e) => { e.preventDefault(); setProcessedPage(idx + 1); }}>{idx + 1}</PaginationLink></PaginationItem>
+                  ))}
+                  <PaginationItem><PaginationNext href="#" onClick={(e) => { e.preventDefault(); setProcessedPage((p) => Math.min(processedPageCount, p + 1)); }} /></PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </CardContent>
         </Card>
       )}

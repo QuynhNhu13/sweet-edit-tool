@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const allSubjects = ["Tất cả", "Toán", "Lý", "Hóa", "Sinh", "Anh văn", "IELTS", "Văn", "Sử", "Tin học"];
 
@@ -28,6 +29,33 @@ const StudentFindTutor = () => {
   const [bookSessions, setBookSessions] = useState(12);
   const [bookSchedule, setBookSchedule] = useState("");
   const [selectedTrialSlot, setSelectedTrialSlot] = useState<{ day: string; time: string } | null>(null);
+  const [listPage, setListPage] = useState(1);
+
+  const [myTutorRequests, setMyTutorRequests] = useState([
+    {
+      id: "sr1",
+      subject: "Toán",
+      schedule: "T2, T4, T6 - 19:00",
+      budget: "2.000.000đ/tháng",
+      note: "Ôn thi THPTQG",
+      parentLinked: true,
+      status: "Đã có ứng tuyển",
+      applicants: [
+        { id: "t1", name: "Nguyễn Văn An", rating: 4.8, status: "Chờ học sinh xác nhận" },
+        { id: "t5", name: "Võ Minh Tuấn", rating: 4.9, status: "Chờ học sinh xác nhận" },
+      ],
+    },
+    {
+      id: "sr2",
+      subject: "Anh văn",
+      schedule: "T7 - 09:00",
+      budget: "2.500.000đ/tháng",
+      note: "Luyện IELTS Writing",
+      parentLinked: false,
+      status: "Đang chờ gia sư ứng tuyển",
+      applicants: [],
+    },
+  ]);
 
   const filtered = tutorListings.filter(t => {
     const matchSearch = !search || t.name.toLowerCase().includes(search.toLowerCase()) || t.subjects.some(s => s.toLowerCase().includes(search.toLowerCase()));
@@ -36,6 +64,25 @@ const StudentFindTutor = () => {
     const matchType = typeFilter === "all" || t.type === typeFilter;
     return matchSearch && matchSubject && matchPrice && matchType;
   });
+  const pageSize = 10;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(listPage, pageCount);
+  const pagedTutors = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const handleAcceptApplicant = (requestId: string, applicantId: string) => {
+    setMyTutorRequests(prev =>
+      prev.map(r =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: "Đã chốt gia sư",
+              applicants: r.applicants.map(a => ({ ...a, status: a.id === applicantId ? "Đã được chọn" : "Đã từ chối" })),
+            }
+          : r,
+      ),
+    );
+    toast({ title: "Đã xác nhận gia sư", description: "Hệ thống đã ghi nhận lựa chọn của bạn." });
+  };
 
   const handleBook = () => {
     if (!bookingModal || !bookStartDate || !bookSchedule) return;
@@ -287,9 +334,15 @@ const StudentFindTutor = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Tutor Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filtered.map(tutor => (
+      <Tabs defaultValue="browse">
+        <TabsList className="w-full md:w-fit">
+          <TabsTrigger value="browse">Tìm gia sư</TabsTrigger>
+          <TabsTrigger value="requests">Đăng ký gia sư của tôi</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="browse" className="space-y-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {pagedTutors.map(tutor => (
           <div key={tutor.id} className="bg-card border border-border rounded-2xl p-5 hover:shadow-elevated transition-all">
             <div className="flex items-start gap-4 mb-4">
               <img src={tutor.avatar} alt="" className="w-14 h-14 rounded-xl object-cover" />
@@ -348,6 +401,63 @@ const StudentFindTutor = () => {
           </div>
         ))}
       </div>
+
+      {filtered.length > 0 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setListPage((p) => Math.max(1, p - 1)); }} />
+            </PaginationItem>
+            {Array.from({ length: pageCount }).map((_, idx) => (
+              <PaginationItem key={idx}>
+                <PaginationLink href="#" isActive={currentPage === idx + 1} onClick={(e) => { e.preventDefault(); setListPage(idx + 1); }}>
+                  {idx + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext href="#" onClick={(e) => { e.preventDefault(); setListPage((p) => Math.min(pageCount, p + 1)); }} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+        </TabsContent>
+
+        <TabsContent value="requests" className="space-y-4 mt-4">
+          {myTutorRequests.map((req) => (
+            <div key={req.id} className="bg-card border border-border rounded-2xl p-4 space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-foreground">{req.subject} • {req.schedule}</p>
+                <p className="text-xs text-muted-foreground">Ngân sách: {req.budget} • Liên kết PH: {req.parentLinked ? "Có" : "Không"}</p>
+                <p className="text-xs text-muted-foreground mt-1">Ghi chú: {req.note}</p>
+              </div>
+              <Badge variant="outline">{req.status}</Badge>
+              <div className="space-y-2">
+                {req.applicants.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Chưa có gia sư ứng tuyển.</p>
+                ) : (
+                  req.applicants.map((ap) => (
+                    <div key={ap.id} className="p-3 rounded-xl border border-border flex items-center justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{ap.name}</p>
+                        <p className="text-xs text-muted-foreground">Đánh giá {ap.rating} • {ap.status}</p>
+                      </div>
+                      {ap.status === "Chờ học sinh xác nhận" ? (
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => handleAcceptApplicant(req.id, ap.id)}>Đồng ý</Button>
+                          <Button size="sm" variant="outline">Từ chối</Button>
+                        </div>
+                      ) : (
+                        <Badge variant="secondary">{ap.status}</Badge>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ))}
+        </TabsContent>
+      </Tabs>
 
       {filtered.length === 0 && (
         <div className="text-center py-16">

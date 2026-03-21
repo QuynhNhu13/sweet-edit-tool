@@ -2,6 +2,7 @@ import { useTutor } from "@/contexts/TutorContext";
 import { Users, TrendingUp, Target, BookOpen, BarChart3, Search, X, Phone, Mail, Calendar, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -11,12 +12,15 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 
 const TutorStudents = () => {
   const { studentProgress } = useTutor();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("all");
   const [filterCompletion, setFilterCompletion] = useState("all");
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const roleBasePath = location.pathname.startsWith("/teacher") ? "/teacher" : "/tutor";
 
   const sp = selected ? studentProgress.find(s => s.studentId + s.classId === selected) : null;
 
@@ -177,6 +181,17 @@ const TutorStudents = () => {
                 </TabsList>
 
                 <TabsContent value="overview">
+                  <div className="mb-4 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setSelected(null);
+                        navigate(`${roleBasePath}/classes/${sp.classId}`);
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium"
+                    >
+                      Đi tới chi tiết lớp học
+                    </button>
+                  </div>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                     <div className="p-4 bg-muted/50 rounded-xl text-center"><BookOpen className="w-5 h-5 text-primary mx-auto mb-1" /><p className="text-2xl font-bold text-foreground">{sp.completedSessions}/{sp.totalSessions}</p><p className="text-xs text-muted-foreground">Buổi</p></div>
                     <div className="p-4 bg-muted/50 rounded-xl text-center"><BarChart3 className="w-5 h-5 text-primary mx-auto mb-1" /><p className="text-2xl font-bold text-foreground">{sp.averageScore > 0 ? sp.averageScore.toFixed(1) : "—"}</p><p className="text-xs text-muted-foreground">Điểm TB</p></div>
