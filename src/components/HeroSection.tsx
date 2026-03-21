@@ -113,18 +113,19 @@ const HeroSection = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-             className="relative lg:-mr-16 xl:-mr-24"
+             className="relative lg:-mr-20 xl:-mr-28"
           >
-            <div className="relative rounded-[2rem] border border-primary/15 bg-card/70 shadow-elevated overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-transparent z-10" />
+            <div className="relative overflow-visible">
+              <div className="absolute -inset-8 bg-primary/10 blur-3xl rounded-[3rem]" />
+              <div className="absolute inset-x-0 -bottom-2 h-24 bg-gradient-to-t from-background via-background/70 to-transparent z-20" />
               <img
                 src={heroBanner}
                 alt="Minh họa gia sư và học sinh học tiếng Anh trực tuyến"
-                className="w-full h-[430px] md:h-[540px] lg:h-[620px] rounded-[1.75rem] object-cover object-center scale-[1.08]"
+                className="relative z-10 w-[108%] max-w-none h-[390px] md:h-[500px] lg:h-[560px] object-cover object-center rounded-[2.25rem] shadow-elevated"
               />
             </div>
 
-            <div className="absolute -bottom-7 left-4 right-4 md:left-8 md:right-8 grid grid-cols-1 sm:grid-cols-3 gap-3 z-20">
+            <div className="absolute -bottom-8 left-3 right-3 md:left-6 md:right-6 grid grid-cols-1 sm:grid-cols-3 gap-3 z-30">
               {stats.map((stat) => (
                 <div
                   key={stat.label}
