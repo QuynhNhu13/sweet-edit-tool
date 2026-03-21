@@ -144,6 +144,31 @@ const AdminTransactions = () => {
             <SelectItem value="custom">Khoảng tùy chọn</SelectItem>
           </SelectContent>
         </Select>
+        {period === "month" && (
+          <Select value={selectedMonth} onValueChange={(v) => { setSelectedMonth(v); setPage(1); }}>
+            <SelectTrigger className="w-32 h-10 rounded-xl"><SelectValue placeholder="Tháng" /></SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: 12 }, (_, i) => {
+                const month = String(i + 1).padStart(2, "0");
+                return <SelectItem key={month} value={month}>Tháng {i + 1}</SelectItem>;
+              })}
+            </SelectContent>
+          </Select>
+        )}
+        {(period === "month" || period === "year") && (
+          <Select value={selectedYear} onValueChange={(v) => { setSelectedYear(v); setPage(1); }}>
+            <SelectTrigger className="w-28 h-10 rounded-xl"><SelectValue placeholder="Năm" /></SelectTrigger>
+            <SelectContent>
+              {["2024", "2025", "2026", "2027"].map((year) => <SelectItem key={year} value={year}>{year}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
+        {period === "custom" && (
+          <div className="flex items-center gap-2">
+            <Input type="date" value={fromDate} onChange={(e) => { setFromDate(e.target.value); setPage(1); }} className="h-10 rounded-xl" />
+            <Input type="date" value={toDate} onChange={(e) => { setToDate(e.target.value); setPage(1); }} className="h-10 rounded-xl" />
+          </div>
+        )}
         <Button
           variant="outline"
           onClick={() => toast({ title: "Đã xuất dữ liệu giao dịch" })}
@@ -168,7 +193,7 @@ const AdminTransactions = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map(tx => {
+              {paginated.map(tx => {
                 const user = users.find(u => u.id === tx.userId);
                 return (
                   <TableRow key={tx.id} className="hover:bg-muted/20 transition-colors">
@@ -194,13 +219,34 @@ const AdminTransactions = () => {
                   </TableRow>
                 );
               })}
-              {filtered.length === 0 && (
+              {paginated.length === 0 && (
                 <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-12">Không tìm thấy giao dịch</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  href="#"
+                  isActive={page === index + 1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(index + 1);
+                  }}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
