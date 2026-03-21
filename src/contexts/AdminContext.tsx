@@ -318,7 +318,7 @@ interface AdminContextType {
   settings: SystemSettings;
   approveUser: (id: string) => void;
   rejectUser: (id: string, reason?: string) => void;
-  updateUserStatus: (id: string, status: UserStatus) => void;
+  updateUserStatus: (id: string, status: UserStatus, reason?: string) => void;
   deleteUser: (id: string) => void;
   addClass: (cls: Omit<AdminClass, "id" | "createdAt">) => void;
   updateClass: (id: string, data: Partial<AdminClass>) => void;
@@ -377,8 +377,8 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     if (user) addAuditLog("Từ chối tài khoản", `${user.name} (${user.role})${reason ? ` - ${reason}` : ""}`);
   }, [users, addAuditLog]);
 
-  const updateUserStatus = useCallback((id: string, status: UserStatus) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, status, rejectionReason: status === "rejected" ? (u.rejectionReason || "Hồ sơ chưa đạt yêu cầu.") : undefined } : u));
+  const updateUserStatus = useCallback((id: string, status: UserStatus, reason?: string) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, status, rejectionReason: status === "rejected" ? (reason || u.rejectionReason || "Hồ sơ chưa đạt yêu cầu.") : undefined } : u));
   }, []);
 
   const deleteUser = useCallback((id: string) => {
