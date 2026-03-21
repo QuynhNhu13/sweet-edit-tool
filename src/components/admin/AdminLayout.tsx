@@ -54,18 +54,18 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-muted/30 overflow-hidden">
       {/* Sidebar */}
-      <aside className={cn("bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
+      <aside className={cn("sidebar-theme bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
         <div className="h-16 flex items-center gap-3 px-4 border-b border-border">
           <EduLogo size={collapsed ? 28 : 36} />
           {!collapsed && (
             <div className="min-w-0">
-              <h1 className="text-base font-bold text-foreground leading-tight truncate">EduConnect</h1>
-              <p className="text-[11px] text-muted-foreground leading-tight">Admin Panel</p>
+                <h1 className="text-base font-bold text-sidebar-foreground leading-tight truncate">EduConnect</h1>
+                <p className="text-[11px] text-sidebar-muted-foreground leading-tight">Admin Panel</p>
             </div>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className={cn("p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground", collapsed ? "mx-auto" : "ml-auto")}
+            className={cn("p-1.5 rounded-lg hover:bg-sidebar-accent transition-colors text-sidebar-foreground/80", collapsed ? "mx-auto" : "ml-auto")}
             title={collapsed ? "Mở rộng" : "Thu gọn"}
           >
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
@@ -73,7 +73,7 @@ const AdminLayout = () => {
         </div>
 
         <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
-          {!collapsed && <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">Menu</p>}
+          {!collapsed && <p className="text-[11px] font-semibold text-sidebar-muted-foreground uppercase tracking-wider px-3 mb-3">Menu</p>}
           {navItems.map(item => (
             <NavLink
               key={item.to}
@@ -85,8 +85,8 @@ const AdminLayout = () => {
                   "flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 group relative",
                   collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
                   isActive
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )
               }
             >
@@ -110,7 +110,7 @@ const AdminLayout = () => {
           <button
             onClick={() => navigate("/")}
             title={collapsed ? "Đăng xuất" : undefined}
-            className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive w-full transition-all duration-200", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
+            className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full transition-all duration-200", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
           >
             <LogOut className="w-[18px] h-[18px] shrink-0" />
             {!collapsed && <span>Đăng xuất</span>}
