@@ -377,9 +377,20 @@ const TutorClasses = () => {
                   <div className="p-3 bg-muted/50 rounded-xl col-span-2"><span className="text-xs text-muted-foreground block">Ngân sách</span><span className="font-medium">{seekingDetail.budget}</span></div>
                 </div>
                 <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Ghi chú</span><p className="text-sm">{seekingDetail.note}</p></div>
-                {!hasTestedSeeking(seekingDetail.id) && (
-                  <button onClick={() => { setSelectedSeeking(null); openTest(seekingDetail.id, seekingDetail.subject); }} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium flex items-center justify-center gap-2">
-                    <FileText className="w-4 h-4" /> Làm bài test để ứng tuyển
+                {!hasPassedMonthlyTest ? (
+                  <button onClick={() => { setSelectedSeeking(null); openTest(seekingDetail.subject); }} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium flex items-center justify-center gap-2">
+                    <FileText className="w-4 h-4" /> Làm bài test tháng để ứng tuyển
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setApplicationStates((prev) => ({ ...prev, [seekingDetail.id]: "applied" }));
+                      setSelectedSeeking(null);
+                      toast.success("Đã gửi ứng tuyển nhận lớp");
+                    }}
+                    className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium"
+                  >
+                    Ứng tuyển nhận lớp
                   </button>
                 )}
               </div>
