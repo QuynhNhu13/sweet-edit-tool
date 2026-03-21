@@ -37,6 +37,7 @@ export interface AdminUser {
   bio?: string;
   school?: string;
   studentId?: string;
+  rejectionReason?: string;
 }
 
 export interface AdminClass {
@@ -212,7 +213,7 @@ const seedUsers: AdminUser[] = [
   { id: "u6", name: "Vũ Thị Phương", email: "phuong.vu@edu.vn", phone: "0956789012", role: "teacher", status: "pending", avatar: avatarFemale3, createdAt: "2026-02-22", subject: "Hóa", bio: "GV Hóa 10 năm kinh nghiệm, THPT Lê Quý Đôn", school: "THPT Lê Quý Đôn" },
   { id: "u7", name: "Đỗ Quang Minh", email: "minh.do@edu.vn", phone: "0967890123", role: "tutor", status: "pending", avatar: avatarMale4, createdAt: "2026-02-25", subject: "Anh", bio: "IELTS 8.5, dạy IELTS/TOEIC 3 năm", school: "ĐH Ngoại Thương", studentId: "FTU2017088" },
   { id: "u8", name: "Ngô Thị Lan", email: "lan.ngo@edu.vn", phone: "0978901234", role: "student", status: "approved", avatar: avatarFemale4, createdAt: "2026-01-20", school: "THPT Trần Đại Nghĩa" },
-  { id: "u9", name: "Bùi Văn Hùng", email: "hung.bui@edu.vn", phone: "0989012345", role: "tutor", status: "rejected", avatar: avatarMale5, createdAt: "2026-01-30", subject: "Sinh", bio: "Sinh viên năm 3 ĐH Y", school: "ĐH Y Dược TP.HCM", studentId: "YD2022015" },
+  { id: "u9", name: "Bùi Văn Hùng", email: "hung.bui@edu.vn", phone: "0989012345", role: "tutor", status: "rejected", avatar: avatarMale5, createdAt: "2026-01-30", subject: "Sinh", bio: "Sinh viên năm 3 ĐH Y", school: "ĐH Y Dược TP.HCM", studentId: "YD2022015", rejectionReason: "Hồ sơ bằng cấp chưa hợp lệ, vui lòng bổ sung giấy tờ xác minh mới nhất." },
   { id: "u10", name: "Lý Thị Mai", email: "mai.ly@edu.vn", phone: "0990123456", role: "parent", status: "approved", avatar: avatarFemale5, createdAt: "2026-02-01" },
   { id: "u11", name: "Trương Văn Kiên", email: "kien.truong@edu.vn", phone: "0901112233", role: "student", status: "approved", avatar: avatarMale6, createdAt: "2026-02-10", school: "THPT Nguyễn Huệ" },
   { id: "u12", name: "Đinh Thị Hoa", email: "hoa.dinh@edu.vn", phone: "0912223344", role: "teacher", status: "approved", avatar: avatarFemale6, createdAt: "2025-10-05", subject: "Sử", bio: "Giáo viên Lịch Sử THPT chuyên Hà Nội", school: "THPT Chuyên Hà Nội - Amsterdam" },
@@ -285,7 +286,7 @@ interface AdminContextType {
   notifications: Notification[];
   settings: SystemSettings;
   approveUser: (id: string) => void;
-  rejectUser: (id: string) => void;
+  rejectUser: (id: string, reason?: string) => void;
   updateUserStatus: (id: string, status: UserStatus) => void;
   deleteUser: (id: string) => void;
   addClass: (cls: Omit<AdminClass, "id" | "createdAt">) => void;
@@ -334,19 +335,19 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const approveUser = useCallback((id: string) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: "approved" as UserStatus } : u));
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: "approved" as UserStatus, rejectionReason: undefined } : u));
     const user = users.find(u => u.id === id);
     if (user) addAuditLog("Duyệt tài khoản", `${user.name} (${user.role})`);
   }, [users, addAuditLog]);
 
-  const rejectUser = useCallback((id: string) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: "rejected" as UserStatus } : u));
+  const rejectUser = useCallback((id: string, reason?: string) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: "rejected" as UserStatus, rejectionReason: reason || "Hồ sơ chưa đạt yêu cầu xác minh." } : u));
     const user = users.find(u => u.id === id);
-    if (user) addAuditLog("Từ chối tài khoản", `${user.name} (${user.role})`);
+    if (user) addAuditLog("Từ chối tài khoản", `${user.name} (${user.role})${reason ? ` - ${reason}` : ""}`);
   }, [users, addAuditLog]);
 
   const updateUserStatus = useCallback((id: string, status: UserStatus) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, status } : u));
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, status, rejectionReason: status === "rejected" ? (u.rejectionReason || "Hồ sơ chưa đạt yêu cầu.") : undefined } : u));
   }, []);
 
   const deleteUser = useCallback((id: string) => {
