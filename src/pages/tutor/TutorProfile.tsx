@@ -11,11 +11,17 @@ const TutorProfile = () => {
   const { profile, updateProfile, classes, reviews, studentProgress } = useTutor();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ bio: profile.bio, hourlyRate: profile.hourlyRate, videoUrl: profile.videoUrl, teachingStyle: profile.teachingStyle, location: profile.location });
+  const [documents, setDocuments] = useState<string[]>(["bang_dai_hoc.pdf", "chung_chi_tesol.pdf"]);
 
   const handleSave = () => {
     updateProfile(form);
     setEditing(false);
     toast.success("Đã cập nhật hồ sơ!");
+  };
+
+  const addDocument = () => {
+    setDocuments((prev) => [...prev, `van_bang_${Date.now()}.pdf`]);
+    toast.success("Đã thêm giấy tờ mới");
   };
 
   const totalStudents = new Set(studentProgress.map(s => s.studentId)).size;
@@ -118,6 +124,18 @@ const TutorProfile = () => {
         <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.degreeVerified ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-border bg-card")}>
           <Trophy className={cn("w-6 h-6", profile.degreeVerified ? "text-success" : "text-muted-foreground")} />
           <div><p className="text-sm font-medium text-foreground">Văn bằng</p><p className="text-xs text-muted-foreground">{profile.degreeVerified ? "Đã xác minh" : "Chưa xác minh"}</p></div>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-foreground">Giấy tờ / Văn bằng</h3>
+          {editing && <button onClick={addDocument} className="px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-medium">Thêm giấy tờ</button>}
+        </div>
+        <div className="space-y-2">
+          {documents.map((doc) => (
+            <div key={doc} className="p-3 rounded-xl bg-muted/40 text-sm text-foreground border border-border">{doc}</div>
+          ))}
         </div>
       </div>
 

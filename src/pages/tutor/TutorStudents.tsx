@@ -14,6 +14,8 @@ const TutorStudents = () => {
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("all");
   const [filterCompletion, setFilterCompletion] = useState("all");
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const sp = selected ? studentProgress.find(s => s.studentId + s.classId === selected) : null;
 
@@ -31,6 +33,8 @@ const TutorStudents = () => {
     if (filterCompletion === "not_started" && s.completedSessions > 0) return false;
     return true;
   });
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const chartConfig = { score: { label: "Điểm", color: "hsl(var(--primary))" } };
 
@@ -81,7 +85,7 @@ const TutorStudents = () => {
 
       {/* Student List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {filtered.map(s => (
+        {paginated.map(s => (
           <button key={s.studentId + s.classId} onClick={() => setSelected(s.studentId + s.classId)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all">
             <div className="flex items-center gap-4 mb-4">
               <img src={s.studentAvatar} alt="" className="w-12 h-12 rounded-full object-cover" />
@@ -119,6 +123,18 @@ const TutorStudents = () => {
         ))}
       </div>
       {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Không tìm thấy học sinh nào</p>}
+      {filtered.length > 0 && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Hiển thị {(page - 1) * ITEMS_PER_PAGE + 1}-{Math.min(page * ITEMS_PER_PAGE, filtered.length)} / {filtered.length}</p>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button key={i} onClick={() => setPage(i + 1)} className={`h-8 min-w-8 px-2 rounded-lg text-xs font-medium ${page === i + 1 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Student Detail Dialog */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>

@@ -154,11 +154,6 @@ const TutorSchedule = () => {
                     {s.format === "online" ? <Monitor className="w-2.5 h-2.5" /> : <MapPin className="w-2.5 h-2.5" />}
                     {s.format === "online" ? "ONL" : "OFF"}
                   </span>
-                  {s.format === "online" && s.meetingLink && (
-                    <button onClick={() => navigate(s.meetingLink)} className="flex items-center gap-1 px-2 py-1 bg-success text-white rounded-lg text-xs">
-                      <Video className="w-3 h-3" /> Vào
-                    </button>
-                  )}
                   <button onClick={() => setSelectedSession(s)} className="p-1"><Eye className="w-4 h-4 text-muted-foreground" /></button>
                 </div>
               ))}
@@ -171,22 +166,29 @@ const TutorSchedule = () => {
           <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-success" /> Buổi đã hoàn thành
           </h3>
-          <div className="space-y-2">
-            {completed.map(s => (
-              <button key={s.id} onClick={() => setSelectedSession(s)} className="w-full flex items-center gap-3 p-3 bg-muted/30 rounded-xl text-left hover:bg-muted/50 transition-all">
-                <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground truncate">{s.className} — {s.content || "N/A"}</p>
-                  <p className="text-[11px] text-muted-foreground">{s.date} • {s.startedAt}-{s.endedAt}</p>
-                </div>
-                {s.format && (
-                  <span className={cn("text-[9px] px-1 py-0.5 rounded", s.format === "online" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground")}>
-                    {s.format === "online" ? "ONL" : "OFF"}
-                  </span>
-                )}
-                {s.rating && <div className="flex items-center gap-0.5">{[...Array(s.rating)].map((_, i) => <span key={i} className="text-amber-400 text-xs">★</span>)}</div>}
-              </button>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left py-2 text-muted-foreground">Lớp</th>
+                  <th className="text-left py-2 text-muted-foreground">Ngày</th>
+                  <th className="text-left py-2 text-muted-foreground">Giờ</th>
+                  <th className="text-left py-2 text-muted-foreground">Hình thức</th>
+                  <th className="text-left py-2 text-muted-foreground">Đánh giá</th>
+                </tr>
+              </thead>
+              <tbody>
+                {completed.map((s) => (
+                  <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 cursor-pointer" onClick={() => setSelectedSession(s)}>
+                    <td className="py-2 text-foreground">{s.className}</td>
+                    <td className="py-2 text-muted-foreground">{s.date}</td>
+                    <td className="py-2 text-muted-foreground">{s.startedAt}-{s.endedAt}</td>
+                    <td className="py-2 text-muted-foreground">{s.format === "online" ? "Online" : "Offline"}</td>
+                    <td className="py-2 text-foreground">{s.rating ? `${s.rating}/5` : "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -210,7 +212,7 @@ const TutorSchedule = () => {
                 {selectedSession.notes && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Nhận xét</span><p className="text-sm">{selectedSession.notes}</p></div>}
                 {selectedSession.homework && <div className="p-3 bg-primary/5 rounded-xl border border-primary/10"><span className="text-xs text-muted-foreground block mb-1">BTVN</span><p className="text-sm font-medium">{selectedSession.homework}</p></div>}
                 {selectedSession.format === "online" && selectedSession.meetingLink && selectedSession.status === "scheduled" && (
-                  <button onClick={() => { setSelectedSession(null); navigate(selectedSession.meetingLink); }} className="w-full py-2.5 bg-success text-white rounded-xl font-medium flex items-center justify-center gap-2">
+                  <button onClick={() => { setSelectedSession(null); navigate(`/tutor/classes/${classes.find(c => c.sessions.some(ss => ss.id === selectedSession.id))?.id || ""}`); }} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium flex items-center justify-center gap-2">
                     <Video className="w-4 h-4" /> Vào phòng họp online
                   </button>
                 )}

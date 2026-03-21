@@ -27,21 +27,6 @@ const TutorDashboard = () => {
   const totalSessionsCompleted = classes.reduce((s, c) => s + c.completedSessions, 0);
   const totalSessionsAll = classes.reduce((s, c) => s + c.totalSessions, 0);
 
-  const upcomingSessions = classes.flatMap(c => c.sessions.filter(s => s.status === "scheduled")).sort((a, b) => a.date.localeCompare(b.date));
-  const nextSession = upcomingSessions[0];
-  const nextClass = nextSession ? classes.find(c => c.sessions.some(s => s.id === nextSession.id)) : null;
-
-  const getCountdown = () => {
-    if (!nextSession) return null;
-    const sessionDate = new Date(`${nextSession.date}T${nextSession.time.split("-")[0]}:00`);
-    const now = new Date();
-    const diff = sessionDate.getTime() - now.getTime();
-    if (diff <= 0) return "Đang diễn ra";
-    const hours = Math.floor(diff / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    if (hours > 24) return `${Math.floor(hours / 24)} ngày`;
-    return `${hours}h ${mins}m`;
-  };
 
   const chatClassMessages = selectedChatClass ? chatMessages.filter(m => m.classId === selectedChatClass) : [];
   const unreadByClass = (classId: string) => chatMessages.filter(m => m.classId === classId && !m.read && m.sender !== "tutor").length;
@@ -139,32 +124,24 @@ const TutorDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Next Session */}
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" /> Buổi học sắp tới
+              <Clock className="w-4 h-4 text-primary" /> Điều hành dạy học nhanh
             </h3>
-            {nextSession && nextClass ? (
-              <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <CalendarDays className="w-7 h-7 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-base font-semibold text-foreground">{nextClass.name}</p>
-                  <p className="text-sm text-muted-foreground">{nextSession.date} • {nextSession.time}</p>
-                  <p className="text-xs text-muted-foreground">Học sinh: {nextClass.studentName}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Còn</p>
-                  <p className="text-lg font-bold text-primary">{getCountdown()}</p>
-                </div>
-                <button onClick={() => navigate(`/tutor/classes/${nextClass.id}`)} className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors">
-                  Vào lớp
-                </button>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">Không có buổi học nào sắp tới</p>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button onClick={() => navigate("/tutor/classes")} className="p-4 rounded-xl bg-muted/40 text-left">
+                <p className="text-xs text-muted-foreground">Lớp cần xử lý</p>
+                <p className="text-lg font-bold text-foreground">{activeClasses.length}</p>
+              </button>
+              <button onClick={() => navigate("/tutor/schedule")} className="p-4 rounded-xl bg-muted/40 text-left">
+                <p className="text-xs text-muted-foreground">Lịch dạy</p>
+                <p className="text-lg font-bold text-foreground">Xem chi tiết</p>
+              </button>
+              <button onClick={() => navigate("/tutor/reviews")} className="p-4 rounded-xl bg-muted/40 text-left">
+                <p className="text-xs text-muted-foreground">Đánh giá mới</p>
+                <p className="text-lg font-bold text-foreground">{reviews.length}</p>
+              </button>
+            </div>
           </div>
 
           {/* Income Line Chart */}
