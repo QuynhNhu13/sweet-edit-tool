@@ -28,8 +28,8 @@ const AdminReports = () => {
 
   const stats = [
     { label: "Tổng doanh thu", value: `${(totalRevenue / 1000000).toFixed(1)}M`, icon: CreditCard, color: "bg-primary/10 text-primary" },
-    { label: "Lớp đang mở", value: activeClasses, icon: BookOpen, color: "bg-emerald-500/10 text-emerald-600" },
-    { label: "Người dùng mới", value: newUsersMonth, icon: Users, color: "bg-amber-500/10 text-amber-600" },
+    { label: "Lớp đang mở", value: activeClasses, icon: BookOpen, color: "bg-success/150/10 text-success" },
+    { label: "Người dùng mới", value: newUsersMonth, icon: Users, color: "bg-warning/150/10 text-warning" },
     { label: "Lợi nhuận Escrow", value: `${(escrowProfit / 1000000).toFixed(1)}M`, icon: TrendingUp, color: "bg-secondary/20 text-secondary-foreground" },
   ];
 

@@ -101,8 +101,8 @@ const TutorClassDetail = () => {
           <p className="text-sm text-muted-foreground">{cls.subject} • {cls.format === "online" ? "Online" : cls.format === "offline" ? "Offline" : "Kết hợp"} • {cls.schedule}</p>
         </div>
         <span className={cn("text-xs font-medium px-3 py-1.5 rounded-lg",
-          cls.escrowStatus === "completed" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
-          cls.escrowStatus === "in_progress" ? "bg-primary/10 text-primary" : "bg-amber-100 text-amber-700"
+          cls.escrowStatus === "completed" ? "bg-emerald-100 text-success dark:bg-emerald-900/30 dark:text-emerald-400" :
+          cls.escrowStatus === "in_progress" ? "bg-primary/10 text-primary" : "bg-amber-100 text-warning"
         )}>
           {cls.escrowStatus === "completed" ? "Hoàn thành" : cls.escrowStatus === "in_progress" ? "Đang học" : "Chờ bắt đầu"}
         </span>
@@ -116,13 +116,13 @@ const TutorClassDetail = () => {
           <p className="text-xs text-muted-foreground">Buổi hoàn thành</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
-          <CheckCircle2 className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
+          <CheckCircle2 className="w-5 h-5 text-success mx-auto mb-1" />
           <p className="text-2xl font-bold text-foreground">{attendanceRate}%</p>
           <p className="text-xs text-muted-foreground">Chuyên cần</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
-          <Wallet className="w-5 h-5 text-emerald-600 mx-auto mb-1" />
-          <p className="text-2xl font-bold text-emerald-600">{escrowPct}%</p>
+          <Wallet className="w-5 h-5 text-success mx-auto mb-1" />
+          <p className="text-2xl font-bold text-success">{escrowPct}%</p>
           <p className="text-xs text-muted-foreground">Giải ngân</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
@@ -131,7 +131,7 @@ const TutorClassDetail = () => {
           <p className="text-xs text-muted-foreground">PH: {cls.parentName}</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
-          <Wallet className="w-5 h-5 text-amber-500 mx-auto mb-1" />
+          <Wallet className="w-5 h-5 text-warning mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{(cls.monthlyFee || cls.fee).toLocaleString("vi-VN")}đ</p>
           <p className="text-xs text-muted-foreground">Học phí/tháng</p>
         </div>
@@ -149,8 +149,8 @@ const TutorClassDetail = () => {
             <p className="font-semibold text-foreground">{cls.escrowAmount.toLocaleString("vi-VN")}đ</p>
             <p className="text-muted-foreground">Tổng Escrow</p>
           </div>
-          <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-            <p className="font-semibold text-emerald-600">{cls.escrowReleased.toLocaleString("vi-VN")}đ</p>
+          <div className="p-2 bg-success/15 dark:bg-emerald-900/20 rounded-lg">
+            <p className="font-semibold text-success">{cls.escrowReleased.toLocaleString("vi-VN")}đ</p>
             <p className="text-muted-foreground">Đã giải ngân</p>
           </div>
           <div className="p-2 bg-primary/5 rounded-lg">
@@ -177,16 +177,16 @@ const TutorClassDetail = () => {
               .map(s => (
               <div key={s.id} className={cn("p-4 rounded-xl border cursor-pointer hover:shadow-sm transition-all",
                 s.status === "scheduled" ? "border-primary/20 bg-primary/5" :
-                s.status === "in_progress" ? "border-amber-300 bg-amber-50 dark:bg-amber-900/10" :
-                s.status === "pending_confirm" ? "border-amber-200 bg-amber-50/50 dark:bg-amber-900/5" :
+                s.status === "in_progress" ? "border-amber-300 bg-warning/15 dark:bg-amber-900/10" :
+                s.status === "pending_confirm" ? "border-warning/30 bg-warning/15/50 dark:bg-amber-900/5" :
                 "border-border bg-card"
               )} onClick={() => setSelectedSession(s.id)}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold",
-                      s.status === "completed" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30" :
-                      s.status === "in_progress" ? "bg-amber-100 text-amber-700" :
-                      s.status === "pending_confirm" ? "bg-amber-100 text-amber-600" :
+                      s.status === "completed" ? "bg-emerald-100 text-success dark:bg-emerald-900/30" :
+                      s.status === "in_progress" ? "bg-amber-100 text-warning" :
+                      s.status === "pending_confirm" ? "bg-amber-100 text-warning" :
                       "bg-primary/10 text-primary"
                     )}>
                       {cls.sessions.indexOf(s) + 1}
@@ -204,20 +204,20 @@ const TutorClassDetail = () => {
                         )}
                       </div>
                       {s.content && <p className="text-xs text-muted-foreground">{s.content}</p>}
-                      {s.absenceReason && <p className="text-xs text-amber-600">⚠ Báo vắng: {s.absenceReason}</p>}
+                      {s.absenceReason && <p className="text-xs text-warning">⚠ Báo vắng: {s.absenceReason}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {s.status === "pending_confirm" && (
-                      <button onClick={e => { e.stopPropagation(); handleConfirm(s.id); }} className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium">
+                      <button onClick={e => { e.stopPropagation(); handleConfirm(s.id); }} className="flex items-center gap-1 px-3 py-1.5 bg-success text-white rounded-lg text-xs font-medium">
                         <CheckCircle2 className="w-3 h-3" /> PH Xác nhận
                       </button>
                     )}
                     {s.status === "scheduled" && (
                       <>
-                        <button onClick={e => { e.stopPropagation(); setSessionDialog({ sessionId: s.id, mode: "absence" }); }} className="text-xs text-amber-600 hover:underline">Báo vắng</button>
+                        <button onClick={e => { e.stopPropagation(); setSessionDialog({ sessionId: s.id, mode: "absence" }); }} className="text-xs text-warning hover:underline">Báo vắng</button>
                         {s.format === "online" && s.meetingLink && (
-                          <button onClick={e => { e.stopPropagation(); navigate(s.meetingLink!); }} className="flex items-center gap-1 px-2 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium">
+                          <button onClick={e => { e.stopPropagation(); navigate(s.meetingLink!); }} className="flex items-center gap-1 px-2 py-1.5 bg-success text-white rounded-lg text-xs font-medium">
                             <Video className="w-3 h-3" /> Meet
                           </button>
                         )}
@@ -231,8 +231,8 @@ const TutorClassDetail = () => {
                         <Square className="w-3 h-3" /> Hoàn thành
                       </button>
                     )}
-                    {s.status === "completed" && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                    {s.status === "pending_confirm" && <Clock className="w-4 h-4 text-amber-500" />}
+                    {s.status === "completed" && <CheckCircle2 className="w-4 h-4 text-success" />}
+                    {s.status === "pending_confirm" && <Clock className="w-4 h-4 text-warning" />}
                   </div>
                 </div>
               </div>
@@ -279,7 +279,7 @@ const TutorClassDetail = () => {
                   {sessionDetail.format && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Hình thức</span><span className="font-medium">{sessionDetail.format === "online" ? "Online" : "Offline"}</span></div>}
                   {sessionDetail.startedAt && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Bắt đầu</span><span className="font-medium">{sessionDetail.startedAt}</span></div>}
                   {sessionDetail.endedAt && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">Kết thúc</span><span className="font-medium">{sessionDetail.endedAt}</span></div>}
-                  {sessionDetail.parentConfirmed !== undefined && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">PH xác nhận</span><span className={cn("font-medium", sessionDetail.parentConfirmed ? "text-emerald-600" : "text-amber-600")}>{sessionDetail.parentConfirmed ? "✓ Đã xác nhận" : "⏳ Chưa xác nhận"}</span></div>}
+                  {sessionDetail.parentConfirmed !== undefined && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block">PH xác nhận</span><span className={cn("font-medium", sessionDetail.parentConfirmed ? "text-success" : "text-warning")}>{sessionDetail.parentConfirmed ? "✓ Đã xác nhận" : "⏳ Chưa xác nhận"}</span></div>}
                 </div>
                 {sessionDetail.content && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Nội dung</span><p className="text-sm">{sessionDetail.content}</p></div>}
                 {sessionDetail.notes && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Nhận xét</span><p className="text-sm">{sessionDetail.notes}</p></div>}
@@ -291,14 +291,14 @@ const TutorClassDetail = () => {
                   </div>
                 )}
                 {sessionDetail.absenceReason && (
-                  <div className="p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200">
+                  <div className="p-3 bg-warning/15 dark:bg-amber-900/10 rounded-xl border border-warning/30">
                     <span className="text-xs text-muted-foreground block mb-1">Lý do vắng</span>
                     <p className="text-sm">{sessionDetail.absenceReason}</p>
-                    <p className="text-[10px] text-amber-600 mt-1">{sessionDetail.absenceApproved ? "✓ Đã được duyệt" : "⏳ Chờ phụ huynh duyệt"}</p>
+                    <p className="text-[10px] text-warning mt-1">{sessionDetail.absenceApproved ? "✓ Đã được duyệt" : "⏳ Chờ phụ huynh duyệt"}</p>
                   </div>
                 )}
                 {sessionDetail.rating && (
-                  <div className="p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl">
+                  <div className="p-3 bg-warning/15 dark:bg-amber-900/10 rounded-xl">
                     <div className="flex items-center gap-1 mb-1">{[...Array(5)].map((_, i) => <span key={i} className={cn("text-sm", i < sessionDetail.rating! ? "text-amber-400" : "text-muted-foreground/30")}>★</span>)}</div>
                     {sessionDetail.ratingComment && <p className="text-xs text-muted-foreground">{sessionDetail.ratingComment}</p>}
                   </div>
@@ -322,7 +322,7 @@ const TutorClassDetail = () => {
             </div>
           ) : sessionDialog?.mode === "end" ? (
             <div className="space-y-3">
-              <div className="p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 text-xs text-amber-700">
+              <div className="p-3 bg-warning/15 dark:bg-amber-900/10 rounded-xl border border-warning/30 text-xs text-warning">
                 <AlertTriangle className="w-3.5 h-3.5 inline mr-1" />
                 Buổi học sẽ ở trạng thái "Chờ xác nhận" cho đến khi phụ huynh/học sinh xác nhận tham gia.
               </div>

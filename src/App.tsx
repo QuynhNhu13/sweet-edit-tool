@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { TutorProvider } from "@/contexts/TutorContext";
 import { TeacherProvider } from "@/contexts/TeacherContext";
@@ -93,10 +92,9 @@ import ExamManagerQuestions from "./pages/exam-manager/ExamManagerQuestions";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="light" storageKey="educonnect-theme">
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AdminProvider>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <AdminProvider>
         <TutorProvider>
         <TeacherProvider>
         <StudentProvider>
@@ -221,9 +219,8 @@ const App = () => (
         </TeacherProvider>
         </TutorProvider>
         </AdminProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;

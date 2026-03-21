@@ -25,12 +25,12 @@ const avatars = [tutor1, tutor2, tutor3, tutor4, tutor5];
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden gradient-hero pt-28 pb-24 md:pt-40 md:pb-32">
-      <div className="absolute top-20 -right-20 w-[500px] h-[500px] bg-neon/10 blur-[120px] rounded-full" />
+      <div className="absolute top-20 -right-20 w-[500px] h-[500px] bg-primary/15 blur-[120px] rounded-full" />
       <div className="absolute bottom-0 -left-20 w-[400px] h-[400px] bg-bright-blue/20 blur-[100px] rounded-full" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[150px] rounded-full" />
 
       <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: `linear-gradient(hsl(82 100% 54% / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(82 100% 54% / 0.3) 1px, transparent 1px)`,
+        backgroundImage: `linear-gradient(hsl(var(--primary) / 0.35) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.35) 1px, transparent 1px)`,
         backgroundSize: '60px 60px'
       }} />
 
@@ -45,9 +45,9 @@ const HeroSection = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon/10 border border-neon/20 text-neon text-sm font-semibold mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/15 border border-primary/25 text-primary-foreground text-sm font-semibold mb-8"
             >
-              <span className="w-2 h-2 rounded-full bg-neon animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-primary-foreground animate-pulse" />
               Nền tảng giáo dục hàng đầu Việt Nam
             </motion.span>
 
@@ -72,14 +72,14 @@ const HeroSection = () => {
                   transition={{ delay: 0.4 + i * 0.1 }}
                   className="flex items-center gap-3 text-white/80"
                 >
-                  <CheckCircle className="w-5 h-5 text-neon flex-shrink-0" />
+                  <CheckCircle className="w-5 h-5 text-info flex-shrink-0" />
                   <span className="font-medium text-body">{b}</span>
                 </motion.li>
               ))}
             </ul>
 
             <div className="flex flex-wrap gap-4 mb-12">
-              <Button size="lg" asChild className="bg-neon text-neon-foreground hover:bg-neon/90 text-base px-10 h-14 rounded-full font-bold shadow-neon group">
+              <Button size="lg" asChild className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-10 h-14 rounded-full font-bold shadow-neon group">
                 <Link to="/find-tutor" className="flex items-center gap-2">
                   Tìm gia sư ngay
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -102,7 +102,7 @@ const HeroSection = () => {
                 ))}
               </div>
               <div>
-                <span className="text-neon font-bold text-sm">+180</span>
+                <span className="text-info font-bold text-sm">+180</span>
                 <span className="text-white/50 text-sm ml-1">gia sư nổi bật</span>
               </div>
             </div>
@@ -120,10 +120,10 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 + i * 0.15 }}
-                className="bg-white/5 backdrop-blur-xl rounded-2xl p-7 flex items-center gap-6 border border-white/10 hover:border-neon/30 transition-all group"
+                className="bg-white/5 backdrop-blur-xl rounded-2xl p-7 flex items-center gap-6 border border-white/10 hover:border-primary/40 transition-all group"
               >
-                <div className="w-16 h-16 rounded-2xl bg-neon/10 flex items-center justify-center flex-shrink-0 group-hover:bg-neon/20 transition-colors">
-                  <stat.icon className="w-8 h-8 text-neon" />
+                <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/25 transition-colors">
+                  <stat.icon className="w-8 h-8 text-info" />
                 </div>
                 <div>
                   <div className="text-4xl font-extrabold text-white">{stat.value}</div>
@@ -135,7 +135,7 @@ const HeroSection = () => {
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="self-end bg-neon text-neon-foreground px-8 py-3.5 rounded-full font-bold text-sm shadow-neon"
+              className="self-end bg-primary text-primary-foreground px-8 py-3.5 rounded-full font-bold text-sm shadow-neon"
             >
               AI-Powered Platform
             </motion.div>

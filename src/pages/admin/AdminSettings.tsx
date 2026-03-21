@@ -91,8 +91,8 @@ const AdminSettings = () => {
           <Card className="border-0 shadow-soft">
             <CardContent className="p-6 space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-border">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-emerald-600" />
+                <div className="w-10 h-10 rounded-xl bg-success/150/10 flex items-center justify-center">
+                  <Settings className="w-5 h-5 text-success" />
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-foreground">Hệ thống chung</h3>
@@ -139,8 +139,8 @@ const AdminSettings = () => {
           <Card className="border-0 shadow-soft">
             <CardContent className="p-6 space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-border">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                  <Bell className="w-5 h-5 text-amber-600" />
+                <div className="w-10 h-10 rounded-xl bg-warning/150/10 flex items-center justify-center">
+                  <Bell className="w-5 h-5 text-warning" />
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-foreground">Thông báo</h3>

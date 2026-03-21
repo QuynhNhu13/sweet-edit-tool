@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "@/components/ThemeToggle";
 import EduLogo from "@/components/EduLogo";
 import {
   DropdownMenu,
@@ -101,17 +100,15 @@ const Header = () => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <ThemeToggle />
           <Button variant="ghost" asChild className="rounded-full text-sm px-6">
             <Link to="/login">Đăng nhập</Link>
           </Button>
-          <Button asChild className="rounded-full bg-neon text-neon-foreground hover:bg-neon/90 font-semibold text-sm shadow-neon px-6">
+          <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-sm shadow-neon px-6">
             <Link to="/register">Đăng ký</Link>
           </Button>
         </div>
 
         <div className="flex lg:hidden items-center gap-2">
-          <ThemeToggle />
           <button className="p-2" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -147,7 +144,7 @@ const Header = () => {
             <Button variant="ghost" asChild className="flex-1 rounded-full">
               <Link to="/login" onClick={() => setMobileOpen(false)}>Đăng nhập</Link>
             </Button>
-            <Button asChild className="flex-1 rounded-full bg-neon text-neon-foreground hover:bg-neon/90">
+            <Button asChild className="flex-1 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
               <Link to="/register" onClick={() => setMobileOpen(false)}>Đăng ký</Link>
             </Button>
           </div>

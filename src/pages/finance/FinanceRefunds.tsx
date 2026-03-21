@@ -9,7 +9,7 @@ import { toast } from "sonner";
 interface ModerationLog { id: string; refundId: string; action: "approved" | "rejected"; by: string; reason: string; timestamp: string; }
 
 const statusLabels: Record<string, string> = { pending: "Chờ duyệt", approved: "Đã duyệt", rejected: "Từ chối" };
-const statusColors: Record<string, string> = { pending: "bg-amber-50 text-amber-600 dark:bg-amber-900/20", approved: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20", rejected: "bg-destructive/10 text-destructive" };
+const statusColors: Record<string, string> = { pending: "bg-warning/15 text-warning dark:bg-amber-900/20", approved: "bg-success/15 text-success dark:bg-emerald-900/20", rejected: "bg-destructive/10 text-destructive" };
 
 const MOCK_DATA: RefundRequest[] = [
   { id: "rf-s1", classId: "c1", className: "Toán 12 - Ôn thi ĐH", tutorId: "u1", tutorName: "Nguyễn Văn An", amount: 1200000, maxAmount: 1200000, reason: "Phụ huynh yêu cầu dừng lớp", status: "pending", createdAt: "04/03/2026 09:15", studentName: "Lê Minh Châu", subject: "Toán" },
@@ -58,8 +58,8 @@ const FinanceRefunds = () => {
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: "Chờ duyệt", count: pendingCount, icon: Clock, iconColor: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/20" },
-          { label: "Đã duyệt", count: allRefundRequests.filter(r => gs(r) === "approved").length, icon: Check, iconColor: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
+          { label: "Chờ duyệt", count: pendingCount, icon: Clock, iconColor: "text-warning", bg: "bg-warning/15 dark:bg-amber-900/20" },
+          { label: "Đã duyệt", count: allRefundRequests.filter(r => gs(r) === "approved").length, icon: Check, iconColor: "text-success", bg: "bg-success/15 dark:bg-emerald-900/20" },
           { label: "Từ chối", count: allRefundRequests.filter(r => gs(r) === "rejected").length, icon: X, iconColor: "text-destructive", bg: "bg-destructive/10" },
         ].map(s => (
           <div key={s.label} className="bg-card border border-border rounded-2xl p-5">
@@ -114,7 +114,7 @@ const FinanceRefunds = () => {
                     </div>
                     {st === "pending" && (
                       <div className="flex gap-2 shrink-0">
-                        <button onClick={() => { setProcessDialog({ request: r, action: "approve" }); setProcessNote(""); }} className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-medium hover:bg-emerald-700 transition-colors"><Check className="w-3.5 h-3.5" /> Duyệt</button>
+                        <button onClick={() => { setProcessDialog({ request: r, action: "approve" }); setProcessNote(""); }} className="flex items-center gap-1 px-3 py-1.5 bg-success text-white rounded-xl text-xs font-medium hover:bg-emerald-700 transition-colors"><Check className="w-3.5 h-3.5" /> Duyệt</button>
                         <button onClick={() => { setProcessDialog({ request: r, action: "reject" }); setProcessNote(""); }} className="flex items-center gap-1 px-3 py-1.5 bg-destructive text-destructive-foreground rounded-xl text-xs font-medium hover:bg-destructive/90 transition-colors"><X className="w-3.5 h-3.5" /> Từ chối</button>
                       </div>
                     )}
@@ -128,7 +128,7 @@ const FinanceRefunds = () => {
 
       <Dialog open={!!processDialog} onOpenChange={() => setProcessDialog(null)}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle className="flex items-center gap-2">{processDialog?.action === "approve" ? <><Check className="w-5 h-5 text-emerald-600" /> Duyệt hoàn tiền</> : <><X className="w-5 h-5 text-destructive" /> Từ chối hoàn tiền</>}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="flex items-center gap-2">{processDialog?.action === "approve" ? <><Check className="w-5 h-5 text-success" /> Duyệt hoàn tiền</> : <><X className="w-5 h-5 text-destructive" /> Từ chối hoàn tiền</>}</DialogTitle></DialogHeader>
           {processDialog && (
             <div className="space-y-4">
               <div className="p-3 bg-muted/50 rounded-xl">
@@ -140,12 +140,12 @@ const FinanceRefunds = () => {
                 <textarea value={processNote} onChange={e => setProcessNote(e.target.value)} placeholder={processDialog.action === "approve" ? "Nhập lý do duyệt hoàn tiền..." : "Nhập lý do từ chối..."} className="w-full mt-2 px-3 py-2 bg-muted/50 border border-border rounded-xl text-sm min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" maxLength={500} />
               </div>
               {processDialog.action === "approve" && (
-                <div className="flex gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <p className="text-xs text-amber-700 dark:text-amber-400">Sau khi duyệt, hệ thống sẽ hoàn {processDialog.request.amount.toLocaleString("vi-VN")}đ về ví phụ huynh/học sinh và cập nhật Escrow.</p>
+                <div className="flex gap-3 p-3 bg-warning/15 dark:bg-amber-900/10 border border-warning/30 dark:border-warning/40 rounded-xl">
+                  <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+                  <p className="text-xs text-warning dark:text-amber-400">Sau khi duyệt, hệ thống sẽ hoàn {processDialog.request.amount.toLocaleString("vi-VN")}đ về ví phụ huynh/học sinh và cập nhật Escrow.</p>
                 </div>
               )}
-              <button onClick={handleProcess} disabled={!processNote.trim()} className={cn("w-full py-2.5 rounded-xl font-medium disabled:opacity-50 transition-colors", processDialog.action === "approve" ? "bg-emerald-600 text-white hover:bg-emerald-700" : "bg-destructive text-destructive-foreground hover:bg-destructive/90")}>{processDialog.action === "approve" ? "Xác nhận duyệt" : "Xác nhận từ chối"}</button>
+              <button onClick={handleProcess} disabled={!processNote.trim()} className={cn("w-full py-2.5 rounded-xl font-medium disabled:opacity-50 transition-colors", processDialog.action === "approve" ? "bg-success text-white hover:bg-emerald-700" : "bg-destructive text-destructive-foreground hover:bg-destructive/90")}>{processDialog.action === "approve" ? "Xác nhận duyệt" : "Xác nhận từ chối"}</button>
             </div>
           )}
         </DialogContent>

@@ -50,7 +50,7 @@ const TutorProfile = () => {
             <div className="flex items-center gap-3 mb-1">
               <h2 className="text-xl font-bold text-foreground">{profile.name}</h2>
               {profile.degreeVerified && (
-                <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg"><ShieldCheck className="w-3 h-3" /> Verified</span>
+                <span className="flex items-center gap-1 text-xs font-medium text-success bg-success/15 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg"><ShieldCheck className="w-3 h-3" /> Verified</span>
               )}
             </div>
             <p className="text-sm text-muted-foreground">{profile.school} • {profile.degree}</p>
@@ -78,12 +78,12 @@ const TutorProfile = () => {
           <p className="text-xs text-muted-foreground">Học sinh</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
-          <BookOpen className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
+          <BookOpen className="w-5 h-5 text-success mx-auto mb-1" />
           <p className="text-2xl font-bold text-foreground">{activeClasses}</p>
           <p className="text-xs text-muted-foreground">Lớp đang dạy</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
-          <Trophy className="w-5 h-5 text-amber-500 mx-auto mb-1" />
+          <Trophy className="w-5 h-5 text-warning mx-auto mb-1" />
           <p className="text-2xl font-bold text-foreground">{completedClasses}</p>
           <p className="text-xs text-muted-foreground">Lớp hoàn thành</p>
         </div>
@@ -101,22 +101,22 @@ const TutorProfile = () => {
 
       {/* Achievements */}
       <div className="bg-card border border-border rounded-2xl p-5">
-        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2"><Award className="w-4 h-4 text-amber-500" /> Thành tích</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2"><Award className="w-4 h-4 text-warning" /> Thành tích</h3>
         <div className="flex flex-wrap gap-2">
           {profile.achievements.map((a, i) => (
-            <span key={i} className="px-3 py-1.5 bg-amber-50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-xl text-xs font-medium">{a}</span>
+            <span key={i} className="px-3 py-1.5 bg-warning/15 dark:bg-amber-900/10 text-warning dark:text-amber-400 border border-warning/30 dark:border-warning/40 rounded-xl text-xs font-medium">{a}</span>
           ))}
         </div>
       </div>
 
       {/* Verified Badges */}
       <div className="grid grid-cols-2 gap-4">
-        <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.transcriptVerified ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10" : "border-border bg-card")}>
-          <ShieldCheck className={cn("w-6 h-6", profile.transcriptVerified ? "text-emerald-600" : "text-muted-foreground")} />
+        <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.transcriptVerified ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-border bg-card")}>
+          <ShieldCheck className={cn("w-6 h-6", profile.transcriptVerified ? "text-success" : "text-muted-foreground")} />
           <div><p className="text-sm font-medium text-foreground">Bảng điểm</p><p className="text-xs text-muted-foreground">{profile.transcriptVerified ? "Đã xác minh" : "Chưa xác minh"}</p></div>
         </div>
-        <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.degreeVerified ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10" : "border-border bg-card")}>
-          <Trophy className={cn("w-6 h-6", profile.degreeVerified ? "text-emerald-600" : "text-muted-foreground")} />
+        <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.degreeVerified ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-border bg-card")}>
+          <Trophy className={cn("w-6 h-6", profile.degreeVerified ? "text-success" : "text-muted-foreground")} />
           <div><p className="text-sm font-medium text-foreground">Văn bằng</p><p className="text-xs text-muted-foreground">{profile.degreeVerified ? "Đã xác minh" : "Chưa xác minh"}</p></div>
         </div>
       </div>

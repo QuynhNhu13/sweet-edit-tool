@@ -9,9 +9,9 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 const escrowColors: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  pending: "bg-amber-100 text-warning dark:bg-amber-900/30 dark:text-amber-400",
   in_progress: "bg-primary/10 text-primary",
-  completed: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  completed: "bg-emerald-100 text-success dark:bg-emerald-900/30 dark:text-emerald-400",
   refunded: "bg-destructive/10 text-destructive",
 };
 const escrowLabels: Record<string, string> = { pending: "Chờ bắt đầu", in_progress: "Đang học", completed: "Hoàn thành", refunded: "Đã hoàn tiền" };
@@ -139,10 +139,10 @@ const TutorClasses = () => {
   };
 
   const trialStatusColors: Record<string, string> = {
-    pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    pending: "bg-amber-100 text-warning dark:bg-amber-900/30 dark:text-amber-400",
     confirmed: "bg-primary/10 text-primary",
     rejected: "bg-destructive/10 text-destructive",
-    completed: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    completed: "bg-emerald-100 text-success dark:bg-emerald-900/30 dark:text-emerald-400",
   };
   const trialStatusLabels: Record<string, string> = { pending: "Chờ xác nhận", confirmed: "Đã xác nhận", rejected: "Đã từ chối", completed: "Hoàn thành" };
 
@@ -226,9 +226,9 @@ const TutorClasses = () => {
 
         {/* Tab 2: Seeking */}
         <TabsContent value="seeking" className="mt-4">
-          <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-            <p className="text-xs text-amber-700 dark:text-amber-400">Bạn cần hoàn thành bài kiểm tra năng lực (đạt ≥70%) trước khi ứng tuyển. <strong>Mỗi bài test chỉ được làm 1 lần.</strong></p>
+          <div className="mb-4 p-3 bg-warning/15 dark:bg-amber-900/10 border border-warning/30 dark:border-warning/40 rounded-xl flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
+            <p className="text-xs text-warning dark:text-amber-400">Bạn cần hoàn thành bài kiểm tra năng lực (đạt ≥70%) trước khi ứng tuyển. <strong>Mỗi bài test chỉ được làm 1 lần.</strong></p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredSeeking.map(s => {
@@ -258,7 +258,7 @@ const TutorClasses = () => {
                     <span className="text-[10px] text-muted-foreground">Đăng: {s.postedDate}</span>
                     <div className="flex gap-2">
                       {tested && result ? (
-                        <span className={cn("text-xs font-medium px-2 py-1 rounded-lg", result.passed ? "bg-emerald-100 text-emerald-700" : "bg-destructive/10 text-destructive")}>
+                        <span className={cn("text-xs font-medium px-2 py-1 rounded-lg", result.passed ? "bg-emerald-100 text-success" : "bg-destructive/10 text-destructive")}>
                           {result.passed ? `✓ Đã đạt ${result.score}%` : `✗ Không đạt ${result.score}%`}
                         </span>
                       ) : (
@@ -338,16 +338,16 @@ const TutorClasses = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
               {testResults.map(r => (
-                <div key={r.id} className={cn("bg-card border rounded-2xl p-5", r.passed ? "border-emerald-200 dark:border-emerald-800" : "border-destructive/20")}>
+                <div key={r.id} className={cn("bg-card border rounded-2xl p-5", r.passed ? "border-success/30 dark:border-success/40" : "border-destructive/20")}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <p className="text-base font-semibold text-foreground">{r.subject}</p>
                       <p className="text-xs text-muted-foreground">{r.date}</p>
                     </div>
-                    <div className={cn("text-2xl font-bold", r.passed ? "text-emerald-600" : "text-destructive")}>{r.score}%</div>
+                    <div className={cn("text-2xl font-bold", r.passed ? "text-success" : "text-destructive")}>{r.score}%</div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className={cn("text-xs font-medium px-2 py-1 rounded-lg", r.passed ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30" : "bg-destructive/10 text-destructive")}>
+                    <span className={cn("text-xs font-medium px-2 py-1 rounded-lg", r.passed ? "bg-emerald-100 text-success dark:bg-emerald-900/30" : "bg-destructive/10 text-destructive")}>
                       {r.passed ? "✓ Đạt" : "✗ Không đạt"}
                     </span>
                     <button onClick={() => setViewTestResult(r.id)} className="text-xs text-primary font-medium hover:underline flex items-center gap-1">
@@ -416,7 +416,7 @@ const TutorClasses = () => {
                   </div>
                 )}
                 {trialDetail.feedback && (
-                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl">
+                  <div className="p-3 bg-success/15 dark:bg-emerald-900/10 rounded-xl">
                     <span className="text-xs text-muted-foreground block mb-1">Phản hồi</span>
                     <p className="text-sm">{trialDetail.feedback}</p>
                   </div>
@@ -458,11 +458,11 @@ const TutorClasses = () => {
                       <button key={q.id} onClick={() => setCurrentQuestion(i)} className={cn(
                         "w-9 h-9 rounded-lg text-xs font-medium border transition-all relative",
                         i === currentQuestion ? "bg-primary text-primary-foreground border-primary" :
-                        testAnswers[q.id] !== undefined ? "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700" :
+                        testAnswers[q.id] !== undefined ? "bg-emerald-100 text-success border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700" :
                         "bg-card text-muted-foreground border-border hover:border-primary/50"
                       )}>
                         {i + 1}
-                        {testFlagged.has(q.id) && <Flag className="w-2.5 h-2.5 text-amber-500 absolute -top-1 -right-1" />}
+                        {testFlagged.has(q.id) && <Flag className="w-2.5 h-2.5 text-warning absolute -top-1 -right-1" />}
                       </button>
                     ))}
                   </div>
@@ -474,7 +474,7 @@ const TutorClasses = () => {
                           const f = new Set(testFlagged);
                           if (f.has(currentQ.id)) f.delete(currentQ.id); else f.add(currentQ.id);
                           setTestFlagged(f);
-                        }} className={cn("flex items-center gap-1 text-xs px-2 py-1 rounded-lg", testFlagged.has(currentQ.id) ? "bg-amber-100 text-amber-700" : "bg-muted text-muted-foreground")}>
+                        }} className={cn("flex items-center gap-1 text-xs px-2 py-1 rounded-lg", testFlagged.has(currentQ.id) ? "bg-amber-100 text-warning" : "bg-muted text-muted-foreground")}>
                           <Flag className="w-3 h-3" /> {testFlagged.has(currentQ.id) ? "Đã đánh dấu" : "Đánh dấu"}
                         </button>
                       </div>
@@ -500,7 +500,7 @@ const TutorClasses = () => {
                         Câu tiếp <ChevronRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <button onClick={submitTest} disabled={answeredCount < currentTestQuestions.length} className="px-6 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium disabled:opacity-50">
+                      <button onClick={submitTest} disabled={answeredCount < currentTestQuestions.length} className="px-6 py-2 bg-success text-white rounded-xl text-sm font-medium disabled:opacity-50">
                         Nộp bài ({answeredCount}/{currentTestQuestions.length})
                       </button>
                     )}
@@ -508,18 +508,18 @@ const TutorClasses = () => {
                 </div>
               ) : (
                 <div className="space-y-6 text-center">
-                  <div className={cn("p-8 rounded-2xl", testScore >= 70 ? "bg-emerald-50 dark:bg-emerald-900/10" : "bg-destructive/5")}>
-                    <p className={cn("text-5xl font-bold mb-2", testScore >= 70 ? "text-emerald-600" : "text-destructive")}>{testScore}%</p>
+                  <div className={cn("p-8 rounded-2xl", testScore >= 70 ? "bg-success/15 dark:bg-emerald-900/10" : "bg-destructive/5")}>
+                    <p className={cn("text-5xl font-bold mb-2", testScore >= 70 ? "text-success" : "text-destructive")}>{testScore}%</p>
                     <p className="text-sm text-muted-foreground">{testScore >= 70 ? "🎉 Đạt yêu cầu!" : "😔 Không đạt. Bạn không thể làm lại bài test này."}</p>
                   </div>
                   <div className="space-y-3 text-left">
                     {currentTestQuestions.map((q, i) => {
                       const isCorrect = testAnswers[q.id] === q.correctAnswer;
                       return (
-                        <div key={q.id} className={cn("p-3 rounded-xl border", isCorrect ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10" : "border-destructive/20 bg-destructive/5")}>
+                        <div key={q.id} className={cn("p-3 rounded-xl border", isCorrect ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-destructive/20 bg-destructive/5")}>
                           <p className="text-xs font-medium text-foreground mb-1">Câu {i + 1}: {q.question}</p>
-                          <p className="text-xs"><span className="text-muted-foreground">Bạn chọn: </span><span className={isCorrect ? "text-emerald-600 font-medium" : "text-destructive font-medium"}>{q.options[testAnswers[q.id]] || "Chưa trả lời"}</span></p>
-                          {!isCorrect && <p className="text-xs text-emerald-600 mt-0.5">Đáp án: {q.options[q.correctAnswer]}</p>}
+                          <p className="text-xs"><span className="text-muted-foreground">Bạn chọn: </span><span className={isCorrect ? "text-success font-medium" : "text-destructive font-medium"}>{q.options[testAnswers[q.id]] || "Chưa trả lời"}</span></p>
+                          {!isCorrect && <p className="text-xs text-success mt-0.5">Đáp án: {q.options[q.correctAnswer]}</p>}
                           <p className="text-[11px] text-muted-foreground mt-1 italic">{q.explanation}</p>
                         </div>
                       );
@@ -543,23 +543,23 @@ const TutorClasses = () => {
               <DialogHeader>
                 <DialogTitle className="flex items-center justify-between">
                   <span>Kết quả bài test - {selectedTestResult.subject}</span>
-                  <span className={cn("text-2xl font-bold", selectedTestResult.passed ? "text-emerald-600" : "text-destructive")}>{selectedTestResult.score}%</span>
+                  <span className={cn("text-2xl font-bold", selectedTestResult.passed ? "text-success" : "text-destructive")}>{selectedTestResult.score}%</span>
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-3">
                 <div className="grid grid-cols-3 gap-3 text-center text-sm">
                   <div className="p-3 bg-muted/50 rounded-xl"><p className="text-xs text-muted-foreground">Ngày làm</p><p className="font-medium">{selectedTestResult.date}</p></div>
                   <div className="p-3 bg-muted/50 rounded-xl"><p className="text-xs text-muted-foreground">Số câu đúng</p><p className="font-medium">{Math.round(selectedTestResult.score * selectedTestResult.questions.length / 100)}/{selectedTestResult.questions.length}</p></div>
-                  <div className={cn("p-3 rounded-xl", selectedTestResult.passed ? "bg-emerald-50 dark:bg-emerald-900/10" : "bg-destructive/5")}><p className="text-xs text-muted-foreground">Kết quả</p><p className="font-medium">{selectedTestResult.passed ? "Đạt" : "Không đạt"}</p></div>
+                  <div className={cn("p-3 rounded-xl", selectedTestResult.passed ? "bg-success/15 dark:bg-emerald-900/10" : "bg-destructive/5")}><p className="text-xs text-muted-foreground">Kết quả</p><p className="font-medium">{selectedTestResult.passed ? "Đạt" : "Không đạt"}</p></div>
                 </div>
                 {selectedTestResult.questions.map((q, i) => {
                   const userAnswer = selectedTestResult.answers[q.id];
                   const isCorrect = userAnswer === q.correctAnswer;
                   return (
-                    <div key={q.id} className={cn("p-3 rounded-xl border", isCorrect ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10" : "border-destructive/20 bg-destructive/5")}>
+                    <div key={q.id} className={cn("p-3 rounded-xl border", isCorrect ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-destructive/20 bg-destructive/5")}>
                       <p className="text-xs font-medium text-foreground mb-1">Câu {i + 1}: {q.question}</p>
-                      <p className="text-xs"><span className="text-muted-foreground">Bạn chọn: </span><span className={isCorrect ? "text-emerald-600" : "text-destructive"}>{q.options[userAnswer] || "—"}</span></p>
-                      {!isCorrect && <p className="text-xs text-emerald-600">Đáp án: {q.options[q.correctAnswer]}</p>}
+                      <p className="text-xs"><span className="text-muted-foreground">Bạn chọn: </span><span className={isCorrect ? "text-success" : "text-destructive"}>{q.options[userAnswer] || "—"}</span></p>
+                      {!isCorrect && <p className="text-xs text-success">Đáp án: {q.options[q.correctAnswer]}</p>}
                       <p className="text-[11px] text-muted-foreground mt-1 italic">{q.explanation}</p>
                     </div>
                   );

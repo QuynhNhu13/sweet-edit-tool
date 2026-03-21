@@ -12,8 +12,8 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const difficultyConfig: Record<string, { label: string; className: string }> = {
-  easy: { label: "Dễ", className: "bg-emerald-100 text-emerald-700" },
-  medium: { label: "Trung bình", className: "bg-amber-100 text-amber-700" },
+  easy: { label: "Dễ", className: "bg-emerald-100 text-success" },
+  medium: { label: "Trung bình", className: "bg-amber-100 text-warning" },
   hard: { label: "Khó", className: "bg-red-100 text-red-700" },
 };
 
@@ -52,7 +52,7 @@ const ExamManagerQuestions = () => {
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3"><Database className="w-5 h-5 text-blue-600" /></div>
+          <div className="w-10 h-10 rounded-xl bg-primary/100/10 flex items-center justify-center mb-3"><Database className="w-5 h-5 text-primary" /></div>
           <p className="text-2xl font-bold text-foreground">{questions.length}</p>
           <p className="text-xs text-muted-foreground mt-1">Tổng câu hỏi</p>
         </CardContent></Card>
@@ -137,7 +137,7 @@ const ExamManagerQuestions = () => {
               <p className="text-sm text-foreground mb-2">{q.content}</p>
               <div className="grid grid-cols-2 gap-2">
                 {q.options.map((o, i) => (
-                  <div key={i} className={`text-xs p-2 rounded-lg ${i === q.correctAnswer ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-muted/50 text-muted-foreground"}`}>
+                  <div key={i} className={`text-xs p-2 rounded-lg ${i === q.correctAnswer ? "bg-success/15 text-success border border-success/30" : "bg-muted/50 text-muted-foreground"}`}>
                     {String.fromCharCode(65 + i)}. {o}
                   </div>
                 ))}

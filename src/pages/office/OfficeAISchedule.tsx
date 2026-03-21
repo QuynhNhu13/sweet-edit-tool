@@ -78,12 +78,12 @@ const OfficeAISchedule = () => {
       </div>
 
       {isDone && (
-        <div className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl">
+        <div className="flex items-center justify-between p-4 bg-success/15 dark:bg-emerald-950/30 border border-success/30 dark:border-success/40 rounded-2xl">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+            <CheckCircle2 className="w-6 h-6 text-success" />
             <div>
-              <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Tạo lịch thành công!</p>
-              <p className="text-xs text-emerald-600 dark:text-emerald-500">Tất cả {results.length} lớp học đã tìm được thời gian phù hợp mà không bị xung đột.</p>
+              <p className="text-sm font-semibold text-success dark:text-emerald-400">Tạo lịch thành công!</p>
+              <p className="text-xs text-success dark:text-success">Tất cả {results.length} lớp học đã tìm được thời gian phù hợp mà không bị xung đột.</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -171,7 +171,7 @@ const OfficeAISchedule = () => {
                     <div className="p-3 bg-muted/50 rounded-xl space-y-2">
                       {steps.map((s, i) => (
                         <div key={i} className="flex items-center gap-2">
-                          {i < currentStep ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : i === currentStep ? <Clock className="w-4 h-4 text-primary animate-spin" style={{ animationDuration: "2s" }} /> : <div className="w-4 h-4" />}
+                          {i < currentStep ? <CheckCircle2 className="w-4 h-4 text-success" /> : i === currentStep ? <Clock className="w-4 h-4 text-primary animate-spin" style={{ animationDuration: "2s" }} /> : <div className="w-4 h-4" />}
                           <span className={`text-xs ${i <= currentStep ? "text-foreground" : "text-muted-foreground"}`}>{s}</span>
                         </div>
                       ))}
@@ -251,7 +251,7 @@ const OfficeAISchedule = () => {
                   <span className="text-lg font-bold text-foreground">{pendingClasses}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center"><Users className="w-4 h-4 text-emerald-600" /></div><span className="text-sm text-foreground">Giáo viên tham gia</span></div>
+                  <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-success/150/10 flex items-center justify-center"><Users className="w-4 h-4 text-success" /></div><span className="text-sm text-foreground">Giáo viên tham gia</span></div>
                   <span className="text-lg font-bold text-foreground">12</span>
                 </div>
                 <div className="flex items-center justify-between">

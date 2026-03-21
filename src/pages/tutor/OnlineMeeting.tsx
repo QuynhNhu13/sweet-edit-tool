@@ -54,7 +54,7 @@ const OnlineMeeting = () => {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-white/60 text-sm font-mono">{formatDuration(duration)}</span>
-          <div className="flex items-center gap-1 px-2 py-1 bg-emerald-600/20 rounded-lg">
+          <div className="flex items-center gap-1 px-2 py-1 bg-success/20 rounded-lg">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-emerald-400 text-xs">Trực tiếp</span>
           </div>

@@ -76,8 +76,8 @@ const TutorDashboard = () => {
 
   const stats = [
     { label: "Lớp đang dạy", value: activeClasses.length, sub: `${completedClasses.length} hoàn thành`, icon: BookOpen, color: "text-primary", bg: "bg-primary/10", link: "/tutor/classes" },
-    { label: "Thu nhập ròng", value: `${(netIncome / 1000000).toFixed(1)}tr`, sub: `Tổng: ${(totalIncome / 1000000).toFixed(1)}tr`, icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20", link: "/tutor/wallet" },
-    { label: "Đánh giá TB", value: profile.rating.toFixed(1), sub: `${profile.totalReviews} đánh giá`, icon: Star, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-900/20", link: "/tutor/reviews" },
+    { label: "Thu nhập ròng", value: `${(netIncome / 1000000).toFixed(1)}tr`, sub: `Tổng: ${(totalIncome / 1000000).toFixed(1)}tr`, icon: Wallet, color: "text-success", bg: "bg-success/15 dark:bg-emerald-900/20", link: "/tutor/wallet" },
+    { label: "Đánh giá TB", value: profile.rating.toFixed(1), sub: `${profile.totalReviews} đánh giá`, icon: Star, color: "text-warning", bg: "bg-warning/15 dark:bg-amber-900/20", link: "/tutor/reviews" },
     { label: "Buổi đã dạy", value: totalSessionsCompleted, sub: `/ ${totalSessionsAll} tổng`, icon: CheckCircle2, color: "text-primary", bg: "bg-primary/10", link: "/tutor/schedule" },
   ];
 
@@ -117,12 +117,12 @@ const TutorDashboard = () => {
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground">Giải ngân Escrow</span>
-              <span className="text-xs font-semibold text-emerald-600">
+              <span className="text-xs font-semibold text-success">
                 {classes.reduce((s, c) => s + c.escrowReleased, 0).toLocaleString("vi-VN")}đ
               </span>
             </div>
             <div className="w-full bg-secondary rounded-full h-2.5 overflow-hidden">
-              <div className="bg-emerald-500 h-full rounded-full transition-all" style={{ width: `${(classes.reduce((s, c) => s + c.escrowReleased, 0) / Math.max(1, classes.reduce((s, c) => s + c.escrowAmount, 0))) * 100}%` }} />
+              <div className="bg-success/150 h-full rounded-full transition-all" style={{ width: `${(classes.reduce((s, c) => s + c.escrowReleased, 0) / Math.max(1, classes.reduce((s, c) => s + c.escrowAmount, 0))) * 100}%` }} />
             </div>
             <p className="text-[10px] text-muted-foreground mt-1">Đang giữ: {escrowBalance.toLocaleString("vi-VN")}đ</p>
           </div>
@@ -170,7 +170,7 @@ const TutorDashboard = () => {
           {/* Income Line Chart */}
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-emerald-600" /> Thu nhập theo tháng
+              <Wallet className="w-4 h-4 text-success" /> Thu nhập theo tháng
             </h3>
             <ChartContainer config={chartConfig} className="h-[220px] w-full">
               <LineChart data={monthlyData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
@@ -221,7 +221,7 @@ const TutorDashboard = () => {
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center justify-between">
               <span>Yêu cầu học thử</span>
-              {pendingTrials.length > 0 && <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">{pendingTrials.length}</span>}
+              {pendingTrials.length > 0 && <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-warning dark:bg-amber-900/30 dark:text-amber-400">{pendingTrials.length}</span>}
             </h3>
             {pendingTrials.length > 0 ? pendingTrials.map(t => (
               <div key={t.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl mb-2 last:mb-0">
@@ -240,9 +240,9 @@ const TutorDashboard = () => {
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="text-sm font-semibold text-foreground mb-3">Ví điện tử</h3>
             <div className="space-y-2">
-              <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-success/15 dark:bg-emerald-900/20 rounded-xl">
                 <span className="text-xs text-muted-foreground">Khả dụng</span>
-                <span className="text-sm font-bold text-emerald-600">{walletBalance.toLocaleString("vi-VN")}đ</span>
+                <span className="text-sm font-bold text-success">{walletBalance.toLocaleString("vi-VN")}đ</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-primary/5 rounded-xl">
                 <span className="text-xs text-muted-foreground">Escrow đang giữ</span>

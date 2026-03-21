@@ -66,7 +66,7 @@ const AdminApprovals = () => {
             {tab.label}
             <span className={`min-w-[22px] h-[22px] flex items-center justify-center text-[11px] font-bold rounded-full px-1.5 ${
               activeTab === tab.value
-                ? tab.value === "pending" ? "bg-destructive/10 text-destructive" : tab.value === "approved" ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
+                ? tab.value === "pending" ? "bg-destructive/10 text-destructive" : tab.value === "approved" ? "bg-success/150/10 text-success" : "bg-muted text-muted-foreground"
                 : "bg-muted text-muted-foreground"
             }`}>
               {tab.count}
@@ -137,7 +137,7 @@ const AdminApprovals = () => {
                     <div className="flex flex-col gap-2 shrink-0">
                       <Button
                         size="sm"
-                        className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
+                        className="rounded-xl bg-success/150 hover:bg-success text-white shadow-sm"
                         onClick={() => handleApprove(u.id)}
                       >
                         <CheckCircle className="w-4 h-4 mr-1.5" /> Duyệt
@@ -211,7 +211,7 @@ const AdminApprovals = () => {
 
               {detail.status === "pending" && (
                 <div className="flex gap-2 pt-2">
-                  <Button className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white flex-1" onClick={() => { handleApprove(detail.id); setDetail(null); }}>Duyệt</Button>
+                  <Button className="rounded-xl bg-success/150 hover:bg-success text-white flex-1" onClick={() => { handleApprove(detail.id); setDetail(null); }}>Duyệt</Button>
                   <Button variant="outline" className="rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 flex-1" onClick={() => { handleReject(detail.id); setDetail(null); }}>Từ chối</Button>
                 </div>
               )}
@@ -246,7 +246,7 @@ const AdminApprovals = () => {
                 </p>
               </div>
               <div className="bg-primary/5 p-3 rounded-xl text-xs text-muted-foreground">
-                📎 File đính kèm đã được xác minh bởi hệ thống. Trạng thái: <span className="text-emerald-600 font-medium">Hợp lệ</span>
+                📎 File đính kèm đã được xác minh bởi hệ thống. Trạng thái: <span className="text-success font-medium">Hợp lệ</span>
               </div>
             </div>
           )}

@@ -44,7 +44,7 @@ const TutorStudents = () => {
           <p className="text-xs text-muted-foreground">Tổng học sinh</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-5 text-center">
-          <BookOpen className="w-6 h-6 text-emerald-500 mx-auto mb-2" />
+          <BookOpen className="w-6 h-6 text-success mx-auto mb-2" />
           <p className="text-2xl font-bold text-foreground">{activeStudents}</p>
           <p className="text-xs text-muted-foreground">Đang học</p>
         </div>
@@ -54,7 +54,7 @@ const TutorStudents = () => {
           <p className="text-xs text-muted-foreground">Chuyên cần TB</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-5 text-center">
-          <BarChart3 className="w-6 h-6 text-amber-500 mx-auto mb-2" />
+          <BarChart3 className="w-6 h-6 text-warning mx-auto mb-2" />
           <p className="text-2xl font-bold text-foreground">{avgScore.toFixed(1)}</p>
           <p className="text-xs text-muted-foreground">Điểm TB</p>
         </div>
@@ -89,7 +89,7 @@ const TutorStudents = () => {
                 <p className="text-base font-semibold text-foreground">{s.studentName}</p>
                 <p className="text-xs text-muted-foreground">{s.className} • {s.subject} • {s.studentGrade}</p>
               </div>
-              {s.goalCompletion === 100 && <span className="text-[10px] font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-lg">Hoàn thành</span>}
+              {s.goalCompletion === 100 && <span className="text-[10px] font-medium bg-emerald-100 text-success dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-lg">Hoàn thành</span>}
               {s.completedSessions === 0 && <span className="text-[10px] font-medium bg-muted text-muted-foreground px-2 py-0.5 rounded-lg">Chưa học</span>}
             </div>
             <div className="grid grid-cols-5 gap-2">
@@ -102,7 +102,7 @@ const TutorStudents = () => {
                 <p className="text-[10px] text-muted-foreground">Điểm TB</p>
               </div>
               <div className="p-2 bg-muted/50 rounded-lg text-center">
-                <p className={cn("text-lg font-bold", s.attendanceRate >= 90 ? "text-emerald-600" : s.attendanceRate >= 70 ? "text-amber-600" : "text-destructive")}>{s.attendanceRate}%</p>
+                <p className={cn("text-lg font-bold", s.attendanceRate >= 90 ? "text-success" : s.attendanceRate >= 70 ? "text-warning" : "text-destructive")}>{s.attendanceRate}%</p>
                 <p className="text-[10px] text-muted-foreground">Chuyên cần</p>
               </div>
               <div className="p-2 bg-muted/50 rounded-lg text-center">
@@ -154,7 +154,7 @@ const TutorStudents = () => {
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                     <div className="p-4 bg-muted/50 rounded-xl text-center"><BookOpen className="w-5 h-5 text-primary mx-auto mb-1" /><p className="text-2xl font-bold text-foreground">{sp.completedSessions}/{sp.totalSessions}</p><p className="text-xs text-muted-foreground">Buổi</p></div>
                     <div className="p-4 bg-muted/50 rounded-xl text-center"><BarChart3 className="w-5 h-5 text-primary mx-auto mb-1" /><p className="text-2xl font-bold text-foreground">{sp.averageScore > 0 ? sp.averageScore.toFixed(1) : "—"}</p><p className="text-xs text-muted-foreground">Điểm TB</p></div>
-                    <div className="p-4 bg-muted/50 rounded-xl text-center"><CheckCircle2 className={cn("w-5 h-5 mx-auto mb-1", sp.attendanceRate >= 90 ? "text-emerald-500" : "text-amber-500")} /><p className="text-2xl font-bold text-foreground">{sp.attendanceRate}%</p><p className="text-xs text-muted-foreground">Chuyên cần</p></div>
+                    <div className="p-4 bg-muted/50 rounded-xl text-center"><CheckCircle2 className={cn("w-5 h-5 mx-auto mb-1", sp.attendanceRate >= 90 ? "text-success" : "text-warning")} /><p className="text-2xl font-bold text-foreground">{sp.attendanceRate}%</p><p className="text-xs text-muted-foreground">Chuyên cần</p></div>
                     <div className="p-4 bg-muted/50 rounded-xl text-center"><Target className="w-5 h-5 text-primary mx-auto mb-1" /><p className="text-2xl font-bold text-primary">{sp.goalCompletion}%</p><p className="text-xs text-muted-foreground">Mục tiêu</p></div>
                     <div className="p-4 bg-muted/50 rounded-xl text-center"><p className="text-2xl font-bold text-foreground">{sp.homeworkCompletion}%</p><p className="text-xs text-muted-foreground">BTVN</p></div>
                     <div className="p-4 bg-muted/50 rounded-xl text-center"><p className="text-2xl font-bold text-foreground">{sp.missedSessions}</p><p className="text-xs text-muted-foreground">Buổi vắng</p></div>
@@ -169,7 +169,7 @@ const TutorStudents = () => {
                         <span className="font-medium text-foreground">{skill.name}</span>
                         <span className="text-xs text-muted-foreground">
                           {skill.prevScore} → <span className="text-primary font-semibold">{skill.score}</span>
-                          {skill.score > skill.prevScore && <TrendingUp className="w-3 h-3 text-emerald-500 inline ml-1" />}
+                          {skill.score > skill.prevScore && <TrendingUp className="w-3 h-3 text-success inline ml-1" />}
                         </span>
                       </div>
                       <div className="w-full bg-muted rounded-full h-2 relative">
