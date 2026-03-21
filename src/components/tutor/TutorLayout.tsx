@@ -83,8 +83,8 @@ const TutorLayout = () => {
 
   return (
     <div className="flex h-screen bg-muted/30 overflow-hidden">
-      <aside className={cn("sidebar-theme bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
-        <div className="h-16 flex items-center gap-3 px-4 border-b border-border">
+      <aside className={cn("sidebar-theme mx-3 my-3 rounded-[1.75rem] border border-sidebar-border/70 bg-card shadow-elevated backdrop-blur-sm flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
+        <div className="h-16 flex items-center gap-3 px-4 border-b border-sidebar-border/40">
           <EduLogo size={collapsed ? 28 : 36} />
           {!collapsed && (
             <div className="min-w-0">
@@ -94,14 +94,14 @@ const TutorLayout = () => {
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className={cn("p-1.5 rounded-lg hover:bg-sidebar-accent transition-colors text-sidebar-foreground/80", collapsed ? "mx-auto" : "ml-auto")}
+            className={cn("p-1.5 rounded-full hover:bg-sidebar-accent/80 transition-all duration-300 text-sidebar-foreground/90 hover:text-sidebar-accent-foreground hover:shadow-soft", collapsed ? "mx-auto" : "ml-auto")}
           >
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
         </div>
 
-        <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
-          {!collapsed && <p className="text-[11px] font-semibold uppercase tracking-wider px-3 mb-3 text-sidebar-foreground/70">Menu</p>}
+        <nav className="flex-1 px-3 py-5 overflow-y-auto">
+          {!collapsed && <p className="text-[10px] font-semibold uppercase tracking-[0.18em] px-3 mb-3 text-sidebar-muted-foreground">Menu</p>}
           {navItems.map(item => (
             <NavLink
               key={item.to}
@@ -110,11 +110,11 @@ const TutorLayout = () => {
               title={collapsed ? item.label : undefined}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 relative",
+                  "flex items-center gap-3 rounded-full text-[13px] font-semibold transition-all duration-300 relative",
                   collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
                   isActive
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-soft"
+                    : "text-sidebar-foreground/95 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )
               }
             >
@@ -132,11 +132,11 @@ const TutorLayout = () => {
           ))}
         </nav>
 
-        <div className="px-2 py-3 border-t border-border">
+        <div className="px-3 py-3 border-t border-sidebar-border/40">
           <button
             onClick={() => navigate("/")}
             title={collapsed ? "Đăng xuất" : undefined}
-            className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full transition-all duration-200", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
+            className={cn("flex items-center gap-3 rounded-full text-[13px] font-semibold text-sidebar-foreground/95 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full transition-all duration-300", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
           >
             <LogOut className="w-[18px] h-[18px] shrink-0" />
             {!collapsed && <span>Đăng xuất</span>}
