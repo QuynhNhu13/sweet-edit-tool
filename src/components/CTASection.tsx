@@ -30,12 +30,12 @@ const CTASection = () => {
             Bắt đầu miễn phí
           </motion.div>
 
-          <h2 className="text-4xl md:text-6xl font-extrabold font-display text-white mb-5 leading-tight">
+          <h2 className="text-4xl md:text-6xl font-extrabold font-display text-foreground mb-5 leading-tight">
             Sẵn sàng bắt đầu
             <br />
             <span className="text-gradient">hành trình học tập?</span>
           </h2>
-          <p className="text-white/50 text-lg mb-12 max-w-xl mx-auto">
+          <p className="text-muted-foreground text-lg mb-12 max-w-xl mx-auto">
             Đăng ký ngay hôm nay để tìm gia sư phù hợp hoặc bắt đầu sự nghiệp giảng dạy của bạn.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
@@ -45,7 +45,7 @@ const CTASection = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="border-white/20 text-white hover:bg-white/10 text-body px-10 h-14 rounded-full font-semibold">
+            <Button size="lg" variant="outline" asChild className="border-primary/30 text-primary hover:bg-primary/10 text-body px-10 h-14 rounded-full font-semibold">
               <Link to="/register-tutor">Trở thành gia sư</Link>
             </Button>
           </div>

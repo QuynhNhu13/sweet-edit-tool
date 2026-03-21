@@ -12,7 +12,7 @@ const features = [
 
 const ExamSection = () => {
   return (
-    <section className="py-24 md:py-32 bg-muted/30 dark:bg-card/30 relative overflow-hidden" id="exam">
+    <section className="py-24 md:py-32 bg-muted/30 relative overflow-hidden" id="exam">
       <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-neon/5 blur-[100px] rounded-full" />
 
       <div className="container mx-auto px-4 relative z-10">
@@ -23,7 +23,7 @@ const ExamSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon/10 text-neon text-sm font-semibold mb-6 dark:bg-neon/10">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon/10 text-neon text-sm font-semibold mb-6">
               <Sparkles className="w-4 h-4" />
               Thi thử Online
             </span>
@@ -37,7 +37,7 @@ const ExamSection = () => {
             <ul className="space-y-4 mb-10">
               {features.map((f) => (
                 <li key={f.text} className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <f.icon className="w-5 h-5 text-primary" />
                   </div>
                   <span className="text-foreground font-medium">{f.text}</span>
@@ -78,7 +78,7 @@ const ExamSection = () => {
                   { label: "Phí thi", value: "10.000đ", highlight: true },
                   { label: "Lượt thi", value: "1,234" },
                 ].map((item) => (
-                  <div key={item.label} className="bg-muted/50 dark:bg-white/5 rounded-2xl p-4">
+                  <div key={item.label} className="bg-muted/50 rounded-2xl p-4">
                     <div className="text-xs text-muted-foreground mb-1">{item.label}</div>
                     <div className={`font-bold font-display text-lg ${item.highlight ? "text-neon" : "text-foreground"}`}>
                       {item.value}
@@ -87,7 +87,7 @@ const ExamSection = () => {
                 ))}
               </div>
 
-              <Button className="w-full gradient-blue text-white h-14 rounded-full font-bold text-base" asChild>
+              <Button className="w-full gradient-blue text-primary-foreground h-14 rounded-full font-bold text-base" asChild>
                 <Link to="/exam-online">Bắt đầu thi thử</Link>
               </Button>
             </div>
