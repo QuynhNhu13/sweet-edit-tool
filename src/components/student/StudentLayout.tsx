@@ -68,13 +68,13 @@ const StudentLayout = () => {
           <EduLogo size={collapsed ? 28 : 36} />
           {!collapsed && (
             <div className="min-w-0">
-              <h1 className="text-base font-bold leading-tight truncate">EduConnect</h1>
-              <p className="text-[11px] opacity-70 leading-tight">Học sinh</p>
+                <h1 className="text-base font-bold leading-tight truncate text-sidebar-foreground">EduConnect</h1>
+                <p className="text-[11px] text-sidebar-muted-foreground leading-tight">Học sinh</p>
             </div>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className={cn("p-1.5 rounded-lg hover:bg-muted transition-colors opacity-70", collapsed ? "mx-auto" : "ml-auto")}
+            className={cn("p-1.5 rounded-lg hover:bg-sidebar-accent transition-colors text-sidebar-foreground/80", collapsed ? "mx-auto" : "ml-auto")}
           >
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
@@ -84,7 +84,7 @@ const StudentLayout = () => {
           {navGroups.map((group, gi) => (
             <div key={gi} className={gi > 0 ? "mt-4" : ""}>
               {!collapsed && gi === 0 && (
-                <p className="text-[10px] font-semibold uppercase tracking-wider px-3 mb-2 opacity-50">Menu</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider px-3 mb-2 text-sidebar-muted-foreground">Menu</p>
               )}
               {collapsed && gi > 0 && <div className="border-t border-border my-2 mx-2" />}
               <div className="space-y-0.5">
@@ -99,8 +99,8 @@ const StudentLayout = () => {
                         "flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 relative",
                         collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
                         isActive
-                          ? "bg-primary text-primary-foreground shadow-md"
-                          : "opacity-70 hover:bg-muted hover:opacity-100"
+                          ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       )
                     }
                   >
@@ -125,7 +125,7 @@ const StudentLayout = () => {
           <button
             onClick={() => navigate("/")}
             title={collapsed ? "Đăng xuất" : undefined}
-            className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium opacity-70 hover:bg-destructive/20 hover:opacity-100 w-full transition-all duration-200", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
+            className={cn("flex items-center gap-3 rounded-xl text-[13px] font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full transition-all duration-200", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
           >
             <LogOut className="w-[18px] h-[18px] shrink-0" />
             {!collapsed && <span>Đăng xuất</span>}
