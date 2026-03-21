@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Trash2, Eye, Search, Star, Users, UserCheck, GraduationCap, UserPlus, CheckCircle2, XCircle } from "lucide-react";
 import type { AdminUser, UserStatus } from "@/contexts/AdminContext";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 const roleTabs = [
   { value: "all", label: "Tất cả", icon: Users },
@@ -44,6 +45,8 @@ const AdminUsers = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [detail, setDetail] = useState<AdminUser | null>(null);
   const [page, setPage] = useState(1);
+  const [rejectingUserId, setRejectingUserId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const { toast } = useToast();
 
   const filtered = useMemo(() => users.filter(u => {
@@ -61,8 +64,8 @@ const AdminUsers = () => {
     toast({ title: `Đã xóa ${u.name}`, variant: "destructive" });
   };
 
-  const handleStatusChange = (id: string, status: string) => {
-    updateUserStatus(id, status as UserStatus);
+  const handleStatusChange = (id: string, status: string, reason?: string) => {
+    updateUserStatus(id, status as UserStatus, reason);
     toast({ title: "Đã cập nhật trạng thái" });
   };
 
@@ -151,7 +154,14 @@ const AdminUsers = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Button size="sm" onClick={() => handleStatusChange(u.id, "approved")} className="rounded-lg h-8"><CheckCircle2 className="w-3.5 h-3.5 mr-1" />Duyệt</Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleStatusChange(u.id, "rejected")} className="rounded-lg h-8"><XCircle className="w-3.5 h-3.5 mr-1" />Từ chối</Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => { setRejectingUserId(u.id); setRejectReason(""); }}
+                      className="rounded-lg h-8"
+                    >
+                      <XCircle className="w-3.5 h-3.5 mr-1" />Từ chối
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -261,6 +271,34 @@ const AdminUsers = () => {
               {detail.bio && <p className="text-sm text-foreground bg-muted/50 p-3 rounded-xl">{detail.bio}</p>}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!rejectingUserId} onOpenChange={() => setRejectingUserId(null)}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader><DialogTitle>Lý do từ chối hồ sơ</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <Textarea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              rows={4}
+              placeholder="Nhập lý do để gửi phản hồi cho người dùng..."
+              className="rounded-xl"
+            />
+            <Button
+              variant="destructive"
+              className="w-full rounded-xl"
+              disabled={!rejectReason.trim() || !rejectingUserId}
+              onClick={() => {
+                if (!rejectingUserId) return;
+                handleStatusChange(rejectingUserId, "rejected", rejectReason.trim());
+                setRejectingUserId(null);
+                setRejectReason("");
+              }}
+            >
+              Xác nhận từ chối
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
