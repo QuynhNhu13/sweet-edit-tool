@@ -1,5 +1,5 @@
 import { useTutor } from "@/contexts/TutorContext";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ShieldCheck, DollarSign, Plus, CreditCard, AlertTriangle, Info } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ShieldCheck, DollarSign, Plus, CreditCard, AlertTriangle, Info, Landmark, Smartphone, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,11 +15,11 @@ const typeLabels: Record<string, string> = {
 };
 
 const paymentMethods = [
-  { id: "momo", name: "MoMo", icon: "💜", desc: "Ví điện tử MoMo" },
-  { id: "vnpay", name: "VNPay", icon: "🔵", desc: "Cổng thanh toán VNPay" },
-  { id: "vietcombank", name: "Vietcombank", icon: "🏦", desc: "****1234" },
-  { id: "techcombank", name: "Techcombank", icon: "🏧", desc: "****5678" },
-  { id: "bidv", name: "BIDV", icon: "🔴", desc: "****9012" },
+  { id: "momo", name: "MoMo", icon: Smartphone, desc: "Ví điện tử MoMo" },
+  { id: "vnpay", name: "VNPay", icon: CreditCard, desc: "Cổng thanh toán VNPay" },
+  { id: "vietcombank", name: "Vietcombank", icon: Landmark, desc: "****1234" },
+  { id: "techcombank", name: "Techcombank", icon: Building2, desc: "****5678" },
+  { id: "bidv", name: "BIDV", icon: Landmark, desc: "****9012" },
 ];
 
 const refundReasons = [
@@ -249,7 +249,7 @@ const TutorWallet = () => {
               <div className="space-y-2 mt-2">
                 {paymentMethods.map(m => (
                   <button key={m.id} onClick={() => setSelectedMethod(m.id)} className={cn("w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all", selectedMethod === m.id ? "border-primary bg-primary/5" : "border-border bg-card hover:border-primary/50")}>
-                    <span className="text-xl">{m.icon}</span>
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><m.icon className="w-4 h-4 text-muted-foreground" /></div>
                     <div>
                       <p className="text-sm font-medium text-foreground">{m.name}</p>
                       <p className="text-xs text-muted-foreground">{m.desc}</p>

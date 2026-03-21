@@ -51,6 +51,10 @@ const TutorClasses = () => {
   // Seeking detail
   const [selectedSeeking, setSelectedSeeking] = useState<string | null>(null);
   const seekingDetail = selectedSeeking ? seekingTutor.find(s => s.id === selectedSeeking) : null;
+  const [applicationStates, setApplicationStates] = useState<Record<string, "applied" | "accepted" | "rejected">>({
+    seek2: "accepted",
+    seek4: "rejected",
+  });
 
   // Test results view
   const [viewTestResult, setViewTestResult] = useState<string | null>(null);
@@ -73,25 +77,20 @@ const TutorClasses = () => {
     return true;
   });
 
-  // Check if already tested for this seeking
-  const hasTestedSeeking = (seekingId: string) => testResults.some(r => r.seekingId === seekingId);
-  const getTestResultForSeeking = (seekingId: string) => testResults.find(r => r.seekingId === seekingId);
+  const monthKey = new Date().toISOString().slice(0, 7);
+  const monthlyResult = [...testResults]
+    .filter((r) => r.date.startsWith(monthKey))
+    .sort((a, b) => b.date.localeCompare(a.date))[0];
+  const hasPassedMonthlyTest = !!monthlyResult?.passed;
 
   const getTestQuestions = (subject: string) => testQuestions.filter(q => q.subject === subject).slice(0, 10);
 
-  const openTest = (seekingId: string, subject: string) => {
-    if (hasTestedSeeking(seekingId)) {
-      const result = getTestResultForSeeking(seekingId);
-      if (result && !result.passed) {
-        toast.error("Bạn đã làm bài test này và không đạt. Không thể làm lại.");
-        return;
-      }
-      if (result && result.passed) {
-        toast.info("Bạn đã đạt bài test này. Ứng tuyển đã được gửi.");
-        return;
-      }
+  const openTest = (subject: string) => {
+    if (monthlyResult) {
+      toast.info("Bạn đã làm bài test năng lực tháng này.");
+      return;
     }
-    setTestDialog({ seekingId, subject });
+    setTestDialog({ seekingId: `monthly-${monthKey}`, subject });
     setTestAnswers({});
     setTestFlagged(new Set());
     setCurrentQuestion(0);
@@ -110,7 +109,7 @@ const TutorClasses = () => {
 
     const result = {
       id: `tr_${Date.now()}`,
-      seekingId: testDialog.seekingId,
+      seekingId: `monthly-${monthKey}`,
       subject: testDialog.subject,
       score,
       passed: score >= 70,
@@ -123,7 +122,7 @@ const TutorClasses = () => {
 
   const handleApplyAfterTest = () => {
     if (testScore >= 70) {
-      toast.success("Đã gửi ứng tuyển thành công!");
+      toast.success("Đã đạt test tháng, bạn có thể ứng tuyển nhận lớp.");
     } else {
       toast.error("Không đạt yêu cầu (≥70%). Bạn không thể làm lại bài test này.");
     }
@@ -226,15 +225,20 @@ const TutorClasses = () => {
 
         {/* Tab 2: Seeking */}
         <TabsContent value="seeking" className="mt-4">
-          <div className="mb-4 p-3 bg-warning/15 dark:bg-amber-900/10 border border-warning/30 dark:border-warning/40 rounded-xl flex items-center gap-2">
+          <div className="mb-4 p-3 bg-warning/15 dark:bg-amber-900/10 border border-warning/30 dark:border-warning/40 rounded-xl flex items-center justify-between gap-2">
             <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
-            <p className="text-xs text-warning dark:text-amber-400">Bạn cần hoàn thành bài kiểm tra năng lực (đạt ≥70%) trước khi ứng tuyển. <strong>Mỗi bài test chỉ được làm 1 lần.</strong></p>
+            <p className="text-xs text-warning dark:text-amber-400">Bài test năng lực được áp dụng <strong>1 lần / tháng</strong> (đạt ≥70%) trước khi ứng tuyển nhận lớp.</p>
+            <button
+              onClick={() => openTest(filterSubject === "all" ? "Toán" : filterSubject)}
+              className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium"
+            >
+              {monthlyResult ? `Đã test ${monthlyResult.score}%` : "Làm test tháng"}
+            </button>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredSeeking.map(s => {
               const FormatIcon = formatIcons[s.format];
-              const tested = hasTestedSeeking(s.id);
-              const result = getTestResultForSeeking(s.id);
+              const application = applicationStates[s.id];
               return (
                 <div key={s.id} className="bg-card border border-border rounded-2xl p-5 hover:shadow-elevated transition-all">
                   <div className="flex items-start justify-between mb-3">
@@ -257,15 +261,13 @@ const TutorClasses = () => {
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-[10px] text-muted-foreground">Đăng: {s.postedDate}</span>
                     <div className="flex gap-2">
-                      {tested && result ? (
-                        <span className={cn("text-xs font-medium px-2 py-1 rounded-lg", result.passed ? "bg-emerald-100 text-success" : "bg-destructive/10 text-destructive")}>
-                          {result.passed ? `✓ Đã đạt ${result.score}%` : `✗ Không đạt ${result.score}%`}
-                        </span>
+                      <button onClick={() => setSelectedSeeking(s.id)} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"><Eye className="w-3 h-3" /> Xem</button>
+                      {!hasPassedMonthlyTest ? (
+                        <span className="text-xs font-medium px-2 py-1 rounded-lg bg-warning/15 text-warning">Chưa đạt test tháng</span>
+                      ) : application ? (
+                        <span className={cn("text-xs font-medium px-2 py-1 rounded-lg", application === "accepted" ? "bg-success/15 text-success" : application === "rejected" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary")}>{application === "accepted" ? "Đã được chọn" : application === "rejected" ? "Đã từ chối" : "Đã ứng tuyển"}</span>
                       ) : (
-                        <>
-                          <button onClick={() => setSelectedSeeking(s.id)} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"><Eye className="w-3 h-3" /> Xem</button>
-                          <button onClick={() => openTest(s.id, s.subject)} className="text-xs text-primary font-medium flex items-center gap-1"><FileText className="w-3 h-3" /> Làm test</button>
-                        </>
+                        <button onClick={() => { setApplicationStates((prev) => ({ ...prev, [s.id]: "applied" })); toast.success("Đã gửi ứng tuyển nhận lớp"); }} className="text-xs text-primary font-medium flex items-center gap-1"><FileText className="w-3 h-3" /> Ứng tuyển</button>
                       )}
                     </div>
                   </div>
@@ -375,9 +377,20 @@ const TutorClasses = () => {
                   <div className="p-3 bg-muted/50 rounded-xl col-span-2"><span className="text-xs text-muted-foreground block">Ngân sách</span><span className="font-medium">{seekingDetail.budget}</span></div>
                 </div>
                 <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Ghi chú</span><p className="text-sm">{seekingDetail.note}</p></div>
-                {!hasTestedSeeking(seekingDetail.id) && (
-                  <button onClick={() => { setSelectedSeeking(null); openTest(seekingDetail.id, seekingDetail.subject); }} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium flex items-center justify-center gap-2">
-                    <FileText className="w-4 h-4" /> Làm bài test để ứng tuyển
+                {!hasPassedMonthlyTest ? (
+                  <button onClick={() => { setSelectedSeeking(null); openTest(seekingDetail.subject); }} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium flex items-center justify-center gap-2">
+                    <FileText className="w-4 h-4" /> Làm bài test tháng để ứng tuyển
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setApplicationStates((prev) => ({ ...prev, [seekingDetail.id]: "applied" }));
+                      setSelectedSeeking(null);
+                      toast.success("Đã gửi ứng tuyển nhận lớp");
+                    }}
+                    className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium"
+                  >
+                    Ứng tuyển nhận lớp
                   </button>
                 )}
               </div>

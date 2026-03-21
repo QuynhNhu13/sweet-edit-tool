@@ -11,6 +11,11 @@ const TutorProfile = () => {
   const { profile, updateProfile, classes, reviews, studentProgress } = useTutor();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ bio: profile.bio, hourlyRate: profile.hourlyRate, videoUrl: profile.videoUrl, teachingStyle: profile.teachingStyle, location: profile.location });
+  const [credentials, setCredentials] = useState([
+    { id: "cr1", name: "Bằng Cử nhân Sư phạm Toán", uploadedAt: "2026-01-03", status: "verified" },
+    { id: "cr2", name: "Chứng chỉ nghiệp vụ sư phạm", uploadedAt: "2026-01-10", status: "verified" },
+  ]);
+  const [newCredential, setNewCredential] = useState("");
 
   const handleSave = () => {
     updateProfile(form);
@@ -118,6 +123,38 @@ const TutorProfile = () => {
         <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.degreeVerified ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-border bg-card")}>
           <Trophy className={cn("w-6 h-6", profile.degreeVerified ? "text-success" : "text-muted-foreground")} />
           <div><p className="text-sm font-medium text-foreground">Văn bằng</p><p className="text-xs text-muted-foreground">{profile.degreeVerified ? "Đã xác minh" : "Chưa xác minh"}</p></div>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-foreground">Văn bằng & chứng chỉ</h3>
+          <span className="text-xs text-muted-foreground">{credentials.length} tài liệu</span>
+        </div>
+        <div className="space-y-2 mb-3">
+          {credentials.map((doc) => (
+            <div key={doc.id} className="p-3 rounded-xl border border-border bg-muted/20 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">{doc.name}</p>
+                <p className="text-xs text-muted-foreground">Tải lên: {doc.uploadedAt}</p>
+              </div>
+              <span className={cn("text-xs px-2 py-1 rounded-lg", doc.status === "verified" ? "bg-success/15 text-success" : "bg-warning/15 text-warning")}>{doc.status === "verified" ? "Đã xác minh" : "Chờ duyệt"}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input value={newCredential} onChange={(e) => setNewCredential(e.target.value)} placeholder="Tên văn bằng/chứng chỉ mới" className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm" />
+          <button
+            className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm"
+            onClick={() => {
+              if (!newCredential.trim()) return;
+              setCredentials((prev) => [{ id: `cr-${Date.now()}`, name: newCredential.trim(), uploadedAt: new Date().toLocaleDateString("vi-VN"), status: "pending" }, ...prev]);
+              setNewCredential("");
+              toast.success("Đã thêm hồ sơ văn bằng mới");
+            }}
+          >
+            Upload
+          </button>
         </div>
       </div>
 

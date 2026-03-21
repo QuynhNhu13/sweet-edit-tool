@@ -1,297 +1,208 @@
-import { useStudent, TestQuestion } from "@/contexts/StudentContext";
-import { ClipboardCheck, Clock, CheckCircle2, AlertCircle, ChevronLeft, ChevronRight, Flag, Search, Filter, BarChart3, X } from "lucide-react";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { useMemo, useState } from "react";
+import { useStudent } from "@/contexts/StudentContext";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Progress } from "@/components/ui/progress";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Camera, CheckCircle2, ClipboardCheck, Search, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const ITEMS_PER_PAGE = 10;
+
+const mockAssignments = Array.from({ length: 18 }).map((_, idx) => ({
+  id: `asg-${idx + 1}`,
+  subject: idx % 2 === 0 ? "Toán" : "Anh văn",
+  title: `Bài tập ${idx + 1}`,
+  className: idx % 2 === 0 ? "Toán 12 - Ôn thi ĐH" : "IELTS Writing",
+  dueDate: `2026-03-${String((idx % 20) + 8).padStart(2, "0")}`,
+  status: idx % 4 === 0 ? "completed" : "pending",
+}));
 
 const StudentTests = () => {
   const { tests, submitTest } = useStudent();
-  const [activeTest, setActiveTest] = useState<string | null>(null);
-  const [reviewTest, setReviewTest] = useState<string | null>(null);
-  const [currentQ, setCurrentQ] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [flagged, setFlagged] = useState<Set<string>>(new Set());
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [tab, setTab] = useState<"assignments" | "tests">("assignments");
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "available" | "completed">("all");
+  const [page, setPage] = useState(1);
+  const [cameraEnabled, setCameraEnabled] = useState(false);
+  const [activeTestId, setActiveTestId] = useState<string | null>(null);
 
-  const filtered = tests.filter(t => {
-    const matchSearch = !search || t.title.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "all" || t.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  const assignmentsFiltered = useMemo(
+    () =>
+      mockAssignments.filter(
+        (a) =>
+          a.title.toLowerCase().includes(search.toLowerCase()) ||
+          a.subject.toLowerCase().includes(search.toLowerCase()) ||
+          a.className.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [search],
+  );
 
-  const available = filtered.filter(t => t.status === "available");
-  const completed = filtered.filter(t => t.status === "completed");
-  const allCompleted = tests.filter(t => t.status === "completed");
-  const avgScore = allCompleted.length > 0 ? Math.round(allCompleted.reduce((s, t) => s + (t.score || 0), 0) / allCompleted.length) : 0;
+  const testsFiltered = useMemo(
+    () => tests.filter((t) => t.title.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase())),
+    [search, tests],
+  );
 
-  const test = activeTest ? tests.find(t => t.id === activeTest) : null;
-  const review = reviewTest ? tests.find(t => t.id === reviewTest) : null;
+  const source = tab === "assignments" ? assignmentsFiltered : testsFiltered;
+  const pageCount = Math.max(1, Math.ceil(source.length / ITEMS_PER_PAGE));
+  const currentPage = Math.min(page, pageCount);
+  const pagedData = source.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  const chartData = allCompleted.map(t => ({ name: t.title.slice(0, 15), score: t.score || 0 }));
-
-  const startTest = (testId: string) => {
-    const t = tests.find(tt => tt.id === testId);
-    if (!t) return;
-    setActiveTest(testId);
-    setCurrentQ(0);
-    setAnswers({});
-    setFlagged(new Set());
-    setTimeLeft(t.duration * 60);
-  };
-
-  const handleSubmit = () => {
-    if (activeTest) {
-      submitTest(activeTest, answers);
-      setActiveTest(null);
-    }
-  };
-
-  const toggleFlag = (qId: string) => {
-    setFlagged(prev => {
-      const n = new Set(prev);
-      n.has(qId) ? n.delete(qId) : n.add(qId);
-      return n;
+  const handleStartTest = (testId: string) => {
+    if (!cameraEnabled) return;
+    const test = tests.find((t) => t.id === testId);
+    if (!test) return;
+    const defaultAnswers: Record<string, number> = {};
+    test.questions.forEach((q) => {
+      defaultAnswers[q.id] = 0;
     });
+    submitTest(testId, defaultAnswers);
+    setActiveTestId(testId);
   };
-
-  // Active Test View
-  if (test) {
-    const q = test.questions[currentQ];
-    const answered = Object.keys(answers).length;
-    return (
-      <div className="p-6 space-y-6">
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-lg font-bold text-foreground">{test.title}</h2>
-              <p className="text-xs text-muted-foreground">{test.subject} • {test.totalQuestions} câu • {test.duration} phút</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-mono text-foreground">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}</span>
-              <Button variant="destructive" className="rounded-xl" size="sm" onClick={handleSubmit}>Nộp bài</Button>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2 mb-6">
-            {test.questions.map((qq, i) => (
-              <button key={qq.id} onClick={() => setCurrentQ(i)} className={cn(
-                "w-8 h-8 rounded-lg text-xs font-medium transition-all",
-                currentQ === i ? "bg-primary text-primary-foreground" :
-                answers[qq.id] !== undefined ? "bg-muted text-foreground border border-border" :
-                flagged.has(qq.id) ? "bg-muted text-foreground border border-border" :
-                "bg-muted text-muted-foreground"
-              )}>
-                {i + 1}
-              </button>
-            ))}
-          </div>
-          <Progress value={(answered / test.totalQuestions) * 100} className="h-1.5 mb-6" />
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-foreground">Câu {currentQ + 1}/{test.totalQuestions}</h3>
-              <button onClick={() => toggleFlag(q.id)} className={cn("flex items-center gap-1 text-xs", flagged.has(q.id) ? "text-foreground font-medium" : "text-muted-foreground")}>
-                <Flag className="w-3.5 h-3.5" /> {flagged.has(q.id) ? "Đã đánh dấu" : "Đánh dấu"}
-              </button>
-            </div>
-            <p className="text-sm text-foreground mb-4">{q.question}</p>
-            <div className="space-y-2">
-              {q.options.map((opt, oi) => (
-                <button key={oi} onClick={() => setAnswers(prev => ({ ...prev, [q.id]: oi }))} className={cn(
-                  "w-full text-left p-3 rounded-xl border text-sm transition-all",
-                  answers[q.id] === oi ? "border-primary bg-primary/5 text-foreground font-medium" : "border-border bg-card text-muted-foreground hover:border-primary/50"
-                )}>
-                  <span className="inline-flex w-6 h-6 rounded-full border border-current items-center justify-center text-xs mr-3">
-                    {String.fromCharCode(65 + oi)}
-                  </span>
-                  {opt}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <Button variant="outline" className="rounded-xl gap-1" size="sm" disabled={currentQ === 0} onClick={() => setCurrentQ(currentQ - 1)}>
-              <ChevronLeft className="w-4 h-4" /> Câu trước
-            </Button>
-            <span className="text-xs text-muted-foreground">{answered}/{test.totalQuestions} đã trả lời</span>
-            {currentQ < test.totalQuestions - 1 ? (
-              <Button className="rounded-xl gap-1" size="sm" onClick={() => setCurrentQ(currentQ + 1)}>
-                Câu sau <ChevronRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button className="rounded-xl" size="sm" onClick={handleSubmit}>Nộp bài</Button>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Review Test View
-  if (review) {
-    const correctCount = review.questions.filter(q => review.answers?.[q.id] === q.correctAnswer).length;
-    const wrongCount = review.totalQuestions - correctCount;
-    return (
-      <div className="p-6 space-y-6">
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-lg font-bold text-foreground">{review.title}</h2>
-              <p className="text-xs text-muted-foreground">Điểm: {review.score}% • {review.completedAt} • Đúng {correctCount}/{review.totalQuestions}</p>
-            </div>
-            <Button variant="outline" className="rounded-xl" size="sm" onClick={() => setReviewTest(null)}>Đóng</Button>
-          </div>
-
-          {/* Analysis Summary */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="p-3 bg-muted/50 rounded-xl text-center">
-              <p className="text-xs text-muted-foreground">Đúng</p>
-              <p className="text-lg font-bold text-foreground">{correctCount}</p>
-            </div>
-            <div className="p-3 bg-muted/50 rounded-xl text-center">
-              <p className="text-xs text-muted-foreground">Sai</p>
-              <p className="text-lg font-bold text-destructive">{wrongCount}</p>
-            </div>
-            <div className="p-3 bg-muted/50 rounded-xl text-center">
-              <p className="text-xs text-muted-foreground">Điểm</p>
-              <p className="text-lg font-bold text-foreground">{review.score}%</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {review.questions.map((q, i) => {
-              const userAnswer = review.answers?.[q.id];
-              const isCorrect = userAnswer === q.correctAnswer;
-              return (
-                <div key={q.id} className={cn("border rounded-xl p-4", isCorrect ? "border-border bg-muted/30" : "border-destructive/30 bg-destructive/5")}>
-                  <div className="flex items-start gap-2 mb-3">
-                    <span className={cn("w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0", isCorrect ? "bg-muted text-foreground" : "bg-destructive/10 text-destructive")}>
-                      {isCorrect ? "✓" : "✕"}
-                    </span>
-                    <p className="text-sm font-medium text-foreground">Câu {i + 1}: {q.question}</p>
-                  </div>
-                  <div className="space-y-1.5 mb-3 ml-8">
-                    {q.options.map((opt, oi) => (
-                      <div key={oi} className={cn("p-2 rounded-lg text-xs",
-                        oi === q.correctAnswer ? "bg-muted text-foreground font-medium" :
-                        oi === userAnswer && !isCorrect ? "bg-destructive/10 text-destructive line-through" :
-                        "text-muted-foreground"
-                      )}>
-                        {String.fromCharCode(65 + oi)}. {opt}
-                        {oi === q.correctAnswer && " (Đáp án đúng)"}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="ml-8 p-3 bg-muted/50 rounded-lg">
-                    <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Giải thích:</span> {q.explanation}</p>
-                    {!isCorrect && <p className="text-xs text-destructive mt-1">Bạn chọn: {String.fromCharCode(65 + (userAnswer ?? 0))} - Sai vì không đúng công thức/khái niệm</p>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 space-y-6">
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-2xl p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center"><ClipboardCheck className="w-6 h-6 text-foreground" /></div>
-          <div><p className="text-xs text-muted-foreground">Bài có sẵn</p><p className="text-xl font-bold text-foreground">{tests.filter(t => t.status === "available").length}</p></div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <p className="text-xs text-muted-foreground">Bài tập được giao</p>
+          <p className="text-2xl font-bold text-foreground">{mockAssignments.length}</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-6 h-6 text-foreground" /></div>
-          <div><p className="text-xs text-muted-foreground">Đã hoàn thành</p><p className="text-xl font-bold text-foreground">{allCompleted.length}</p></div>
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <p className="text-xs text-muted-foreground">Bài kiểm tra</p>
+          <p className="text-2xl font-bold text-foreground">{tests.length}</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center"><BarChart3 className="w-6 h-6 text-foreground" /></div>
-          <div><p className="text-xs text-muted-foreground">Điểm TB</p><p className="text-xl font-bold text-foreground">{avgScore}%</p></div>
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <p className="text-xs text-muted-foreground">Bảo mật bài làm</p>
+          <div className="flex items-center gap-2 mt-1">
+            <ShieldCheck className="w-4 h-4 text-primary" />
+            <p className="text-sm font-medium text-foreground">Yêu cầu bật camera</p>
+          </div>
         </div>
       </div>
 
-      {/* Score Chart */}
-      {chartData.length > 0 && (
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Điểm các bài kiểm tra</h3>
-          <ChartContainer config={{ score: { label: "Điểm", color: "hsl(var(--primary))" } }} className="h-[180px] w-full">
-            <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-              <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
-              <YAxis domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="score" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ChartContainer>
-        </div>
-      )}
-
-      {/* Search & Filter */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Tìm bài kiểm tra..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 rounded-xl" />
-        </div>
-        <div className="flex gap-2">
-          {(["all", "available", "completed"] as const).map(s => (
-            <button key={s} onClick={() => setStatusFilter(s)} className={cn("px-3 py-1.5 rounded-full text-xs font-medium transition-colors", statusFilter === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
-              {s === "all" ? "Tất cả" : s === "available" ? "Có sẵn" : "Đã làm"}
+      <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
+        <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between">
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setTab("assignments");
+                setPage(1);
+              }}
+              className={cn("px-3 py-1.5 rounded-xl text-xs", tab === "assignments" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}
+            >
+              Bài tập
             </button>
+            <button
+              onClick={() => {
+                setTab("tests");
+                setPage(1);
+              }}
+              className={cn("px-3 py-1.5 rounded-xl text-xs", tab === "tests" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}
+            >
+              Bài kiểm tra
+            </button>
+          </div>
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tìm bài học..." />
+          </div>
+        </div>
+
+        {tab === "tests" && (
+          <div className="p-3 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <Camera className="w-4 h-4 text-primary" />
+              Bật camera trước khi làm bài kiểm tra.
+            </div>
+            <Button size="sm" variant={cameraEnabled ? "outline" : "default"} onClick={() => setCameraEnabled((v) => !v)}>
+              {cameraEnabled ? "Đã bật" : "Bật camera"}
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          {pagedData.map((item: any) => (
+            <div key={item.id} className="p-3 rounded-xl border border-border bg-muted/20 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">{item.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {tab === "assignments" ? item.className : item.subject} • Hạn: {item.dueDate || item.completedAt || "-"}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={item.status === "completed" ? "secondary" : "outline"}>
+                  {item.status === "completed" ? "Hoàn thành" : "Chưa làm"}
+                </Badge>
+                {tab === "tests" ? (
+                  <Button size="sm" onClick={() => handleStartTest(item.id)} disabled={item.status === "completed" || !cameraEnabled}>
+                    Làm bài
+                  </Button>
+                ) : (
+                  <Button size="sm" variant="outline" disabled={item.status === "completed"}>
+                    Nộp bài
+                  </Button>
+                )}
+              </div>
+            </div>
           ))}
         </div>
+
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage((p) => Math.max(1, p - 1));
+                }}
+              />
+            </PaginationItem>
+            {Array.from({ length: pageCount }).map((_, idx) => (
+              <PaginationItem key={idx}>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPage === idx + 1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(idx + 1);
+                  }}
+                >
+                  {idx + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage((p) => Math.min(pageCount, p + 1));
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
 
-      {/* Available */}
-      {available.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">Bài kiểm tra có sẵn</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {available.map(t => (
-              <div key={t.id} className="bg-card border border-border rounded-2xl p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground">{t.title}</h4>
-                    <p className="text-xs text-muted-foreground">{t.subject} • {t.totalQuestions} câu • {t.duration} phút</p>
-                  </div>
-                  <Badge variant="outline" className="text-[10px]">{t.subject}</Badge>
-                </div>
-                <Button className="w-full rounded-xl" size="sm" onClick={() => startTest(t.id)}>Bắt đầu làm bài</Button>
-              </div>
-            ))}
-          </div>
+      {activeTestId && (
+        <div className="p-3 rounded-xl bg-success/15 border border-success/30 flex items-center gap-2 text-sm text-success">
+          <CheckCircle2 className="w-4 h-4" />
+          Đã nộp bài kiểm tra mô phỏng thành công cho mã {activeTestId}.
         </div>
       )}
 
-      {/* Completed */}
-      {completed.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">Đã hoàn thành</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {completed.map(t => (
-              <div key={t.id} className="bg-card border border-border rounded-2xl p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground">{t.title}</h4>
-                    <p className="text-xs text-muted-foreground">{t.completedAt} • {t.subject}</p>
-                  </div>
-                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold bg-muted text-foreground")}>
-                    {t.score}%
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full rounded-xl" size="sm" onClick={() => setReviewTest(t.id)}>Xem lại bài làm</Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="bg-card border border-border rounded-2xl p-4">
+        <p className="text-xs text-muted-foreground mb-2">Tiến độ hoàn thành</p>
+        <Progress value={Math.round((mockAssignments.filter((a) => a.status === "completed").length / mockAssignments.length) * 100)} />
+      </div>
     </div>
   );
 };

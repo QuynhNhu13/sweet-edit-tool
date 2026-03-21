@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const TutorStudents = () => {
   const { studentProgress } = useTutor();
@@ -14,6 +15,8 @@ const TutorStudents = () => {
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("all");
   const [filterCompletion, setFilterCompletion] = useState("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const sp = selected ? studentProgress.find(s => s.studentId + s.classId === selected) : null;
 
@@ -31,6 +34,9 @@ const TutorStudents = () => {
     if (filterCompletion === "not_started" && s.completedSessions > 0) return false;
     return true;
   });
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pagedStudents = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const chartConfig = { score: { label: "Điểm", color: "hsl(var(--primary))" } };
 
@@ -81,7 +87,7 @@ const TutorStudents = () => {
 
       {/* Student List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {filtered.map(s => (
+        {pagedStudents.map(s => (
           <button key={s.studentId + s.classId} onClick={() => setSelected(s.studentId + s.classId)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all">
             <div className="flex items-center gap-4 mb-4">
               <img src={s.studentAvatar} alt="" className="w-12 h-12 rounded-full object-cover" />
@@ -119,6 +125,26 @@ const TutorStudents = () => {
         ))}
       </div>
       {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Không tìm thấy học sinh nào</p>}
+
+      {filtered.length > 0 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)); }} />
+            </PaginationItem>
+            {Array.from({ length: pageCount }).map((_, idx) => (
+              <PaginationItem key={idx}>
+                <PaginationLink href="#" isActive={currentPage === idx + 1} onClick={(e) => { e.preventDefault(); setPage(idx + 1); }}>
+                  {idx + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(pageCount, p + 1)); }} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
 
       {/* Student Detail Dialog */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>

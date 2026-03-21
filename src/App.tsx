@@ -152,12 +152,12 @@ const App = () => (
                 <Route path="/student" element={<StudentLayout />}>
                   <Route index element={<StudentDashboard />} />
                   <Route path="classes" element={<StudentClasses />} />
-                  <Route path="schedule" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="schedule" element={<StudentSchedule />} />
                   <Route path="availability" element={<Navigate to="/student/classes" replace />} />
-                  <Route path="tests" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="tests" element={<StudentTests />} />
                   <Route path="mock-exam" element={<Navigate to="/student/classes" replace />} />
                   <Route path="results" element={<Navigate to="/student/classes" replace />} />
-                  <Route path="report" element={<Navigate to="/student/classes" replace />} />
+                  <Route path="report" element={<StudentReport />} />
                   <Route path="find-tutor" element={<Navigate to="/find-tutor" replace />} />
                   <Route path="reviews" element={<StudentReviews />} />
                   <Route path="wallet" element={<StudentWallet />} />
@@ -169,7 +169,7 @@ const App = () => (
                   <Route path="find-tutor" element={<Navigate to="/find-tutor" replace />} />
                   <Route path="chat" element={<ParentChat />} />
                   <Route path="children" element={<ParentChildren />} />
-                  <Route path="reports" element={<Navigate to="/parent/children" replace />} />
+                  <Route path="reports" element={<ParentReports />} />
                   <Route path="reviews" element={<ParentReviews />} />
                   <Route path="wallet" element={<ParentWallet />} />
                   <Route path="support" element={<ParentSupport />} />

@@ -4,12 +4,15 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from "recharts";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const TutorReviews = () => {
   const { profile, reviews } = useTutor();
   const [search, setSearch] = useState("");
   const [filterRating, setFilterRating] = useState<number | null>(null);
   const [filterSubject, setFilterSubject] = useState("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const subjects = [...new Set(reviews.map(r => r.subject))];
   const filtered = reviews.filter(r => {
@@ -18,6 +21,9 @@ const TutorReviews = () => {
     if (filterSubject !== "all" && r.subject !== filterSubject) return false;
     return true;
   });
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pagedReviews = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const ratingDist = [5, 4, 3, 2, 1].map(r => ({
     stars: r,
@@ -140,7 +146,7 @@ const TutorReviews = () => {
 
       {/* Review List */}
       <div className="space-y-3">
-        {filtered.map(r => (
+        {pagedReviews.map(r => (
           <div key={r.id} className="bg-card border border-border rounded-2xl p-5">
             <div className="flex items-start gap-4">
               <img src={r.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
@@ -165,6 +171,45 @@ const TutorReviews = () => {
         ))}
         {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">Không có đánh giá nào</p>}
       </div>
+
+      {filtered.length > 0 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage((p) => Math.max(1, p - 1));
+                }}
+              />
+            </PaginationItem>
+            {Array.from({ length: pageCount }).map((_, idx) => (
+              <PaginationItem key={idx}>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPage === idx + 1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(idx + 1);
+                  }}
+                >
+                  {idx + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage((p) => Math.min(pageCount, p + 1));
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
