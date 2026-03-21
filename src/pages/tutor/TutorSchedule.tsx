@@ -107,8 +107,8 @@ const TutorSchedule = () => {
                             </span>
                           </button>
                         ) : available ? (
-                          <div className="w-full h-12 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200/50 dark:border-emerald-800/50 flex items-center justify-center">
-                            <span className="text-[10px] text-emerald-600">Rảnh</span>
+                          <div className="w-full h-12 rounded-lg bg-success/15 dark:bg-emerald-900/10 border border-success/30/50 dark:border-success/40/50 flex items-center justify-center">
+                            <span className="text-[10px] text-success">Rảnh</span>
                           </div>
                         ) : (
                           <div className="w-full h-12" />
@@ -155,7 +155,7 @@ const TutorSchedule = () => {
                     {s.format === "online" ? "ONL" : "OFF"}
                   </span>
                   {s.format === "online" && s.meetingLink && (
-                    <button onClick={() => navigate(s.meetingLink)} className="flex items-center gap-1 px-2 py-1 bg-emerald-600 text-white rounded-lg text-xs">
+                    <button onClick={() => navigate(s.meetingLink)} className="flex items-center gap-1 px-2 py-1 bg-success text-white rounded-lg text-xs">
                       <Video className="w-3 h-3" /> Vào
                     </button>
                   )}
@@ -169,12 +169,12 @@ const TutorSchedule = () => {
         {/* Completed */}
         <div className="bg-card border border-border rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Buổi đã hoàn thành
+            <CheckCircle2 className="w-4 h-4 text-success" /> Buổi đã hoàn thành
           </h3>
           <div className="space-y-2">
             {completed.map(s => (
               <button key={s.id} onClick={() => setSelectedSession(s)} className="w-full flex items-center gap-3 p-3 bg-muted/30 rounded-xl text-left hover:bg-muted/50 transition-all">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-foreground truncate">{s.className} — {s.content || "N/A"}</p>
                   <p className="text-[11px] text-muted-foreground">{s.date} • {s.startedAt}-{s.endedAt}</p>
@@ -210,7 +210,7 @@ const TutorSchedule = () => {
                 {selectedSession.notes && <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Nhận xét</span><p className="text-sm">{selectedSession.notes}</p></div>}
                 {selectedSession.homework && <div className="p-3 bg-primary/5 rounded-xl border border-primary/10"><span className="text-xs text-muted-foreground block mb-1">BTVN</span><p className="text-sm font-medium">{selectedSession.homework}</p></div>}
                 {selectedSession.format === "online" && selectedSession.meetingLink && selectedSession.status === "scheduled" && (
-                  <button onClick={() => { setSelectedSession(null); navigate(selectedSession.meetingLink); }} className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-medium flex items-center justify-center gap-2">
+                  <button onClick={() => { setSelectedSession(null); navigate(selectedSession.meetingLink); }} className="w-full py-2.5 bg-success text-white rounded-xl font-medium flex items-center justify-center gap-2">
                     <Video className="w-4 h-4" /> Vào phòng họp online
                   </button>
                 )}

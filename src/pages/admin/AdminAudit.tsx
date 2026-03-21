@@ -4,17 +4,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollText, Shield, Clock, User } from "lucide-react";
 
 const actionColor: Record<string, string> = {
-  "Duyệt tài khoản": "bg-emerald-500/10 text-emerald-600",
+  "Duyệt tài khoản": "bg-success/150/10 text-success",
   "Từ chối tài khoản": "bg-destructive/10 text-destructive",
   "Xóa người dùng": "bg-destructive/10 text-destructive",
   "Tạo lớp học": "bg-primary/10 text-primary",
-  "Cập nhật lớp học": "bg-amber-500/10 text-amber-600",
+  "Cập nhật lớp học": "bg-warning/150/10 text-warning",
   "Xóa lớp học": "bg-destructive/10 text-destructive",
   "Tạo bài test": "bg-primary/10 text-primary",
-  "Cập nhật bài test": "bg-amber-500/10 text-amber-600",
+  "Cập nhật bài test": "bg-warning/150/10 text-warning",
   "Xóa bài test": "bg-destructive/10 text-destructive",
   "Cập nhật cài đặt": "bg-muted text-muted-foreground",
-  "Thêm giao dịch": "bg-emerald-500/10 text-emerald-600",
+  "Thêm giao dịch": "bg-success/150/10 text-success",
 };
 
 const AdminAudit = () => {
@@ -37,8 +37,8 @@ const AdminAudit = () => {
         </Card>
         <Card className="border-0 shadow-soft">
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-emerald-600" />
+            <div className="w-10 h-10 rounded-xl bg-success/150/10 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-success" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{auditLog.filter(l => l.action.includes("Duyệt")).length}</p>

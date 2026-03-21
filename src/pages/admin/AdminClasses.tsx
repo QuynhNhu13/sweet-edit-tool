@@ -13,8 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const statusLabel: Record<string, string> = { searching: "Đang tìm", active: "Đang học", completed: "Hoàn thành" };
 const statusColor: Record<string, string> = {
-  searching: "bg-amber-500/10 text-amber-600",
-  active: "bg-emerald-500/10 text-emerald-600",
+  searching: "bg-warning/150/10 text-warning",
+  active: "bg-success/150/10 text-success",
   completed: "bg-primary/10 text-primary",
 };
 const formatColor: Record<string, string> = {
@@ -66,8 +66,8 @@ const AdminClasses = () => {
 
   const stats = [
     { label: "Tổng lớp", value: classes.length, icon: BookOpen, color: "bg-primary/10 text-primary" },
-    { label: "Đang hoạt động", value: activeClasses, icon: Users, color: "bg-emerald-500/10 text-emerald-600" },
-    { label: "Đang tìm gia sư", value: searchingClasses, icon: SearchIcon, color: "bg-amber-500/10 text-amber-600" },
+    { label: "Đang hoạt động", value: activeClasses, icon: Users, color: "bg-success/150/10 text-success" },
+    { label: "Đang tìm gia sư", value: searchingClasses, icon: SearchIcon, color: "bg-warning/150/10 text-warning" },
     { label: "Buổi học tháng này", value: activeClasses * 8, icon: Calendar, color: "bg-primary/10 text-primary" },
   ];
 
@@ -262,7 +262,7 @@ const AdminClasses = () => {
                 </div>
                 <div className="bg-muted/50 p-3 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <BookOpen className="w-4 h-4 text-emerald-600" />
+                    <BookOpen className="w-4 h-4 text-success" />
                     <span className="text-xs text-muted-foreground">Gia sư</span>
                   </div>
                   <div className="flex items-center gap-2">

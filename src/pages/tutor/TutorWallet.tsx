@@ -95,7 +95,7 @@ const TutorWallet = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center"><Wallet className="w-5 h-5 text-emerald-600" /></div>
+            <div className="w-10 h-10 rounded-xl bg-success/15 dark:bg-emerald-900/20 flex items-center justify-center"><Wallet className="w-5 h-5 text-success" /></div>
             <span className="text-xs text-muted-foreground">Ví khả dụng</span>
           </div>
           <p className="text-2xl font-bold text-foreground">{walletBalance.toLocaleString("vi-VN")}đ</p>
@@ -103,7 +103,7 @@ const TutorWallet = () => {
             <button onClick={() => setDialogType("withdraw")} className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium flex items-center justify-center gap-1">
               <ArrowUpRight className="w-3.5 h-3.5" /> Rút
             </button>
-            <button onClick={() => setDialogType("deposit")} className="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-1">
+            <button onClick={() => setDialogType("deposit")} className="flex-1 py-2 bg-success text-white rounded-xl text-sm font-medium flex items-center justify-center gap-1">
               <Plus className="w-3.5 h-3.5" /> Nạp
             </button>
           </div>
@@ -118,7 +118,7 @@ const TutorWallet = () => {
         </div>
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center"><DollarSign className="w-5 h-5 text-amber-600" /></div>
+            <div className="w-10 h-10 rounded-xl bg-warning/15 dark:bg-amber-900/20 flex items-center justify-center"><DollarSign className="w-5 h-5 text-warning" /></div>
             <span className="text-xs text-muted-foreground">Tổng thu nhập</span>
           </div>
           <p className="text-2xl font-bold text-foreground">{totalIncome.toLocaleString("vi-VN")}đ</p>
@@ -144,14 +144,14 @@ const TutorWallet = () => {
               </div>
               <div className="w-32">
                 <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-emerald-500 rounded-full h-2 transition-all" style={{ width: `${(c.escrowReleased / c.escrowAmount) * 100}%` }} />
+                  <div className="bg-success/150 rounded-full h-2 transition-all" style={{ width: `${(c.escrowReleased / c.escrowAmount) * 100}%` }} />
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-0.5 text-right">{c.escrowReleased.toLocaleString("vi-VN")}/{c.escrowAmount.toLocaleString("vi-VN")}đ</p>
               </div>
-              {c.escrowStatus === "completed" && <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg">Đã giải ngân</span>}
+              {c.escrowStatus === "completed" && <span className="text-[10px] font-medium text-success bg-success/15 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg">Đã giải ngân</span>}
               {(c.escrowStatus === "pending" || c.escrowStatus === "in_progress") && (
                 hasExistingRefund(c.id) ? (
-                  <span className="text-[10px] font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg">Chờ duyệt</span>
+                  <span className="text-[10px] font-medium text-warning bg-warning/15 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg">Chờ duyệt</span>
                 ) : (
                   <button onClick={() => openRefundModal(c.id)} className="text-[10px] font-medium text-destructive hover:underline">Hoàn tiền</button>
                 )
@@ -177,8 +177,8 @@ const TutorWallet = () => {
                   <p className="text-[10px] text-muted-foreground/70">{r.createdAt}</p>
                 </div>
                 <span className={cn("text-[10px] px-2 py-0.5 rounded-lg font-medium",
-                  r.status === "pending" && "bg-amber-50 text-amber-600 dark:bg-amber-900/20",
-                  r.status === "approved" && "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20",
+                  r.status === "pending" && "bg-warning/15 text-warning dark:bg-amber-900/20",
+                  r.status === "approved" && "bg-success/15 text-success dark:bg-emerald-900/20",
                   r.status === "rejected" && "bg-destructive/10 text-destructive",
                 )}>
                   {r.status === "pending" ? "Chờ duyệt" : r.status === "approved" ? "Đã duyệt" : "Từ chối"}
@@ -202,17 +202,17 @@ const TutorWallet = () => {
         <div className="space-y-2">
           {filtered.map(w => (
             <div key={w.id} className="flex items-center gap-3 p-3 hover:bg-muted/30 rounded-xl transition-colors">
-              <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", w.amount > 0 ? "bg-emerald-50 dark:bg-emerald-900/20" : "bg-muted")}>
-                {w.amount > 0 ? <ArrowDownLeft className="w-4 h-4 text-emerald-600" /> : <ArrowUpRight className="w-4 h-4 text-muted-foreground" />}
+              <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", w.amount > 0 ? "bg-success/15 dark:bg-emerald-900/20" : "bg-muted")}>
+                {w.amount > 0 ? <ArrowDownLeft className="w-4 h-4 text-success" /> : <ArrowUpRight className="w-4 h-4 text-muted-foreground" />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-foreground">{w.description}</p>
                 <p className="text-[11px] text-muted-foreground">{w.date} • {typeLabels[w.type]}{w.paymentMethod ? ` • ${w.paymentMethod}` : ""}</p>
               </div>
-              <p className={cn("text-sm font-semibold", w.amount > 0 ? "text-emerald-600" : "text-foreground")}>
+              <p className={cn("text-sm font-semibold", w.amount > 0 ? "text-success" : "text-foreground")}>
                 {w.amount > 0 ? "+" : ""}{w.amount.toLocaleString("vi-VN")}đ
               </p>
-              <span className={cn("text-[10px] px-2 py-0.5 rounded-lg", w.status === "completed" ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20" : "bg-amber-50 text-amber-600 dark:bg-amber-900/20")}>
+              <span className={cn("text-[10px] px-2 py-0.5 rounded-lg", w.status === "completed" ? "bg-success/15 text-success dark:bg-emerald-900/20" : "bg-warning/15 text-warning dark:bg-amber-900/20")}>
                 {w.status === "completed" ? "Hoàn thành" : "Đang xử lý"}
               </span>
             </div>
@@ -268,7 +268,7 @@ const TutorWallet = () => {
       {/* Refund Request Dialog */}
       <Dialog open={!!refundClassId} onOpenChange={() => setRefundClassId(null)}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-amber-500" /> Yêu cầu hoàn tiền</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-warning" /> Yêu cầu hoàn tiền</DialogTitle></DialogHeader>
           <div className="space-y-4">
             {/* Explanation */}
             <div className="flex gap-3 p-3 bg-primary/5 border border-primary/20 rounded-xl">

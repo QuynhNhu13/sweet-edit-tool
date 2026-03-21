@@ -124,7 +124,7 @@ const ExamManagerStats = () => {
                   <p className="text-xs text-muted-foreground">{exam?.name}</p>
                 </div>
                 <div className="text-right">
-                  <p className={`text-sm font-bold ${a.score >= 5 ? "text-emerald-600" : "text-red-600"}`}>{a.score} điểm</p>
+                  <p className={`text-sm font-bold ${a.score >= 5 ? "text-success" : "text-red-600"}`}>{a.score} điểm</p>
                   <p className="text-[10px] text-muted-foreground">{a.completedAt}</p>
                 </div>
               </div>

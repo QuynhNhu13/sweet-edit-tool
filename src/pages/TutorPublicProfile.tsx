@@ -32,7 +32,7 @@ const TutorPublicProfile = () => {
               <div className="flex items-center gap-3 mb-1">
                 <h1 className="text-2xl font-bold">{profile.name}</h1>
                 {profile.degreeVerified && (
-                  <span className="flex items-center gap-1 text-xs font-medium bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-lg">
+                  <span className="flex items-center gap-1 text-xs font-medium bg-success/150/20 text-emerald-300 px-2 py-0.5 rounded-lg">
                     <ShieldCheck className="w-3 h-3" /> Verified
                   </span>
                 )}
@@ -73,15 +73,15 @@ const TutorPublicProfile = () => {
 
         {/* Verified Credentials */}
         <div className="grid grid-cols-2 gap-4">
-          <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.transcriptVerified ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10" : "border-border bg-card")}>
-            <ShieldCheck className={cn("w-6 h-6", profile.transcriptVerified ? "text-emerald-600" : "text-muted-foreground")} />
+          <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.transcriptVerified ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-border bg-card")}>
+            <ShieldCheck className={cn("w-6 h-6", profile.transcriptVerified ? "text-success" : "text-muted-foreground")} />
             <div>
               <p className="text-sm font-medium text-foreground">Bảng điểm</p>
               <p className="text-xs text-muted-foreground">{profile.transcriptVerified ? "Đã xác minh" : "Chưa xác minh"}</p>
             </div>
           </div>
-          <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.degreeVerified ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10" : "border-border bg-card")}>
-            <Trophy className={cn("w-6 h-6", profile.degreeVerified ? "text-emerald-600" : "text-muted-foreground")} />
+          <div className={cn("p-4 rounded-2xl border flex items-center gap-3", profile.degreeVerified ? "border-success/30 bg-success/15/50 dark:border-success/40 dark:bg-emerald-900/10" : "border-border bg-card")}>
+            <Trophy className={cn("w-6 h-6", profile.degreeVerified ? "text-success" : "text-muted-foreground")} />
             <div>
               <p className="text-sm font-medium text-foreground">Văn bằng</p>
               <p className="text-xs text-muted-foreground">{profile.degreeVerified ? "Đã xác minh" : "Chưa xác minh"}</p>

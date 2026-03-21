@@ -99,7 +99,7 @@ const TutorReviews = () => {
           <div className="mt-4 pt-4 border-t border-border text-center">
             <p className="text-3xl font-bold text-primary">{profile.testPassRate}%</p>
             <p className="text-xs text-muted-foreground">Tỷ lệ đậu test</p>
-            <TrendingUp className="w-4 h-4 text-emerald-500 mx-auto mt-1" />
+            <TrendingUp className="w-4 h-4 text-success mx-auto mt-1" />
           </div>
         </div>
       </div>

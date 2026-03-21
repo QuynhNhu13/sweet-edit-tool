@@ -52,7 +52,7 @@ const StudentReviews = () => {
           <p className="text-xs text-muted-foreground mt-1">Đã đánh giá</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-5 text-center">
-          <p className="text-3xl font-bold text-amber-500">{unreviewedSessions.length}</p>
+          <p className="text-3xl font-bold text-warning">{unreviewedSessions.length}</p>
           <p className="text-xs text-muted-foreground mt-1">Chưa đánh giá</p>
         </div>
       </div>

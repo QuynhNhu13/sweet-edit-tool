@@ -222,7 +222,7 @@ const ExamManagerExams = () => {
                   <TableCell><Badge variant={statusConfig[e.status]?.variant || "outline"}>{statusConfig[e.status]?.label || e.status}</Badge></TableCell>
                   <TableCell>
                     <button onClick={() => toggleExamVisibility(e.id)} className="p-1 rounded hover:bg-muted">
-                      {e.visible ? <Eye className="w-4 h-4 text-emerald-600" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
+                      {e.visible ? <Eye className="w-4 h-4 text-success" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
                     </button>
                   </TableCell>
                   <TableCell>
