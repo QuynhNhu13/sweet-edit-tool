@@ -3,22 +3,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CreditCard, TrendingUp, Wallet, Receipt, Search, Download } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const typeLabel: Record<string, string> = { tuition: "Học phí", salary: "Lương gia sư", "exam-fee": "Phí thi thử" };
-const typeColor: Record<string, string> = {
-  tuition: "bg-primary/10 text-primary",
-  salary: "bg-emerald-500/10 text-emerald-600",
-  "exam-fee": "bg-amber-500/10 text-amber-600",
+const typeVariant: Record<string, "default" | "success" | "warning"> = {
+  tuition: "default",
+  salary: "success",
+  "exam-fee": "warning",
 };
 const statusLabel: Record<string, string> = { completed: "Hoàn thành", pending: "Đang xử lý", failed: "Thất bại", refunded: "Hoàn tiền" };
-const statusColor: Record<string, string> = {
-  completed: "bg-emerald-500/10 text-emerald-600",
-  pending: "bg-amber-500/10 text-amber-600",
-  failed: "bg-destructive/10 text-destructive",
-  refunded: "bg-primary/10 text-primary",
+const statusVariant: Record<string, "success" | "warning" | "destructive" | "info"> = {
+  completed: "success",
+  pending: "warning",
+  failed: "destructive",
+  refunded: "info",
 };
 
 const AdminTransactions = () => {
@@ -46,9 +48,9 @@ const AdminTransactions = () => {
 
   const stats = [
     { label: "Tổng giao dịch", value: transactions.length, icon: Receipt, color: "bg-primary/10 text-primary" },
-    { label: "Tổng doanh thu", value: `${(totalRevenue / 1000000).toFixed(1)}M`, icon: CreditCard, color: "bg-emerald-500/10 text-emerald-600" },
-    { label: `Lợi nhuận (${settings.escrowPercent}%)`, value: `${(escrowProfit / 1000000).toFixed(1)}M`, icon: TrendingUp, color: "bg-secondary/20 text-secondary-foreground" },
-    { label: "Đang chờ xử lý", value: `${(pendingAmount / 1000000).toFixed(1)}M`, icon: Wallet, color: "bg-amber-500/10 text-amber-600" },
+    { label: "Tổng doanh thu", value: `${(totalRevenue / 1000000).toFixed(1)}M`, icon: CreditCard, color: "bg-success/15 text-success" },
+    { label: `Lợi nhuận (${settings.escrowPercent}%)`, value: `${(escrowProfit / 1000000).toFixed(1)}M`, icon: TrendingUp, color: "bg-info/15 text-info" },
+    { label: "Đang chờ xử lý", value: `${(pendingAmount / 1000000).toFixed(1)}M`, icon: Wallet, color: "bg-warning/15 text-warning" },
   ];
 
   return (
@@ -108,12 +110,13 @@ const AdminTransactions = () => {
             <SelectItem value="custom">Khoảng tùy chọn</SelectItem>
           </SelectContent>
         </Select>
-        <button
+        <Button
+          variant="outline"
           onClick={() => toast({ title: "Đã xuất dữ liệu giao dịch" })}
-          className="h-10 px-4 rounded-xl border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors inline-flex items-center gap-2"
+          className="h-10 rounded-xl inline-flex items-center gap-2"
         >
           <Download className="w-4 h-4" /> Export
-        </button>
+        </Button>
       </div>
 
       {/* Table */}
@@ -142,17 +145,17 @@ const AdminTransactions = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${typeColor[tx.type]}`}>
+                      <Badge variant={typeVariant[tx.type] ?? "default"}>
                         {typeLabel[tx.type]}
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-foreground">{tx.amount.toLocaleString("vi-VN")}đ</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{tx.date}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{tx.description}</TableCell>
                     <TableCell>
-                      <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${statusColor[tx.status]}`}>
+                      <Badge variant={statusVariant[tx.status] ?? "outline"}>
                         {statusLabel[tx.status]}
-                      </span>
+                      </Badge>
                     </TableCell>
                   </TableRow>
                 );
