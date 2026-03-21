@@ -3,7 +3,6 @@ import { LayoutDashboard, ClipboardCheck, AlertTriangle, BookOpen, CalendarCog, 
 import { cn } from "@/lib/utils";
 import { useOffice } from "@/contexts/OfficeContext";
 import EduLogo from "@/components/EduLogo";
-import ThemeToggle from "@/components/ThemeToggle";
 import UserAvatarDropdown from "@/components/UserAvatarDropdown";
 import { useState, useRef, useEffect } from "react";
 
@@ -87,7 +86,6 @@ const OfficeLayout = () => {
         <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between shrink-0">
           <h2 className="text-lg font-semibold text-foreground">{currentTitle}</h2>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
             <div className="relative" ref={notifRef}>
               <button className="relative p-2 rounded-xl hover:bg-muted transition-colors" onClick={() => setShowNotif(!showNotif)}>
                 <Bell className="w-5 h-5 text-muted-foreground" />
