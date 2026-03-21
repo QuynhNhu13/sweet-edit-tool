@@ -1,10 +1,10 @@
 import { useParent } from "@/contexts/ParentContext";
-import { Wallet, Users, Bell, Star, CreditCard, MessageSquare, HelpCircle, CalendarDays, TrendingUp, BookOpen, CheckCircle2 } from "lucide-react";
+import { Wallet, Users, Bell, Star, CreditCard, MessageSquare, HelpCircle, CalendarDays, TrendingUp, BookOpen, CheckCircle2, BarChart3, UserRoundSearch } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const ParentDashboard = () => {
-  const { profile, children, notifications, walletBalance, transactions } = useParent();
+  const { profile, children, notifications, walletBalance, transactions, childProgress } = useParent();
   const navigate = useNavigate();
   const unreadNotifs = notifications.filter(n => !n.read).length;
   const totalSpent = Math.abs(
@@ -19,7 +19,12 @@ const ParentDashboard = () => {
     { label: "Thanh toán học phí", icon: CreditCard, action: () => navigate("/parent/wallet"), desc: "Quản lý học phí và lịch sử giao dịch" },
     { label: "Tin nhắn", icon: MessageSquare, action: () => navigate("/parent/chat"), desc: "Trao đổi với gia sư và trung tâm" },
     { label: "Hỗ trợ & khiếu nại", icon: HelpCircle, action: () => navigate("/parent/support"), desc: "Tạo yêu cầu hỗ trợ hoặc khiếu nại" },
+    { label: "Tìm gia sư", icon: UserRoundSearch, action: () => navigate("/find-tutor"), desc: "Chuyển tới hệ thống tìm gia sư" },
   ];
+
+  const latestReports = Object.values(childProgress)
+    .map((series) => series[series.length - 1])
+    .filter(Boolean);
 
   return (
     <div className="p-6 space-y-6">
@@ -69,6 +74,24 @@ const ParentDashboard = () => {
                 <p className="text-lg font-bold text-foreground">{child.gpa}</p>
                 <p className="text-[10px] text-muted-foreground">GPA</p>
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-primary" /> Báo cáo tiến độ tích hợp
+          </h3>
+          <button onClick={() => navigate("/parent/reports")} className="text-xs text-primary font-medium hover:text-primary/80">Xem báo cáo chi tiết</button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {latestReports.map((report, idx) => (
+            <div key={idx} className="p-3 rounded-xl border border-border bg-muted/20">
+              <p className="text-xs text-muted-foreground">{report.month}</p>
+              <p className="text-lg font-bold text-foreground">GPA {report.gpa}</p>
+              <p className="text-xs text-muted-foreground">Chuyên cần {report.attendance}% • {report.sessionsCompleted} buổi</p>
             </div>
           ))}
         </div>

@@ -139,34 +139,6 @@ const TutorDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Next Session */}
-          <div className="bg-card border border-border rounded-2xl p-6">
-            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" /> Buổi học sắp tới
-            </h3>
-            {nextSession && nextClass ? (
-              <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <CalendarDays className="w-7 h-7 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-base font-semibold text-foreground">{nextClass.name}</p>
-                  <p className="text-sm text-muted-foreground">{nextSession.date} • {nextSession.time}</p>
-                  <p className="text-xs text-muted-foreground">Học sinh: {nextClass.studentName}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Còn</p>
-                  <p className="text-lg font-bold text-primary">{getCountdown()}</p>
-                </div>
-                <button onClick={() => navigate(`/tutor/classes/${nextClass.id}`)} className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors">
-                  Vào lớp
-                </button>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">Không có buổi học nào sắp tới</p>
-            )}
-          </div>
-
           {/* Income Line Chart */}
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
