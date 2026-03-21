@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, Eye, FileText, Phone, Mail, BookOpen, GraduationCap, Building2, Hash } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import type { AdminUser } from "@/contexts/AdminContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,6 +28,8 @@ const AdminApprovals = () => {
   const [detail, setDetail] = useState<AdminUser | null>(null);
   const [docView, setDocView] = useState<{ user: AdminUser; type: "transcript" | "diploma" } | null>(null);
   const [activeTab, setActiveTab] = useState<TabValue>("pending");
+  const [rejectTarget, setRejectTarget] = useState<AdminUser | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const { toast } = useToast();
 
   const tabs: { value: TabValue; label: string; count: number }[] = [
@@ -42,8 +45,8 @@ const AdminApprovals = () => {
     toast({ title: "Đã duyệt tài khoản thành công" });
   };
 
-  const handleReject = (id: string) => {
-    rejectUser(id);
+  const handleReject = (id: string, reason?: string) => {
+    rejectUser(id, reason);
     toast({ title: "Đã từ chối tài khoản", variant: "destructive" });
   };
 
@@ -146,7 +149,7 @@ const AdminApprovals = () => {
                         size="sm"
                         variant="outline"
                         className="rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10"
-                        onClick={() => handleReject(u.id)}
+                          onClick={() => { setRejectTarget(u); setRejectReason(""); }}
                       >
                         <XCircle className="w-4 h-4 mr-1.5" /> Từ chối
                       </Button>
@@ -212,7 +215,17 @@ const AdminApprovals = () => {
               {detail.status === "pending" && (
                 <div className="flex gap-2 pt-2">
                   <Button className="rounded-xl bg-success/150 hover:bg-success text-white flex-1" onClick={() => { handleApprove(detail.id); setDetail(null); }}>Duyệt</Button>
-                  <Button variant="outline" className="rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 flex-1" onClick={() => { handleReject(detail.id); setDetail(null); }}>Từ chối</Button>
+                   <Button
+                     variant="outline"
+                     className="rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 flex-1"
+                     onClick={() => {
+                       setDetail(null);
+                       setRejectTarget(detail);
+                       setRejectReason("");
+                     }}
+                   >
+                     Từ chối
+                   </Button>
                 </div>
               )}
             </div>
@@ -250,6 +263,35 @@ const AdminApprovals = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!rejectTarget} onOpenChange={() => setRejectTarget(null)}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader><DialogTitle>Nhập lý do từ chối</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">Lý do sẽ được gửi đến {rejectTarget?.name}.</p>
+            <Textarea
+              rows={4}
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="VD: Thiếu giấy tờ xác minh hợp lệ..."
+              className="rounded-xl"
+            />
+            <Button
+              variant="destructive"
+              className="w-full rounded-xl"
+              disabled={!rejectReason.trim() || !rejectTarget}
+              onClick={() => {
+                if (!rejectTarget) return;
+                handleReject(rejectTarget.id, rejectReason.trim());
+                setRejectTarget(null);
+                setRejectReason("");
+              }}
+            >
+              Xác nhận từ chối
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
