@@ -153,9 +153,9 @@ const HeroSection = () => {
               ))}
             </div>
 
-            <div className="absolute top-5 right-5 bg-success/15 text-success border border-success/30 px-4 py-2 rounded-full text-xs font-bold z-30">
+            {/* <div className="absolute top-5 right-5 bg-success/15 text-success border border-success/30 px-4 py-2 rounded-full text-xs font-bold z-30">
               Tỉ lệ hoàn thành mục tiêu cao
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>

@@ -57,11 +57,11 @@ const FindTutor = () => {
             />
           </div>
 
-          <div className="max-w-3xl mx-auto mb-8 bg-card border border-border rounded-3xl p-5">
+          {/* <div className="max-w-3xl mx-auto mb-8 bg-card border border-border rounded-3xl p-5">
             <p className="text-xs text-muted-foreground mb-1">Demo đặt lịch đang diễn ra</p>
             <p className="text-sm font-semibold text-foreground">{demoBooking.studentName} • {demoBooking.subject} • Gia sư {demoBooking.tutor}</p>
             <p className="text-xs text-muted-foreground mt-1">Gửi lúc {demoBooking.requestedAt} • Trạng thái: {demoBooking.status}</p>
-          </div>
+          </div> */}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((t) => (

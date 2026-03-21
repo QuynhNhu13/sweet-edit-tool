@@ -66,29 +66,29 @@ const Header = () => {
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-all"
+              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white rounded-lg hover:bg-[#1E69E7] transition-all"
             >
               {link.label}
             </button>
           ))}
           <Link
             to="/find-tutor"
-            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-all"
+            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white rounded-lg hover:bg-[#1E69E7] transition-all"
           >
             Tìm gia sư
           </Link>
-          <Link
+          {/* <Link
             to="/exam-online"
             className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-all"
           >
             Thi thử
-          </Link>
+          </Link> */}
         </nav>
 
         <div className="hidden lg:flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-all">
+              <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white rounded-lg hover:bg-[#1E69E7] transition-all">
                 Demo <ChevronDown className="w-3.5 h-3.5" />
               </button>
             </DropdownMenuTrigger>
@@ -103,7 +103,7 @@ const Header = () => {
           <Button variant="ghost" asChild className="rounded-full text-sm px-6">
             <Link to="/login">Đăng nhập</Link>
           </Button>
-          <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-sm shadow-neon px-6">
+          <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-[#1E69E7] font-semibold text-sm shadow-neon px-6">
             <Link to="/register">Đăng ký</Link>
           </Button>
         </div>
@@ -121,15 +121,15 @@ const Header = () => {
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}
-              className="block w-full text-left py-2.5 px-3 text-sm font-medium text-muted-foreground rounded-lg hover:bg-muted/50"
+              className="block w-full text-left py-2.5 px-3 text-sm font-medium text-muted-foreground hover:text-white rounded-lg hover:bg-[#1E69E7]"
             >
               {link.label}
             </button>
           ))}
-          <Link to="/find-tutor" className="block py-2.5 px-3 text-sm font-medium text-muted-foreground rounded-lg hover:bg-muted/50" onClick={() => setMobileOpen(false)}>Tìm gia sư</Link>
-          <Link to="/exam-online" className="block py-2.5 px-3 text-sm font-medium text-muted-foreground rounded-lg hover:bg-muted/50" onClick={() => setMobileOpen(false)}>Thi thử Online</Link>
+          <Link to="/find-tutor" className="block py-2.5 px-3 text-sm font-medium text-muted-foreground hover:text-white rounded-lg hover:bg-[#1E69E7]" onClick={() => setMobileOpen(false)}>Tìm gia sư</Link>
+          <Link to="/exam-online" className="block py-2.5 px-3 text-sm font-medium text-muted-foreground hover:text-white rounded-lg hover:bg-[#1E69E7]" onClick={() => setMobileOpen(false)}>Thi thử Online</Link>
           <details className="group">
-            <summary className="py-2.5 px-3 text-sm font-medium text-muted-foreground cursor-pointer list-none flex items-center gap-1 rounded-lg hover:bg-muted/50">
+            <summary className="py-2.5 px-3 text-sm font-medium text-muted-foreground hover:text-white cursor-pointer list-none flex items-center gap-1 rounded-lg hover:bg-[#1E69E7]">
               Demo <ChevronDown className="w-3.5 h-3.5 group-open:rotate-180 transition-transform" />
             </summary>
             <div className="pl-6 space-y-1">
@@ -144,7 +144,7 @@ const Header = () => {
             <Button variant="ghost" asChild className="flex-1 rounded-full">
               <Link to="/login" onClick={() => setMobileOpen(false)}>Đăng nhập</Link>
             </Button>
-            <Button asChild className="flex-1 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button asChild className="flex-1 rounded-full bg-primary text-primary-foreground hover:bg-[#1E69E7]">
               <Link to="/register" onClick={() => setMobileOpen(false)}>Đăng ký</Link>
             </Button>
           </div>

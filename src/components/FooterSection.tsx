@@ -4,7 +4,7 @@ import EduLogo from "@/components/EduLogo";
 
 const FooterSection = () => {
   return (
-    <footer className="bg-primary py-16 border-t border-primary/70">
+    <footer className="bg-[#052861] py-16 border-t border-primary/70">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-10 mb-14">
           <div>
