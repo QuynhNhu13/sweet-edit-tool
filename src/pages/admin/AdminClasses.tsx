@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Edit, BookOpen, Users, Search as SearchIcon, Calendar, Eye, Clock, MapPin, FileText } from "lucide-react";
 import type { AdminClass, ClassStatus, ClassFormat } from "@/contexts/AdminContext";
 import { useToast } from "@/hooks/use-toast";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 
 const statusLabel: Record<string, string> = { searching: "Đang tìm", active: "Đang học", completed: "Hoàn thành" };
 const statusColor: Record<string, string> = {
@@ -35,40 +34,7 @@ const AdminClasses = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilterVal, setStatusFilterVal] = useState("all");
   const [formatFilterVal, setFormatFilterVal] = useState("all");
-  const [period, setPeriod] = useState("month");
-  const [selectedMonth, setSelectedMonth] = useState("03");
-  const [selectedYear, setSelectedYear] = useState("2026");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [page, setPage] = useState(1);
   const { toast } = useToast();
-
-  const ITEMS_PER_PAGE = 10;
-
-  const parseDate = (value: string) => new Date(value);
-
-  const byPeriod = (createdAt: string) => {
-    const date = parseDate(createdAt);
-    if (Number.isNaN(date.getTime())) return false;
-    if (period === "month") return date.getMonth() + 1 === Number(selectedMonth) && date.getFullYear() === Number(selectedYear);
-    if (period === "year") return date.getFullYear() === Number(selectedYear);
-    if (period === "custom") {
-      if (!fromDate || !toDate) return true;
-      return date >= new Date(fromDate) && date <= new Date(toDate);
-    }
-    return true;
-  };
-
-  const filtered = classes.filter(c => {
-    if (statusFilterVal !== "all" && c.status !== statusFilterVal) return false;
-    if (formatFilterVal !== "all" && c.format !== formatFilterVal) return false;
-    if (!byPeriod(c.createdAt)) return false;
-    if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase()) && !c.subject.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const students = users.filter(u => u.role === "student" && u.status === "approved");
   const tutors = users.filter(u => (u.role === "tutor" || u.role === "teacher") && u.status === "approved");
@@ -157,41 +123,6 @@ const AdminClasses = () => {
             <SelectItem value="hybrid">Hybrid</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={period} onValueChange={(v) => { setPeriod(v); setPage(1); }}>
-          <SelectTrigger className="w-full md:w-40 h-11 rounded-2xl bg-card border-border">
-            <SelectValue placeholder="Khoảng thời gian" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="month">Theo tháng</SelectItem>
-            <SelectItem value="year">Theo năm</SelectItem>
-            <SelectItem value="custom">Khoảng tùy chọn</SelectItem>
-          </SelectContent>
-        </Select>
-        {period === "month" && (
-          <Select value={selectedMonth} onValueChange={(v) => { setSelectedMonth(v); setPage(1); }}>
-            <SelectTrigger className="w-full md:w-32 h-11 rounded-2xl bg-card border-border"><SelectValue placeholder="Tháng" /></SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: 12 }, (_, i) => {
-                const month = String(i + 1).padStart(2, "0");
-                return <SelectItem key={month} value={month}>Tháng {i + 1}</SelectItem>;
-              })}
-            </SelectContent>
-          </Select>
-        )}
-        {(period === "month" || period === "year") && (
-          <Select value={selectedYear} onValueChange={(v) => { setSelectedYear(v); setPage(1); }}>
-            <SelectTrigger className="w-full md:w-28 h-11 rounded-2xl bg-card border-border"><SelectValue placeholder="Năm" /></SelectTrigger>
-            <SelectContent>
-              {["2024", "2025", "2026", "2027"].map((year) => <SelectItem key={year} value={year}>{year}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        )}
-        {period === "custom" && (
-          <div className="flex items-center gap-2">
-            <Input type="date" value={fromDate} onChange={(e) => { setFromDate(e.target.value); setPage(1); }} className="h-11 rounded-2xl" />
-            <Input type="date" value={toDate} onChange={(e) => { setToDate(e.target.value); setPage(1); }} className="h-11 rounded-2xl" />
-          </div>
-        )}
         <Button className="rounded-xl h-11" onClick={openCreate}><Plus className="w-4 h-4 mr-1.5" /> Tạo lớp mới</Button>
       </div>
 
@@ -212,7 +143,12 @@ const AdminClasses = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginated.map(c => (
+              {classes.filter(c => {
+                if (statusFilterVal !== "all" && c.status !== statusFilterVal) return false;
+                if (formatFilterVal !== "all" && c.format !== formatFilterVal) return false;
+                if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase()) && !c.subject.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+                return true;
+              }).map(c => (
                 <TableRow key={c.id} className="hover:bg-muted/20 transition-colors">
                   <TableCell className="font-medium text-foreground">{c.name}</TableCell>
                   <TableCell className="text-sm">{getUserName(c.studentId)}</TableCell>
@@ -249,27 +185,6 @@ const AdminClasses = () => {
           </Table>
         </CardContent>
       </Card>
-
-      {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  href="#"
-                  isActive={page === index + 1}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(index + 1);
-                  }}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-          </PaginationContent>
-        </Pagination>
-      )}
 
       {/* Create/Edit Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>

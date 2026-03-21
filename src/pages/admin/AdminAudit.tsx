@@ -2,10 +2,6 @@ import { useAdmin } from "@/contexts/AdminContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollText, Shield, Clock, User } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 
 const actionColor: Record<string, string> = {
   "Duyệt tài khoản": "bg-success/150/10 text-success",
@@ -23,40 +19,6 @@ const actionColor: Record<string, string> = {
 
 const AdminAudit = () => {
   const { auditLog } = useAdmin();
-  const [period, setPeriod] = useState("month");
-  const [selectedMonth, setSelectedMonth] = useState("03");
-  const [selectedYear, setSelectedYear] = useState("2026");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [page, setPage] = useState(1);
-
-  const ITEMS_PER_PAGE = 10;
-
-  const parseDate = (timestamp: string) => {
-    const [datePart] = timestamp.split(" ");
-    if (datePart.includes("/")) {
-      const [d, m, y] = datePart.split("/");
-      return new Date(`${y}-${m}-${d}`);
-    }
-    return new Date(datePart);
-  };
-
-  const filtered = useMemo(() => auditLog.filter((log) => {
-    const date = parseDate(log.timestamp);
-    if (Number.isNaN(date.getTime())) return false;
-    if (period === "month") return date.getMonth() + 1 === Number(selectedMonth) && date.getFullYear() === Number(selectedYear);
-    if (period === "year") return date.getFullYear() === Number(selectedYear);
-    if (period === "custom") {
-      if (!fromDate || !toDate) return true;
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
-      return date >= from && date <= to;
-    }
-    return true;
-  }), [auditLog, period, selectedMonth, selectedYear, fromDate, toDate]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
     <div className="p-6 space-y-5">
@@ -98,42 +60,6 @@ const AdminAudit = () => {
       </div>
 
       {/* Table */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <Select value={period} onValueChange={(v) => { setPeriod(v); setPage(1); }}>
-          <SelectTrigger className="w-40 h-10 rounded-xl"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="month">Theo tháng</SelectItem>
-            <SelectItem value="year">Theo năm</SelectItem>
-            <SelectItem value="custom">Khoảng tùy chọn</SelectItem>
-          </SelectContent>
-        </Select>
-        {period === "month" && (
-          <Select value={selectedMonth} onValueChange={(v) => { setSelectedMonth(v); setPage(1); }}>
-            <SelectTrigger className="w-32 h-10 rounded-xl"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: 12 }, (_, i) => {
-                const month = String(i + 1).padStart(2, "0");
-                return <SelectItem key={month} value={month}>Tháng {i + 1}</SelectItem>;
-              })}
-            </SelectContent>
-          </Select>
-        )}
-        {(period === "month" || period === "year") && (
-          <Select value={selectedYear} onValueChange={(v) => { setSelectedYear(v); setPage(1); }}>
-            <SelectTrigger className="w-28 h-10 rounded-xl"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {["2024", "2025", "2026", "2027"].map((year) => <SelectItem key={year} value={year}>{year}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        )}
-        {period === "custom" && (
-          <div className="flex items-center gap-2">
-            <Input type="date" value={fromDate} onChange={(e) => { setFromDate(e.target.value); setPage(1); }} className="h-10 rounded-xl" />
-            <Input type="date" value={toDate} onChange={(e) => { setToDate(e.target.value); setPage(1); }} className="h-10 rounded-xl" />
-          </div>
-        )}
-      </div>
-
       <Card className="border-0 shadow-soft overflow-hidden">
         <CardContent className="p-0">
           <Table>
@@ -146,7 +72,7 @@ const AdminAudit = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginated.map(log => (
+              {auditLog.map(log => (
                 <TableRow key={log.id} className="hover:bg-muted/20 transition-colors">
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -170,34 +96,13 @@ const AdminAudit = () => {
                   <TableCell className="text-sm text-muted-foreground">{log.target}</TableCell>
                 </TableRow>
               ))}
-              {paginated.length === 0 && (
+              {auditLog.length === 0 && (
                 <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-12">Chưa có log nào</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
-
-      {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  href="#"
-                  isActive={page === index + 1}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(index + 1);
-                  }}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-          </PaginationContent>
-        </Pagination>
-      )}
     </div>
   );
 };

@@ -45,7 +45,7 @@ const FinanceLayout = () => {
 
   return (
     <div className="flex h-screen bg-muted/30 overflow-hidden">
-      <aside className={cn("sidebar-theme bg-primary text-primary-foreground border-r border-primary/30 flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
+      <aside className={cn("sidebar-theme bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
         <div className="h-16 flex items-center gap-3 px-4 border-b border-border">
           <EduLogo size={collapsed ? 28 : 36} />
           {!collapsed && (
@@ -65,7 +65,7 @@ const FinanceLayout = () => {
               className={({ isActive }) => cn(
                 "flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200",
                 collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
-                isActive ? "bg-background text-foreground shadow-md" : "text-primary-foreground/80 hover:bg-primary-foreground/15 hover:text-primary-foreground"
+                isActive ? "bg-primary text-primary-foreground shadow-md" : "opacity-70 hover:bg-muted hover:opacity-100"
               )}>
               <item.icon className="w-[18px] h-[18px] shrink-0" />
               {!collapsed && <span className="flex-1">{item.label}</span>}

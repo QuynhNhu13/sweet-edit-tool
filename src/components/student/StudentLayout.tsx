@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import MessageBubble from "@/components/MessageBubble";
 import {
   LayoutDashboard, BookOpen, CalendarDays, LogOut, PanelLeftClose, PanelLeft,
-  Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet, Star, ClipboardCheck
+  Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStudent } from "@/contexts/StudentContext";
@@ -15,8 +15,6 @@ const navGroups = [
     items: [
       { to: "/student", icon: LayoutDashboard, label: "Tổng quan", end: true },
       { to: "/student/classes", icon: BookOpen, label: "Học tập" },
-      { to: "/student/tests", icon: ClipboardCheck, label: "Bài tập & kiểm tra" },
-      { to: "/student/schedule", icon: CalendarDays, label: "Lịch học" },
       { to: "/student/wallet", icon: Wallet, label: "Ví học phí" },
       { to: "/student/reviews", icon: Star, label: "Đánh giá" },
       { to: "/student/chat", icon: MessageSquare, label: "Tin nhắn" },
@@ -27,8 +25,7 @@ const navGroups = [
 const pageTitles: Record<string, string> = {
   "/student": "Tổng quan",
   "/student/classes": "Học tập",
-  "/student/tests": "Bài tập & kiểm tra",
-  "/student/schedule": "Lịch học",
+  "/student/schedule": "Học tập",
   "/student/availability": "Học tập",
   "/student/reviews": "Đánh giá gia sư",
   "/student/wallet": "Ví học phí",
@@ -64,7 +61,7 @@ const StudentLayout = () => {
 
   return (
     <div className="flex h-screen bg-muted/30 overflow-hidden">
-      <aside className={cn("sidebar-theme bg-primary text-primary-foreground border-r border-primary/30 flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
+      <aside className={cn("sidebar-theme bg-card border-r border-border flex flex-col shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
         <div className="h-16 flex items-center gap-3 px-4 border-b border-border">
           <EduLogo size={collapsed ? 28 : 36} />
           {!collapsed && (
@@ -99,9 +96,9 @@ const StudentLayout = () => {
                       cn(
                         "flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-200 relative",
                         collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
-                  isActive
-                          ? "bg-background text-foreground shadow-md"
-                          : "text-primary-foreground/80 hover:bg-primary-foreground/15 hover:text-primary-foreground"
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "opacity-70 hover:bg-muted hover:opacity-100"
                       )
                     }
                   >
