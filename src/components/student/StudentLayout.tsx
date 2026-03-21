@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import MessageBubble from "@/components/MessageBubble";
 import {
-  LayoutDashboard, BookOpen, CalendarDays, LogOut, PanelLeftClose, PanelLeft,
+  LayoutDashboard, BookOpen, ClipboardCheck, CalendarDays, LogOut, PanelLeftClose, PanelLeft,
   Bell, Check, AlertTriangle, Info, CheckCircle2, XCircle, MessageSquare, Wallet, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ const navGroups = [
     items: [
       { to: "/student", icon: LayoutDashboard, label: "Tổng quan", end: true },
       { to: "/student/classes", icon: BookOpen, label: "Học tập" },
+      { to: "/student/tests", icon: ClipboardCheck, label: "Bài tập & Kiểm tra" },
       { to: "/student/wallet", icon: Wallet, label: "Ví học phí" },
       { to: "/student/reviews", icon: Star, label: "Đánh giá" },
       { to: "/student/chat", icon: MessageSquare, label: "Tin nhắn" },
@@ -25,6 +26,7 @@ const navGroups = [
 const pageTitles: Record<string, string> = {
   "/student": "Tổng quan",
   "/student/classes": "Học tập",
+  "/student/tests": "Bài tập & Kiểm tra",
   "/student/schedule": "Học tập",
   "/student/availability": "Học tập",
   "/student/reviews": "Đánh giá gia sư",
