@@ -3,7 +3,6 @@ import { LayoutDashboard, Users, BookOpen, CreditCard, ScrollText, Settings, Log
 import { cn } from "@/lib/utils";
 import { useAdmin } from "@/contexts/AdminContext";
 import EduLogo from "@/components/EduLogo";
-import ThemeToggle from "@/components/ThemeToggle";
 import UserAvatarDropdown from "@/components/UserAvatarDropdown";
 import { useState, useRef, useEffect } from "react";
 
@@ -26,9 +25,9 @@ const pageTitles: Record<string, string> = {
 };
 
 const notifIcon: Record<string, React.ReactNode> = {
-  warning: <AlertTriangle className="w-4 h-4 text-amber-500" />,
-  info: <Info className="w-4 h-4 text-primary" />,
-  success: <CheckCircle2 className="w-4 h-4 text-emerald-500" />,
+  warning: <AlertTriangle className="w-4 h-4 text-warning" />,
+  info: <Info className="w-4 h-4 text-info" />,
+  success: <CheckCircle2 className="w-4 h-4 text-success" />,
   error: <XCircle className="w-4 h-4 text-destructive" />,
 };
 
@@ -126,8 +125,6 @@ const AdminLayout = () => {
             <h2 className="text-lg font-semibold text-foreground">{currentTitle}</h2>
           </div>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
-            
             {/* Notification bell with dropdown */}
             <div className="relative" ref={notifRef}>
               <button
