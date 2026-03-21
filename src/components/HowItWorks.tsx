@@ -31,10 +31,10 @@ const HowItWorks = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold font-display text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-extrabold font-display text-foreground mb-4">
             Cách <span className="text-gradient">hoạt động</span>
           </h2>
-          <p className="text-white/50 text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Quy trình đơn giản, minh bạch cho cả gia sư và học sinh
           </p>
         </motion.div>
@@ -46,8 +46,8 @@ const HowItWorks = () => {
               onClick={() => setTab(t)}
               className={`px-8 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${
                 tab === t
-                  ? "bg-neon text-neon-foreground shadow-neon"
-                  : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                  ? "bg-primary text-primary-foreground shadow-neon"
+                  : "bg-card text-muted-foreground border border-border hover:bg-secondary hover:text-secondary-foreground"
               }`}
             >
               {t === "tutor" ? "Dành cho Gia sư" : "Dành cho Học sinh"}
@@ -70,14 +70,14 @@ const HowItWorks = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-neon/30 transition-all group"
+                className="relative bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all group shadow-soft"
               >
                 <div className="w-12 h-12 rounded-xl bg-neon/10 flex items-center justify-center mb-5 group-hover:bg-neon/20 transition-colors">
                   <step.icon className="w-6 h-6 text-neon" />
                 </div>
-                <span className="text-neon/30 text-6xl font-black font-display absolute top-3 right-4">{step.num}</span>
-                <h3 className="font-bold text-white font-display text-lg mb-2">{step.title}</h3>
-                <p className="text-sm text-white/50 leading-relaxed">{step.desc}</p>
+                <span className="text-primary/20 text-6xl font-black font-display absolute top-3 right-4">{step.num}</span>
+                <h3 className="font-bold text-foreground font-display text-lg mb-2">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
                 {i < 3 && (
                   <div className="hidden md:block absolute top-1/2 -right-3 w-6 h-0.5 bg-neon/30" />
                 )}
