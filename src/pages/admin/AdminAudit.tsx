@@ -18,6 +18,8 @@ const actionColor: Record<string, string> = {
   "Thêm giao dịch": "bg-green-100 text-green-700",
 };
 
+const ITEMS_PER_PAGE = 10;
+
 const mockAuditLog = [
   { id: "al1", actor: "Admin", action: "Duyệt tài khoản", target: "Nguyễn Văn An (Gia sư)", timestamp: "2026-03-10 09:00" },
   { id: "al2", actor: "Admin", action: "Tạo lớp học", target: "Toán 12 - Ôn thi ĐH", timestamp: "2026-03-09 15:20" },
@@ -43,6 +45,7 @@ const AdminAudit = () => {
   const { auditLog } = useAdmin();
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
+  const [page, setPage] = useState(1);
 
   const auditLogData = auditLog.length ? auditLog : mockAuditLog;
   const sortedAuditLog = [...auditLogData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -52,6 +55,9 @@ const AdminAudit = () => {
     const matchesSearch = !q || log.actor.toLowerCase().includes(q) || log.target.toLowerCase().includes(q) || log.action.toLowerCase().includes(q);
     return matchesAction && matchesSearch;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredAuditLog.length / ITEMS_PER_PAGE));
+  const paginatedAuditLog = filteredAuditLog.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const totalLog = auditLogData.length;
   const approved = auditLogData.filter(l => l.action.includes("Duyệt")).length;
@@ -86,14 +92,14 @@ const AdminAudit = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Tìm theo người thực hiện, hành động, đối tượng..."
             className="w-full pl-10 h-10 rounded-2xl border border-border bg-card text-sm"
           />
         </div>
         <select
           value={actionFilter}
-          onChange={e => setActionFilter(e.target.value)}
+          onChange={e => { setActionFilter(e.target.value); setPage(1); }}
           className="w-full md:w-48 h-10 rounded-2xl border border-border bg-card px-3 text-sm"
         >
           {actionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -113,7 +119,7 @@ const AdminAudit = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAuditLog.map(log => (
+              {paginatedAuditLog.map(log => (
                 <TableRow key={log.id} className="hover:bg-muted/20 transition-colors">
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -144,6 +150,23 @@ const AdminAudit = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-3">
+          <p className="text-sm text-muted-foreground">Hiển thị {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, filteredAuditLog.length)} / {filteredAuditLog.length}</p>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${page === i + 1 ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

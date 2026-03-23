@@ -1,6 +1,7 @@
 import { useAdmin } from "@/contexts/AdminContext";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -38,11 +39,13 @@ const roleLabel: Record<string, string> = { tutor: "Gia sư", teacher: "Giáo vi
 const ITEMS_PER_PAGE = 8;
 
 const AdminUsers = () => {
-  const { users, updateUserStatus, deleteUser } = useAdmin();
+  const { users, updateUserStatus, deleteUser, rejectUser } = useAdmin();
   const [tab, setTab] = useState("all");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [detail, setDetail] = useState<AdminUser | null>(null);
+  const [rejectUserTarget, setRejectUserTarget] = useState<AdminUser | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const [page, setPage] = useState(1);
   const [showPendingDialog, setShowPendingDialog] = useState(false);
   const { toast } = useToast();
@@ -63,8 +66,31 @@ const AdminUsers = () => {
   };
 
   const handleStatusChange = (id: string, status: string) => {
+    if (status === "rejected") {
+      const u = users.find(u => u.id === id);
+      if (u) {
+        setRejectUserTarget(u);
+        setRejectReason("");
+      }
+      return;
+    }
+
     updateUserStatus(id, status as UserStatus);
     toast({ title: "Đã cập nhật trạng thái" });
+  };
+
+  const handleRejectConfirm = () => {
+    if (!rejectUserTarget) return;
+    const reason = rejectReason.trim() || "Lý do không được cung cấp";
+    rejectUser(rejectUserTarget.id, reason);
+    toast({ title: `Đã từ chối ${rejectUserTarget.name}` });
+    setRejectUserTarget(null);
+    setRejectReason("");
+  };
+
+  const handleRejectCancel = () => {
+    setRejectUserTarget(null);
+    setRejectReason("");
   };
 
   const resetFilters = () => {
@@ -191,7 +217,26 @@ const AdminUsers = () => {
           </div>
         </DialogContent>
       </Dialog>
-
+      <Dialog open={!!rejectUserTarget} onOpenChange={(open) => { if (!open) setRejectUserTarget(null); }}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle>Nhập lý do từ chối</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">Vui lòng cung cấp lý do để cập nhật nhật ký</p>
+            <Textarea
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              placeholder="Nhập lý do tại đây..."
+              className="h-28"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={handleRejectCancel} className="h-10">Hủy</Button>
+              <Button onClick={handleRejectConfirm} className="h-10">Xác nhận</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Role tabs */}
       <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-2xl w-fit">
         {roleTabs.map(r => (

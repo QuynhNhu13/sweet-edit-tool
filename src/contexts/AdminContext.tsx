@@ -216,6 +216,14 @@ const seedUsers: AdminUser[] = [
   { id: "u10", name: "Lý Thị Mai", email: "mai.ly@edu.vn", phone: "0990123456", role: "parent", status: "approved", avatar: avatarFemale5, createdAt: "2026-02-01" },
   { id: "u11", name: "Trương Văn Kiên", email: "kien.truong@edu.vn", phone: "0901112233", role: "student", status: "approved", avatar: avatarMale6, createdAt: "2026-02-10", school: "THPT Nguyễn Huệ" },
   { id: "u12", name: "Đinh Thị Hoa", email: "hoa.dinh@edu.vn", phone: "0912223344", role: "teacher", status: "approved", avatar: avatarFemale6, createdAt: "2025-10-05", subject: "Sử", bio: "Giáo viên Lịch Sử THPT chuyên Hà Nội", school: "THPT Chuyên Hà Nội - Amsterdam" },
+  { id: "u13", name: "Mai Anh Tuấn", email: "tuan.mai@edu.vn", phone: "0902223344", role: "tutor", status: "approved", avatar: avatarMale1, createdAt: "2026-03-01", subject: "Toán", bio: "Gia sư Toán chuyên ôn thi", school: "ĐH Khoa Học Tự Nhiên", studentId: "KH2019055" },
+  { id: "u14", name: "Nguyễn Thị Linh", email: "linh.nguyen@edu.vn", phone: "0913334455", role: "student", status: "approved", avatar: avatarFemale1, createdAt: "2026-03-05", school: "THPT Marie Curie" },
+  { id: "u15", name: "Phan Văn Đức", email: "duc.phan@edu.vn", phone: "0924445566", role: "tutor", status: "approved", avatar: avatarMale2, createdAt: "2026-03-10", subject: "Anh", bio: "Gia sư tiếng Anh chuyên ngữ pháp", school: "ĐH Ngoại Ngữ", studentId: "NN2018033" },
+  { id: "u16", name: "Trần Minh Tuấn", email: "tuan.tran@edu.vn", phone: "0935556677", role: "teacher", status: "approved", avatar: avatarMale3, createdAt: "2026-03-12", subject: "Lý", bio: "Giáo viên Vật Lý THPT", school: "THPT Nguyễn Thượng Hiền" },
+  { id: "u17", name: "Lê Thị Hương", email: "huong.le@edu.vn", phone: "0946667788", role: "student", status: "pending", avatar: avatarFemale2, createdAt: "2026-03-15", school: "THPT Võ Thị Sáu" },
+  { id: "u18", name: "Hoàng Văn Nam", email: "nam.hoang@edu.vn", phone: "0957778899", role: "tutor", status: "approved", avatar: avatarMale4, createdAt: "2026-03-18", subject: "Hóa", bio: "Chuyên gia Hóa học", school: "ĐH Bách Khoa", studentId: "BK2017077" },
+  { id: "u19", name: "Vũ Minh Anh", email: "anh.vu@edu.vn", phone: "0968889900", role: "parent", status: "approved", avatar: avatarFemale3, createdAt: "2026-03-20" },
+  { id: "u20", name: "Đỗ Thị Lan", email: "lan.do@edu.vn", phone: "0979990011", role: "student", status: "approved", avatar: avatarFemale4, createdAt: "2026-03-22", school: "THPT Gia Định" },
 ];
 
 const seedClasses: AdminClass[] = [
@@ -223,6 +231,12 @@ const seedClasses: AdminClass[] = [
   { id: "c2", name: "Văn 11 - Nâng cao", studentId: "u8", tutorId: "u2", format: "offline", fee: 1500000, status: "active", subject: "Văn", createdAt: "2026-01-20", schedule: "T3, T5 - 18:00-20:00", totalSessions: 16, completedSessions: 8, notes: "Tập trung phân tích tác phẩm văn học" },
   { id: "c3", name: "IELTS Writing", studentId: "u11", tutorId: "u1", format: "hybrid", fee: 3000000, status: "searching", subject: "Anh", createdAt: "2026-02-15", schedule: "T7 - 9:00-12:00", totalSessions: 12, completedSessions: 0, notes: "Mục tiêu IELTS Writing 7.0+" },
   { id: "c4", name: "Lý 10 - Cơ bản", studentId: "u3", tutorId: "u1", format: "online", fee: 1800000, status: "completed", subject: "Lý", createdAt: "2025-11-01", schedule: "T2, T6 - 17:00-19:00", totalSessions: 20, completedSessions: 20, notes: "Hoàn thành chương trình Lý 10" },
+  { id: "c5", name: "Hóa 12 - Ôn thi", studentId: "u14", tutorId: "u6", format: "online", fee: 2200000, status: "active", subject: "Hóa", createdAt: "2026-03-01", schedule: "T3, T5, T7 - 20:00-22:00", totalSessions: 20, completedSessions: 5, notes: "Ôn tập Hóa hữu cơ và vô cơ" },
+  { id: "c6", name: "Tiếng Anh Giao Tiếp", studentId: "u17", tutorId: "u7", format: "offline", fee: 2500000, status: "searching", subject: "Anh", createdAt: "2026-03-10", schedule: "T2, T4 - 18:30-20:30", totalSessions: 16, completedSessions: 0, notes: "Cải thiện kỹ năng speaking" },
+  { id: "c7", name: "Toán 11 - Đại số", studentId: "u20", tutorId: "u13", format: "online", fee: 1900000, status: "active", subject: "Toán", createdAt: "2026-03-15", schedule: "T3, T6 - 19:00-21:00", totalSessions: 18, completedSessions: 3, notes: "Ôn tập đại số tuyến tính" },
+  { id: "c8", name: "Văn 10 - Phân tích", studentId: "u14", tutorId: "u2", format: "hybrid", fee: 1600000, status: "completed", subject: "Văn", createdAt: "2026-02-01", schedule: "T4, T7 - 17:00-19:00", totalSessions: 15, completedSessions: 15, notes: "Hoàn thành phân tích văn học" },
+  { id: "c9", name: "Lý 12 - Điện từ", studentId: "u11", tutorId: "u5", format: "online", fee: 2100000, status: "active", subject: "Lý", createdAt: "2026-03-05", schedule: "T2, T5 - 20:00-22:00", totalSessions: 22, completedSessions: 8, notes: "Ôn tập điện từ học" },
+  { id: "c10", name: "Sinh học 11", studentId: "u8", tutorId: "u9", format: "offline", fee: 1800000, status: "searching", subject: "Sinh", createdAt: "2026-03-20", schedule: "T3, T6 - 18:00-20:00", totalSessions: 14, completedSessions: 0, notes: "Ôn tập di truyền và tiến hóa" },
 ];
 
 const seedTests: AdminTest[] = [
@@ -231,6 +245,11 @@ const seedTests: AdminTest[] = [
   { id: "t3", code: "T003", name: "IELTS Mock Test 1", subject: "Anh", level: "IELTS", type: "multiple-choice", attempts: 89, status: "active", createdAt: "2026-02-01", questions: generateQuestions("Anh", 10) },
   { id: "t4", code: "T004", name: "Hóa 12 - Hữu cơ", subject: "Hóa", level: "Lớp 12", type: "multiple-choice", attempts: 45, status: "draft", createdAt: "2026-02-20", questions: generateQuestions("Hóa", 10) },
   { id: "t5", code: "T005", name: "Lý 10 - Động lực học", subject: "Lý", level: "Lớp 10", type: "multiple-choice", attempts: 312, status: "archived", createdAt: "2025-09-01", questions: generateQuestions("Lý", 10) },
+  { id: "t6", code: "T006", name: "Sinh học 11 - Di truyền", subject: "Sinh", level: "Lớp 11", type: "multiple-choice", attempts: 78, status: "active", createdAt: "2026-03-01", questions: generateQuestions("Sinh", 10) },
+  { id: "t7", code: "T007", name: "Toán 11 - Hình học", subject: "Toán", level: "Lớp 11", type: "multiple-choice", attempts: 145, status: "active", createdAt: "2026-03-10", questions: generateQuestions("Toán", 10) },
+  { id: "t8", code: "T008", name: "Văn 10 - Tác phẩm", subject: "Văn", level: "Lớp 10", type: "essay", attempts: 67, status: "draft", createdAt: "2026-03-15", questions: generateQuestions("Văn", 10) },
+  { id: "t9", code: "T009", name: "TOEIC Listening", subject: "Anh", level: "TOEIC", type: "multiple-choice", attempts: 203, status: "active", createdAt: "2026-03-20", questions: generateQuestions("Anh", 10) },
+  { id: "t10", code: "T010", name: "Lý 12 - Quang học", subject: "Lý", level: "Lớp 12", type: "multiple-choice", attempts: 98, status: "active", createdAt: "2026-03-25", questions: generateQuestions("Lý", 10) },
 ];
 
 const seedTransactions: AdminTransaction[] = [
@@ -242,13 +261,41 @@ const seedTransactions: AdminTransaction[] = [
   { id: "tx6", userId: "u3", type: "exam-fee", amount: 30000, date: "2026-02-18", status: "completed", description: "Phí thi thử Toán 12" },
   { id: "tx7", userId: "u3", type: "tuition", amount: 2000000, date: "2026-03-01", status: "completed", description: "Học phí Toán 12 - T3/2026" },
   { id: "tx8", userId: "u8", type: "tuition", amount: 1500000, date: "2026-03-01", status: "pending", description: "Học phí Văn 11 - T3/2026" },
+  { id: "tx9", userId: "u6", type: "salary", amount: 1760000, date: "2026-03-05", status: "completed", description: "Lương GV Hóa 12 - T2/2026" },
+  { id: "tx10", userId: "u14", type: "tuition", amount: 2200000, date: "2026-03-10", status: "completed", description: "Học phí Hóa 12 - T3/2026" },
+  { id: "tx11", userId: "u13", type: "salary", amount: 1520000, date: "2026-03-12", status: "completed", description: "Lương gia sư Toán 11 - T2/2026" },
+  { id: "tx12", userId: "u20", type: "tuition", amount: 1900000, date: "2026-03-15", status: "pending", description: "Học phí Toán 11 - T3/2026" },
+  { id: "tx13", userId: "u15", type: "salary", amount: 2000000, date: "2026-03-18", status: "completed", description: "Lương gia sư Anh - T3/2026" },
+  { id: "tx14", userId: "u17", type: "exam-fee", amount: 40000, date: "2026-03-20", status: "completed", description: "Phí thi thử TOEIC" },
+  { id: "tx15", userId: "u11", type: "tuition", amount: 2100000, date: "2026-03-22", status: "completed", description: "Học phí Lý 12 - T3/2026" },
+  { id: "tx16", userId: "u5", type: "salary", amount: 1680000, date: "2026-03-25", status: "pending", description: "Lương gia sư Lý 12 - T2/2026" },
+  { id: "tx17", userId: "u14", type: "exam-fee", amount: 35000, date: "2026-03-28", status: "failed", description: "Phí thi thử Hóa 12 - Thất bại" },
+  { id: "tx18", userId: "u2", type: "salary", amount: 1200000, date: "2026-03-30", status: "completed", description: "Lương GV Văn 11 - T3/2026" },
+  { id: "tx19", userId: "u8", type: "tuition", amount: 1500000, date: "2026-04-01", status: "refunded", description: "Hoàn tiền học phí Văn 11" },
+  { id: "tx20", userId: "u1", type: "salary", amount: 1600000, date: "2026-04-05", status: "completed", description: "Lương gia sư Toán 12 - T3/2026" },
 ];
 
 const seedAuditLog: AuditLogEntry[] = [
-  { id: "al1", actor: "Admin", action: "Duyệt tài khoản", target: "Nguyễn Văn An (Gia sư)", timestamp: "2025-12-01 09:00" },
-  { id: "al2", actor: "Admin", action: "Tạo lớp học", target: "Toán 12 - Ôn thi ĐH", timestamp: "2026-01-15 10:30" },
-  { id: "al3", actor: "Admin", action: "Từ chối tài khoản", target: "Bùi Văn Hùng (Gia sư)", timestamp: "2026-02-01 14:00" },
-  { id: "al4", actor: "Admin", action: "Cập nhật cài đặt", target: "Phí escrow: 20%", timestamp: "2026-02-10 08:15" },
+  { id: "al1", actor: "Admin", action: "Duyệt tài khoản", target: "Nguyễn Văn An (Gia sư)", timestamp: "2026-03-20 09:00" },
+  { id: "al2", actor: "Admin", action: "Tạo lớp học", target: "Toán 12 - Ôn thi ĐH", timestamp: "2026-03-19 10:30" },
+  { id: "al3", actor: "Admin", action: "Từ chối tài khoản", target: "Bùi Văn Hùng (Gia sư)", timestamp: "2026-03-18 14:00" },
+  { id: "al4", actor: "Admin", action: "Cập nhật cài đặt", target: "Phí escrow: 20%", timestamp: "2026-03-17 08:15" },
+  { id: "al5", actor: "Admin", action: "Xóa người dùng", target: "Đinh Thị Hoa", timestamp: "2026-03-16 11:45" },
+  { id: "al6", actor: "Admin", action: "Thêm giao dịch", target: "Học phí Văn 11", timestamp: "2026-03-15 13:30" },
+  { id: "al7", actor: "Admin", action: "Cập nhật lớp học", target: "IELTS Writing", timestamp: "2026-03-14 10:25" },
+  { id: "al8", actor: "Admin", action: "Duyệt tài khoản", target: "Hoàng Đức Em (Gia sư)", timestamp: "2026-03-13 09:40" },
+  { id: "al9", actor: "Admin", action: "Tạo bài test", target: "Đề thi thử Toán 12", timestamp: "2026-03-12 15:20" },
+  { id: "al10", actor: "Admin", action: "Cập nhật bài test", target: "IELTS Mock Test 1", timestamp: "2026-03-11 14:10" },
+  { id: "al11", actor: "Admin", action: "Xóa bài test", target: "Đề thi thử cũ", timestamp: "2026-03-10 12:05" },
+  { id: "al12", actor: "Admin", action: "Duyệt tài khoản", target: "Vũ Thị Phương (Giáo viên)", timestamp: "2026-03-09 08:50" },
+  { id: "al13", actor: "Admin", action: "Thêm giao dịch", target: "Lương gia sư Toán 12", timestamp: "2026-03-08 16:15" },
+  { id: "al14", actor: "Admin", action: "Cập nhật cài đặt", target: "Bật chế độ bảo trì", timestamp: "2026-03-07 11:30" },
+  { id: "al15", actor: "Admin", action: "Tạo lớp học", target: "Hóa 12 - Hữu cơ", timestamp: "2026-03-06 09:45" },
+  { id: "al16", actor: "Admin", action: "Từ chối tài khoản", target: "Đỗ Quang Minh (Gia sư)", timestamp: "2026-03-05 13:20" },
+  { id: "al17", actor: "Admin", action: "Xóa người dùng", target: "Lý Thị Mai", timestamp: "2026-03-04 10:10" },
+  { id: "al18", actor: "Admin", action: "Cập nhật lớp học", target: "Sinh học 12", timestamp: "2026-03-03 14:55" },
+  { id: "al19", actor: "Admin", action: "Duyệt tài khoản", target: "Trương Văn Kiên (Học sinh)", timestamp: "2026-03-02 08:30" },
+  { id: "al20", actor: "Admin", action: "Thêm giao dịch", target: "Phí thi thử Toán", timestamp: "2026-03-01 15:40" },
 ];
 
 const seedNotifications: Notification[] = [
@@ -258,6 +305,12 @@ const seedNotifications: Notification[] = [
   { id: "n4", title: "Giao dịch thành công", message: "Học phí Toán 12 - T3/2026 đã hoàn thành", type: "success", read: false, timestamp: "2026-03-01 08:00" },
   { id: "n5", title: "Lớp học mới tạo", message: "IELTS Writing đang tìm gia sư phù hợp", type: "info", read: true, timestamp: "2026-02-15 16:00" },
   { id: "n6", title: "Giao dịch đang chờ", message: "Lương GV Văn 11 chưa được xử lý", type: "warning", read: true, timestamp: "2026-02-12 11:00" },
+  { id: "n7", title: "Bài test mới được tạo", message: "Đề thi thử Hóa 12 đã sẵn sàng", type: "info", read: false, timestamp: "2026-03-05 13:45" },
+  { id: "n8", title: "Lớp học hoàn thành", message: "Lý 10 - Cơ bản đã kết thúc", type: "success", read: false, timestamp: "2026-03-10 17:20" },
+  { id: "n9", title: "Tài khoản bị từ chối", message: "Bùi Văn Hùng không đủ điều kiện", type: "error", read: true, timestamp: "2026-03-12 09:30" },
+  { id: "n10", title: "Giao dịch thất bại", message: "Thanh toán học phí Hóa 12 không thành công", type: "error", read: false, timestamp: "2026-03-15 14:10" },
+  { id: "n11", title: "Bài test được cập nhật", message: "IELTS Mock Test 1 đã được chỉnh sửa", type: "info", read: true, timestamp: "2026-03-18 11:25" },
+  { id: "n12", title: "Lớp học đang tìm gia sư", message: "Tiếng Anh Giao Tiếp cần gia sư khẩn cấp", type: "warning", read: false, timestamp: "2026-03-20 16:40" },
 ];
 
 const defaultSettings: SystemSettings = {
@@ -285,7 +338,7 @@ interface AdminContextType {
   notifications: Notification[];
   settings: SystemSettings;
   approveUser: (id: string) => void;
-  rejectUser: (id: string) => void;
+  rejectUser: (id: string, reason?: string) => void;
   updateUserStatus: (id: string, status: UserStatus) => void;
   deleteUser: (id: string) => void;
   addClass: (cls: Omit<AdminClass, "id" | "createdAt">) => void;
@@ -339,10 +392,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     if (user) addAuditLog("Duyệt tài khoản", `${user.name} (${user.role})`);
   }, [users, addAuditLog]);
 
-  const rejectUser = useCallback((id: string) => {
+  const rejectUser = useCallback((id: string, reason: string = "Lý do không rõ") => {
     setUsers(prev => prev.map(u => u.id === id ? { ...u, status: "rejected" as UserStatus } : u));
     const user = users.find(u => u.id === id);
-    if (user) addAuditLog("Từ chối tài khoản", `${user.name} (${user.role})`);
+    if (user) addAuditLog("Từ chối tài khoản", `${user.name} (${user.role}) - ${reason}`);
   }, [users, addAuditLog]);
 
   const updateUserStatus = useCallback((id: string, status: UserStatus) => {

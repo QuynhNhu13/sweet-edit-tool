@@ -23,6 +23,8 @@ const formatColor: Record<string, string> = {
   hybrid: "bg-secondary/20 text-secondary-foreground",
 };
 
+const ITEMS_PER_PAGE = 8;
+
 const emptyForm = { name: "", studentId: "", tutorId: "", format: "online" as ClassFormat, fee: 0, status: "searching" as ClassStatus, subject: "", schedule: "", totalSessions: 0, completedSessions: 0, notes: "" };
 
 const AdminClasses = () => {
@@ -34,7 +36,18 @@ const AdminClasses = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilterVal, setStatusFilterVal] = useState("all");
   const [formatFilterVal, setFormatFilterVal] = useState("all");
+  const [page, setPage] = useState(1);
   const { toast } = useToast();
+
+  const filteredClasses = classes.filter(c => {
+    if (statusFilterVal !== "all" && c.status !== statusFilterVal) return false;
+    if (formatFilterVal !== "all" && c.format !== formatFilterVal) return false;
+    if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase()) && !c.subject.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredClasses.length / ITEMS_PER_PAGE));
+  const paginatedClasses = filteredClasses.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const students = users.filter(u => u.role === "student" && u.status === "approved");
   const tutors = users.filter(u => (u.role === "tutor" || u.role === "teacher") && u.status === "approved");
@@ -97,11 +110,11 @@ const AdminClasses = () => {
           <Input
             placeholder="Tìm theo tên lớp, môn học..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={e => { setSearchQuery(e.target.value); setPage(1); }}
             className="pl-10 h-11 rounded-2xl bg-card border-border"
           />
         </div>
-        <Select value={statusFilterVal} onValueChange={setStatusFilterVal}>
+        <Select value={statusFilterVal} onValueChange={v => { setStatusFilterVal(v); setPage(1); }}>
           <SelectTrigger className="w-full md:w-48 h-11 rounded-2xl bg-card border-border">
             <SelectValue placeholder="Lọc trạng thái" />
           </SelectTrigger>
@@ -112,7 +125,7 @@ const AdminClasses = () => {
             <SelectItem value="completed">Hoàn thành</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={formatFilterVal} onValueChange={setFormatFilterVal}>
+        <Select value={formatFilterVal} onValueChange={v => { setFormatFilterVal(v); setPage(1); }}>
           <SelectTrigger className="w-full md:w-44 h-11 rounded-2xl bg-card border-border">
             <SelectValue placeholder="Hình thức" />
           </SelectTrigger>
@@ -143,12 +156,7 @@ const AdminClasses = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {classes.filter(c => {
-                if (statusFilterVal !== "all" && c.status !== statusFilterVal) return false;
-                if (formatFilterVal !== "all" && c.format !== formatFilterVal) return false;
-                if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase()) && !c.subject.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-                return true;
-              }).map(c => (
+              {paginatedClasses.length > 0 ? paginatedClasses.map(c => (
                 <TableRow key={c.id} className="hover:bg-muted/20 transition-colors">
                   <TableCell className="font-medium text-foreground">{c.name}</TableCell>
                   <TableCell className="text-sm">{getUserName(c.studentId)}</TableCell>
@@ -180,11 +188,33 @@ const AdminClasses = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-12">Không tìm thấy lớp học</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-3">
+          <p className="text-sm text-muted-foreground">Hiển thị {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, filteredClasses.length)} / {filteredClasses.length}</p>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${page === i + 1 ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Create/Edit Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>

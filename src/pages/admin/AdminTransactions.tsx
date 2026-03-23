@@ -23,17 +23,16 @@ const statusVariant: Record<string, "success" | "warning" | "destructive" | "inf
   refunded: "info",
 };
 
+const ITEMS_PER_PAGE = 10;
+
 const AdminTransactions = () => {
   const { transactions, users, settings } = useAdmin();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [period, setPeriod] = useState("month");
+  const [page, setPage] = useState(1);
   const { toast } = useToast();
-
-  const totalRevenue = transactions.filter(t => t.status === "completed").reduce((s, t) => s + t.amount, 0);
-  const escrowProfit = Math.round(totalRevenue * settings.escrowPercent / 100);
-  const pendingAmount = transactions.filter(t => t.status === "pending").reduce((s, t) => s + t.amount, 0);
 
   const filtered = transactions.filter(t => {
     if (filterType !== "all" && t.type !== filterType) return false;
@@ -45,6 +44,14 @@ const AdminTransactions = () => {
     }
     return true;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+
+  const totalRevenue = transactions.filter(t => t.status === "completed").reduce((s, t) => s + t.amount, 0);
+  const escrowProfit = Math.round(totalRevenue * settings.escrowPercent / 100);
+  const pendingAmount = transactions.filter(t => t.status === "pending").reduce((s, t) => s + t.amount, 0);
 
   const stats = [
     { label: "Tổng giao dịch", value: transactions.length, icon: Receipt, bg: "from-blue-700 to-blue-900", iconBg: "bg-blue-100", iconColor: "text-blue-700" },
@@ -79,11 +86,11 @@ const AdminTransactions = () => {
           <Input
             placeholder="Tìm theo tên hoặc mô tả..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
             className="pl-10 h-10 rounded-xl bg-card border-border"
           />
         </div>
-        <Select value={filterType} onValueChange={setFilterType}>
+        <Select value={filterType} onValueChange={v => { setFilterType(v); setPage(1); }}>
           <SelectTrigger className="w-40 h-10 rounded-2xl bg-card border border-border shadow-sm"><SelectValue placeholder="Loại giao dịch" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tất cả loại</SelectItem>
@@ -92,7 +99,7 @@ const AdminTransactions = () => {
             <SelectItem value="exam-fee">Phí thi thử</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
+        <Select value={filterStatus} onValueChange={v => { setFilterStatus(v); setPage(1); }}>
           <SelectTrigger className="w-40 h-10 rounded-2xl bg-card border border-border shadow-sm"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tất cả trạng thái</SelectItem>
@@ -134,7 +141,7 @@ const AdminTransactions = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map(tx => {
+              {paginated.map(tx => {
                 const user = users.find(u => u.id === tx.userId);
                 return (
                   <TableRow key={tx.id} className="hover:bg-muted/20 transition-colors">
@@ -167,6 +174,23 @@ const AdminTransactions = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-3">
+          <p className="text-sm text-muted-foreground">Hiển thị {(page - 1) * ITEMS_PER_PAGE + 1}–{Math.min(page * ITEMS_PER_PAGE, filtered.length)} / {filtered.length}</p>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${page === i + 1 ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
