@@ -1,8 +1,23 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, BookOpen, Wallet, CalendarDays, Users, Star,
-  MessageSquare, UserCircle, LogOut, PanelLeftClose, PanelLeft, Bell,
-  Check, AlertTriangle, Info, CheckCircle2, XCircle
+  LayoutDashboard,
+  BookOpen,
+  Wallet,
+  CalendarDays,
+  Users,
+  Star,
+  MessageSquare,
+  UserCircle,
+  LogOut,
+  PanelLeftClose,
+  PanelLeft,
+  Bell,
+  Check,
+  AlertTriangle,
+  Info,
+  CheckCircle2,
+  XCircle,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTutor } from "@/contexts/TutorContext";
@@ -23,14 +38,14 @@ const navItems = [
 ];
 
 const pageTitles: Record<string, string> = {
-  "/tutor": "Tổng quan",
-  "/tutor/classes": "Quản lý lớp học",
-  "/tutor/students": "Tiến độ học sinh",
-  "/tutor/wallet": "Thu nhập",
-  "/tutor/schedule": "Lịch dạy",
-  "/tutor/reviews": "Đánh giá",
-  "/tutor/chat": "Tin nhắn",
-  "/tutor/profile": "Hồ sơ cá nhân",
+  "/tutor": "TỔNG QUAN",
+  "/tutor/classes": "QUẢN LÝ LỚP HỌC",
+  "/tutor/students": "TIẾN ĐỘ HỌC SINH",
+  "/tutor/wallet": "THU NHẬP",
+  "/tutor/schedule": "LỊCH DẠY",
+  "/tutor/reviews": "ĐÁNH GIÁ",
+  "/tutor/chat": "TIN NHẮN",
+  "/tutor/profile": "HỒ SƠ CÁ NHÂN",
 };
 
 interface Notification {
@@ -43,66 +58,139 @@ interface Notification {
 }
 
 const seedNotifications: Notification[] = [
-  { id: "tn1", type: "success", title: "Buổi học đã hoàn thành", message: "Buổi Toán 12 ngày 01/03 đã được phụ huynh xác nhận.", timestamp: "01/03/2026 21:30", read: false },
-  { id: "tn2", type: "info", title: "Yêu cầu học thử mới", message: "Phụ huynh Nguyễn Văn B yêu cầu học thử Lý 11 cho con.", timestamp: "02/03/2026 10:15", read: false },
-  { id: "tn3", type: "warning", title: "Lịch dạy sắp tới", message: "Bạn có buổi dạy Toán 12 lúc 19:00 hôm nay.", timestamp: "03/03/2026 08:00", read: false },
-  { id: "tn4", type: "success", title: "Thanh toán đã nhận", message: "Bạn đã nhận 500.000đ từ buổi dạy Lý 11.", timestamp: "28/02/2026 15:00", read: true },
-  { id: "tn5", type: "info", title: "Đánh giá mới", message: "Phụ huynh Trần C đã đánh giá 5 sao cho buổi học.", timestamp: "27/02/2026 20:00", read: true },
+  {
+    id: "tn1",
+    type: "success",
+    title: "Buổi học đã hoàn thành",
+    message: "Buổi Toán 12 ngày 01/03 đã được phụ huynh xác nhận.",
+    timestamp: "01/03/2026 21:30",
+    read: false,
+  },
+  {
+    id: "tn2",
+    type: "info",
+    title: "Yêu cầu học thử mới",
+    message: "Phụ huynh Nguyễn Văn B yêu cầu học thử Lý 11 cho con.",
+    timestamp: "02/03/2026 10:15",
+    read: false,
+  },
+  {
+    id: "tn3",
+    type: "warning",
+    title: "Lịch dạy sắp tới",
+    message: "Bạn có buổi dạy Toán 12 lúc 19:00 hôm nay.",
+    timestamp: "03/03/2026 08:00",
+    read: false,
+  },
+  {
+    id: "tn4",
+    type: "success",
+    title: "Thanh toán đã nhận",
+    message: "Bạn đã nhận 500.000đ từ buổi dạy Lý 11.",
+    timestamp: "28/02/2026 15:00",
+    read: true,
+  },
+  {
+    id: "tn5",
+    type: "info",
+    title: "Đánh giá mới",
+    message: "Phụ huynh Trần C đã đánh giá 5 sao cho buổi học.",
+    timestamp: "27/02/2026 20:00",
+    read: true,
+  },
 ];
 
-const notifIcon: Record<string, React.ReactNode> = {
-  warning: <AlertTriangle className="w-4 h-4 text-muted-foreground" />,
-  info: <Info className="w-4 h-4 text-muted-foreground" />,
-  success: <CheckCircle2 className="w-4 h-4 text-muted-foreground" />,
-  error: <XCircle className="w-4 h-4 text-muted-foreground" />,
+const notifIcon: Record<Notification["type"], React.ReactNode> = {
+  warning: <AlertTriangle className="w-4 h-4 text-warning" />,
+  info: <Info className="w-4 h-4 text-info" />,
+  success: <CheckCircle2 className="w-4 h-4 text-success" />,
+  error: <XCircle className="w-4 h-4 text-destructive" />,
 };
 
 const TutorLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { profile, chatMessages } = useTutor();
+
   const [collapsed, setCollapsed] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(seedNotifications);
+  const [notifications, setNotifications] =
+    useState<Notification[]>(seedNotifications);
+
   const notifRef = useRef<HTMLDivElement>(null);
 
-  const unreadChat = chatMessages.filter(m => !m.read && m.sender !== "tutor").length;
-  const unreadNotif = notifications.filter(n => !n.read).length;
+  const unreadChat = chatMessages.filter(
+    (m) => !m.read && m.sender !== "tutor"
+  ).length;
+  const unreadNotif = notifications.filter((n) => !n.read).length;
   const currentTitle = pageTitles[location.pathname] || "Gia sư";
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setShowNotif(false);
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotif(false);
+      }
     };
+
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const markNotificationRead = (id: string) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-  const markAllNotificationsRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  const markNotificationRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
+
+  const markAllNotificationsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
 
   return (
-    <div className="flex h-screen bg-muted/30">
-      <aside className={cn("mx-3 my-3 rounded-3xl shadow-2xl border border-white/15 bg-gradient-to-b from-[#0b2e6a] via-[#052861] to-[#0a2160] text-slate-200 flex flex-col h-full shrink-0 transition-all duration-300", collapsed ? "w-[72px]" : "w-[260px]")}>
-        <div className="h-16 flex items-center gap-3 px-4 border-b border-sidebar-border/40">
-          <EduLogo size={collapsed ? 28 : 36} />
-          {!collapsed && (
-            <div className="min-w-0">
-                <h1 className="text-base font-bold leading-tight truncate text-sidebar-foreground">EduConnect</h1>
-                <p className="text-[11px] text-sidebar-foreground/70 leading-tight">Gia sư</p>
-            </div>
+    <div className="relative min-h-screen bg-slate-100">
+      {/* Floating sidebar rail */}
+      <aside
+        className={cn(
+          "fixed top-4 left-4 h-[calc(100%-2rem)] rounded-3xl bg-gradient-to-b from-[#0b2e6a] via-[#052861] to-[#0a2160] shadow-2xl border border-white/15 text-slate-200 z-20 transition-all duration-300 overflow-hidden flex flex-col",
+          collapsed ? "w-20" : "w-72"
+        )}
+      >
+        <div
+          className={cn(
+            "h-20 flex items-center gap-3 transition-all",
+            collapsed ? "justify-center px-0" : "justify-between px-4"
           )}
+        >
+          <div className="flex items-center gap-3">
+            {!collapsed && <EduLogo size={36} />}
+            {!collapsed && (
+              <div className="min-w-0">
+                <h1 className="text-lg font-bold text-slate-100 leading-tight truncate">
+                  EduConnect
+                </h1>
+                <p className="text-xs text-slate-400 leading-tight">Gia sư</p>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className={cn("p-1.5 rounded-full hover:bg-white/20 transition-all duration-300 text-white/90 hover:text-white shadow-soft", collapsed ? "mx-auto" : "ml-auto")}
+            className={cn(
+              "p-2 rounded-full hover:bg-slate-800 transition-all duration-300 text-slate-300 hover:text-white",
+              collapsed ? "mx-auto" : "ml-auto"
+            )}
+            title={collapsed ? "Mở rộng" : "Thu gọn"}
           >
-            {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+            {collapsed ? (
+              <PanelLeft className="w-5 h-5" />
+            ) : (
+              <PanelLeftClose className="w-5 h-5" />
+            )}
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-5 overflow-y-auto">
-          {/* {!collapsed && <p className="text-[10px] font-semibold uppercase tracking-[0.18em] px-3 mb-3 text-sidebar-muted-foreground">Menu</p>} */}
-          {navItems.map(item => (
+        <nav className="flex-1 px-4 py-4 overflow-y-auto">
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -110,21 +198,25 @@ const TutorLayout = () => {
               title={collapsed ? item.label : undefined}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 rounded-full text-[13px] font-semibold transition-all duration-300 relative",
-                  collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
+                  "flex items-center rounded-full text-sm font-medium transition-all duration-300 group relative mb-1",
+                  collapsed ? "px-0 py-2.5 justify-center gap-0" : "px-4 py-3 gap-3",
                   isActive
-                    ? "bg-white/20 text-white shadow-soft"
+                    ? "bg-white/20 text-white"
                     : "text-slate-200 hover:bg-slate-800 hover:text-white"
                 )
               }
             >
-              <item.icon className="w-[18px] h-[18px] shrink-0" />
+              <item.icon className="w-5 h-5 shrink-0" />
               {!collapsed && <span className="flex-1">{item.label}</span>}
-              {item.to === "/tutor/chat" && unreadChat > 0 && (
-                <span className={cn(
-                  "flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground",
-                  collapsed ? "absolute -top-1 -right-1 min-w-[16px] h-4 px-1 text-[9px]" : "min-w-[20px] h-5 px-1.5"
-                )}>
+
+              {item.to === "/tutor/chat" && unreadChat > 0 && !collapsed && (
+                <span className="min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-semibold rounded-full bg-red-500 text-white">
+                  {unreadChat}
+                </span>
+              )}
+
+              {item.to === "/tutor/chat" && unreadChat > 0 && collapsed && (
+                <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] flex items-center justify-center text-[8px] font-semibold rounded-full bg-red-500 text-white">
                   {unreadChat}
                 </span>
               )}
@@ -136,7 +228,10 @@ const TutorLayout = () => {
           <button
             onClick={() => navigate("/")}
             title={collapsed ? "Đăng xuất" : undefined}
-            className={cn("flex items-center gap-3 rounded-full text-[13px] font-semibold text-slate-200 hover:bg-red-500 hover:text-white w-full transition-all duration-300", collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5")}
+            className={cn(
+              "flex items-center gap-3 rounded-full text-[13px] font-semibold text-slate-200 hover:bg-red-500 hover:text-white w-full transition-all duration-300",
+              collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5"
+            )}
           >
             <LogOut className="w-[18px] h-[18px] shrink-0" />
             {!collapsed && <span>Đăng xuất</span>}
@@ -144,64 +239,151 @@ const TutorLayout = () => {
         </div>
       </aside>
 
-      <div className="flex-1 m-4 mt-4 rounded-3xl bg-white shadow-2xl border border-slate-200/40 overflow-hidden flex flex-col">
-        <header className="h-20 px-8 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white border-b border-slate-200/60 shadow-sm">
-          <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E68E6] to-blue-500">{currentTitle}</h2>
-          <div className="flex items-center gap-3">
-              <div className="relative" ref={notifRef}>
-                <button className="relative p-2 rounded-xl hover:bg-muted transition-colors" onClick={() => setShowNotif(!showNotif)}>
-                  <Bell className="w-5 h-5 text-muted-foreground" />
-                {unreadNotif > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground px-1">
-                    {unreadNotif}
-                  </span>
-                )}
-              </button>
-
-              {showNotif && (
-                <div className="absolute right-0 top-12 w-[380px] bg-card border border-border rounded-2xl shadow-elevated z-50 overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">Thông báo</h3>
-                    {unreadNotif > 0 && (
-                      <button onClick={markAllNotificationsRead} className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium">
-                        <Check className="w-3 h-3" /> Đọc tất cả
-                      </button>
-                    )}
-                  </div>
-                  <div className="max-h-[400px] overflow-y-auto">
-                    {notifications.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-8">Không có thông báo</p>
-                    ) : (
-                      notifications.map(n => (
-                        <button
-                          key={n.id}
-                          onClick={() => { markNotificationRead(n.id); setShowNotif(false); }}
-                          className={cn("w-full text-left px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors flex gap-3", !n.read && "bg-primary/5")}
-                        >
-                          <div className="mt-0.5 shrink-0">{notifIcon[n.type]}</div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className={cn("text-sm font-medium", !n.read ? "text-foreground" : "text-muted-foreground")}>{n.title}</p>
-                              {!n.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-0.5 truncate">{n.message}</p>
-                            <p className="text-[10px] text-muted-foreground/70 mt-1">{n.timestamp}</p>
-                          </div>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
+      {/* Main content layer */}
+      <div
+        className={cn(
+          "relative min-h-screen transition-all duration-300",
+          collapsed ? "pl-24" : "pl-80"
+        )}
+      >
+        <div className="m-4 mt-4 rounded-3xl bg-white shadow-2xl border border-slate-200/40 overflow-hidden min-h-[calc(100vh-2rem)] flex flex-col">
+          <header className="h-20 px-8 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white border-b border-slate-200/60 shadow-sm">
+            <div>
+              <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E68E6] to-blue-500">
+                {currentTitle}
+              </h1>
             </div>
 
-            <UserAvatarDropdown avatar={profile.avatar} name={profile.name} role="Gia sư" profilePath="/tutor/profile" />
-          </div>
-        </header>
-        <main className="flex-1 overflow-y-auto p-6 bg-slate-50">
-          <Outlet />
-        </main>
+            <div className="flex items-center gap-4">
+              <div className="relative" ref={notifRef}>
+                <button
+                  className="relative p-2.5 rounded-lg hover:bg-slate-100 transition-colors group"
+                  onClick={() => setShowNotif(!showNotif)}
+                >
+                  <Bell className="w-5 h-5 text-slate-600 group-hover:text-slate-800" />
+                  {unreadNotif > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold rounded-full bg-rose-500 text-white shadow-sm">
+                      {unreadNotif}
+                    </span>
+                  )}
+                </button>
+
+                {showNotif && (
+                  <div className="absolute right-0 top-12 w-[350px] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+                      <h3 className="text-sm font-semibold text-slate-900">
+                        Thông báo
+                      </h3>
+                      {unreadNotif > 0 && (
+                        <button
+                          onClick={markAllNotificationsRead}
+                          className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-500 font-medium"
+                        >
+                          <Check className="w-3 h-3" /> Đọc tất cả
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="max-h-[360px] overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <p className="text-sm text-slate-500 text-center py-8">
+                          Không có thông báo
+                        </p>
+                      ) : (
+                        notifications.map((n) => (
+                          <button
+                            key={n.id}
+                            onClick={() => {
+                              markNotificationRead(n.id);
+                              setShowNotif(false);
+
+                              if (n.title.includes("Đánh giá")) {
+                                navigate("/tutor/reviews");
+                              }
+
+                              if (n.title.includes("Thanh toán")) {
+                                navigate("/tutor/wallet");
+                              }
+
+                              if (
+                                n.title.includes("Yêu cầu học thử") ||
+                                n.title.includes("Buổi học")
+                              ) {
+                                navigate("/tutor/classes");
+                              }
+
+                              if (n.title.includes("Lịch dạy")) {
+                                navigate("/tutor/schedule");
+                              }
+                            }}
+                            className={cn(
+                              "w-full text-left px-4 py-3 border-b border-slate-200 hover:bg-slate-50 transition-colors flex gap-3",
+                              !n.read && "bg-blue-50"
+                            )}
+                          >
+                            <div className="mt-0.5 shrink-0">
+                              {notifIcon[n.type]}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p
+                                  className={cn(
+                                    "text-sm font-medium",
+                                    !n.read
+                                      ? "text-slate-900"
+                                      : "text-slate-500"
+                                  )}
+                                >
+                                  {n.title}
+                                </p>
+                                {!n.read && (
+                                  <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                                )}
+                              </div>
+
+                              <p className="text-xs text-slate-500 mt-0.5 truncate">
+                                {n.message}
+                              </p>
+                              <p className="text-[10px] text-slate-400 mt-1">
+                                {n.timestamp}
+                              </p>
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+
+                    <div className="px-4 py-2.5 border-t border-slate-200">
+                      <button
+                        onClick={() => {
+                          setShowNotif(false);
+                          navigate("/tutor/chat");
+                        }}
+                        className="text-xs text-blue-600 font-medium flex items-center gap-1 hover:text-blue-500"
+                      >
+                        Xem thêm tương tác <ChevronRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <UserAvatarDropdown
+                avatar={profile.avatar}
+                name={profile.name}
+                role="Gia sư"
+                profilePath="/tutor/profile"
+              />
+            </div>
+          </header>
+
+          <main className="min-h-[calc(100vh-8rem)] p-6 bg-white overflow-y-auto">
+            <Outlet />
+          </main>
+        </div>
       </div>
+
       <MessageBubble to="/tutor/chat" unreadCount={unreadChat} />
     </div>
   );
