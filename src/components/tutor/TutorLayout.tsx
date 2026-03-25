@@ -38,14 +38,14 @@ const navItems = [
 ];
 
 const pageTitles: Record<string, string> = {
-  "/tutor": "TỔNG QUAN",
-  "/tutor/classes": "QUẢN LÝ LỚP HỌC",
-  "/tutor/students": "TIẾN ĐỘ HỌC SINH",
-  "/tutor/wallet": "THU NHẬP",
-  "/tutor/schedule": "LỊCH DẠY",
-  "/tutor/reviews": "ĐÁNH GIÁ",
-  "/tutor/chat": "TIN NHẮN",
-  "/tutor/profile": "HỒ SƠ CÁ NHÂN",
+  "/tutor": "Tổng Quan",
+  "/tutor/classes": "Quản Lý Lớp Học",
+  "/tutor/students": "Tiến Độ Học Sinh",
+  "/tutor/wallet": "Thu Nhập",
+  "/tutor/schedule": "Lịch Dạy",
+  "/tutor/reviews": "Đánh Giá",
+  "/tutor/chat": "Tin Nhắn",
+  "/tutor/profile": "Hồ Sơ Cá Nhân",
 };
 
 interface Notification {

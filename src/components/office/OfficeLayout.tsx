@@ -26,22 +26,23 @@ import { useState, useRef, useEffect } from "react";
 
 const navItems = [
   { to: "/office", icon: LayoutDashboard, label: "Tổng quan", end: true },
+    { to: "/office/reports", icon: BarChart3, label: "Báo cáo" },
   { to: "/office/registrations", icon: ShieldCheck, label: "Đăng ký & Xác minh" },
   { to: "/office/classes", icon: BookOpen, label: "Quản lý lớp" },
   { to: "/office/appointments", icon: CalendarDays, label: "Lịch & Xếp lịch" },
   { to: "/office/attendance", icon: ClipboardCheck, label: "Điểm danh & Sự cố" },
   { to: "/office/reviews", icon: Star, label: "Đánh giá" },
-  { to: "/office/reports", icon: BarChart3, label: "Báo cáo" },
+
 ];
 
 const pageTitles: Record<string, string> = {
-  "/office": "TỔNG QUAN",
-  "/office/registrations": "ĐĂNG KÝ & XÁC MINH",
-  "/office/attendance": "ĐIỂM DANH & SỰ CỐ",
-  "/office/classes": "QUẢN LÝ LỚP",
-  "/office/appointments": "LỊCH & XẾP LỊCH",
-  "/office/reviews": "ĐÁNH GIÁ",
-  "/office/reports": "BÁO CÁO",
+  "/office": "Tổng Quan",
+  "/office/registrations": "Đăng Ký & Xác Minh",
+  "/office/attendance": "Điểm Danh & Sự Cố",
+  "/office/classes": "Quản Lý Lớp",
+  "/office/appointments": "Lịch & Xếp Lịch",
+  "/office/reviews": "Đánh Giá",
+  "/office/reports": "Báo Cáo",
 };
 
 const notifIcon: Record<string, JSX.Element> = {

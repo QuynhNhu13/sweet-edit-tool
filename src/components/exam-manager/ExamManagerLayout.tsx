@@ -31,11 +31,11 @@ const navItems = [
 ];
 
 const pageTitles: Record<string, string> = {
-  "/exam-manager": "TỔNG QUAN",
-  "/exam-manager/exams": "QUẢN LÝ ĐỀ THI",
-  "/exam-manager/ai-config": "CẤU HÌNH AI GENERATE",
-  "/exam-manager/stats": "THỐNG KÊ ĐỀ THI",
-  "/exam-manager/questions": "NGÂN HÀNG CÂU HỎI",
+  "/exam-manager": "Tổng Quan",
+  "/exam-manager/exams": "Quản Lý Đề Thi",
+  "/exam-manager/ai-config": "Cấu Hình AI Generate",
+  "/exam-manager/stats": "Thống Kê Đề Thi",
+  "/exam-manager/questions": "Ngân Hàng Câu Hỏi",
 };
 
 const notifIcon: Record<string, JSX.Element> = {

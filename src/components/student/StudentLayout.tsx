@@ -41,14 +41,14 @@ const navGroups = [
 
 const pageTitles: Record<string, string> = {
   "/student": "Tổng Quan",
-  "/student/classes": "HỌC TẬP",
-  "/student/tests": "BÀI TẬP & KIỂM TRA",
-  "/student/schedule": "HỌC TẬP",
-  "/student/availability": "HỌC TẬP",
-  "/student/reviews": "ĐÁNH GIÁ GIA SƯ",
-  "/student/wallet": "VÍ HỌC PHÍ",
-  "/student/chat": "TIN NHẮN",
-  "/parent/support": "HỖ TRỢ",
+  "/student/classes": "Học Tập",
+  "/student/tests": "Bài Tập & Kiểm Tra",
+  "/student/schedule": "Học Tập",
+  "/student/availability": "Học Tập",
+  "/student/reviews": "Đánh Giá Gia Sư",
+  "/student/wallet": "Ví Học Phí",
+  "/student/chat": "Tin Nhắn",
+  "/parent/support": "Hỗ Trợ",
 };
 
 const notifIcon: Record<string, JSX.Element> = {

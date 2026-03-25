@@ -16,12 +16,12 @@ const navItems = [
 ];
 
 const pageTitles: Record<string, string> = {
-  "/admin": "TỔNG QUAN",
-  "/admin/users": "QUẢN LÝ NGƯỜI DÙNG",
-  "/admin/classes": "QUẢN LÝ LỚP HỌC",
-  "/admin/transactions": "GIAO DỊCH",
-  "/admin/audit": "AUDIT LOG",
-  "/admin/settings": "CÀI ĐẶT HỆ THỐNG",
+  "/admin": "Tổng Quan",
+  "/admin/users": "Quản Lý Người Dùng",
+  "/admin/classes": "Quản Lý Lớp Học",
+  "/admin/transactions": "Giao Dịch",
+  "/admin/audit": "Audit Log",
+  "/admin/settings": "Cài Đặt Hệ Thống",
 };
 
 const notifIcon: Record<string, React.ReactNode> = {
