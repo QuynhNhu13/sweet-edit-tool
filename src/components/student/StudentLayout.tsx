@@ -17,6 +17,7 @@ import {
   Wallet,
   Star,
   ChevronRight,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStudent } from "@/contexts/StudentContext";
@@ -33,12 +34,13 @@ const navGroups = [
       { to: "/student/wallet", icon: Wallet, label: "Ví học phí" },
       { to: "/student/reviews", icon: Star, label: "Đánh giá" },
       { to: "/student/chat", icon: MessageSquare, label: "Tin nhắn" },
+        { to: "/parent/support", icon: HelpCircle, label: "Hỗ trợ" },
     ],
   },
 ];
 
 const pageTitles: Record<string, string> = {
-  "/student": "TỔNG QUAN",
+  "/student": "Tổng Quan",
   "/student/classes": "HỌC TẬP",
   "/student/tests": "BÀI TẬP & KIỂM TRA",
   "/student/schedule": "HỌC TẬP",
@@ -46,6 +48,7 @@ const pageTitles: Record<string, string> = {
   "/student/reviews": "ĐÁNH GIÁ GIA SƯ",
   "/student/wallet": "VÍ HỌC PHÍ",
   "/student/chat": "TIN NHẮN",
+  "/parent/support": "HỖ TRỢ",
 };
 
 const notifIcon: Record<string, JSX.Element> = {

@@ -32,21 +32,18 @@ const ExamManagerDashboard = () => {
   const recentAttempts = attempts.slice(0, 5);
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Chào mừng trở lại, Võ Thanh Hùng</h1>
-        <p className="text-muted-foreground text-sm">Quản lý đề thi • Hôm nay, 03/03/2026</p>
-      </div>
-
+    <div className="px-6 pt-2 pb-6 space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {stats.map(s => (
-          <Card key={s.label} className="border-border">
-            <CardContent className="p-4">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${s.color}`}>
-                <s.icon className="w-5 h-5" />
+        {stats.map((s, i) => (
+          <Card key={s.label} className="border-0 bg-gradient-to-r text-white shadow-lg" style={{ backgroundImage: ["linear-gradient(to right, #2563eb, #3b82f6)", "linear-gradient(to right, #10b981, #14b8a6)", "linear-gradient(to right, #f59e0b, #f97316)", "linear-gradient(to right, #8b5cf6, #a855f7)", "linear-gradient(to right, #ef4444, #f43f5e)", "linear-gradient(to right, #0ea5e9, #22d3ee)" ][i % 6] }}>
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xl font-bold">{s.value}</p>
+                <p className="text-xs text-white/80 mt-1">{s.label}</p>
               </div>
-              <p className="text-2xl font-bold text-foreground">{s.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-5 h-5 text-white" />
+              </div>
             </CardContent>
           </Card>
         ))}

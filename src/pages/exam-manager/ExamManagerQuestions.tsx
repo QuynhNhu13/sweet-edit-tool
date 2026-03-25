@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Upload, Database } from "lucide-react";
+import { Plus, Trash2, Upload, Database, BookOpen, Inbox, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -49,25 +49,26 @@ const ExamManagerQuestions = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 pt-2 pb-6 space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/100/10 flex items-center justify-center mb-3"><Database className="w-5 h-5 text-primary" /></div>
-          <p className="text-2xl font-bold text-foreground">{questions.length}</p>
-          <p className="text-xs text-muted-foreground mt-1">Tổng câu hỏi</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <p className="text-2xl font-bold text-foreground">{subjects.length}</p>
-          <p className="text-xs text-muted-foreground mt-1">Môn học</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <p className="text-2xl font-bold text-foreground">{topics.length}</p>
-          <p className="text-xs text-muted-foreground mt-1">Chủ đề</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <p className="text-2xl font-bold text-foreground">{questions.filter(q => q.difficulty === "hard").length}</p>
-          <p className="text-xs text-muted-foreground mt-1">Câu hỏi khó</p>
-        </CardContent></Card>
+        {[
+          { label: "Tổng câu hỏi", value: questions.length, icon: Database, gradient: "linear-gradient(to right, #2563eb, #3b82f6)" },
+          { label: "Môn học", value: subjects.length, icon: BookOpen, gradient: "linear-gradient(to right, #10b981, #14b8a6)" },
+          { label: "Chủ đề", value: topics.length, icon: Inbox, gradient: "linear-gradient(to right, #f59e0b, #f97316)" },
+          { label: "Câu hỏi khó", value: questions.filter(q => q.difficulty === "hard").length, icon: AlertTriangle, gradient: "linear-gradient(to right, #ef4444, #f43f5e)" },
+        ].map((s, i) => (
+          <Card key={i} className="border-0 text-white shadow-lg" style={{ backgroundImage: s.gradient }}>
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xl font-bold">{s.value}</p>
+                <p className="text-xs text-white/80 mt-1">{s.label}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-5 h-5 text-white" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">

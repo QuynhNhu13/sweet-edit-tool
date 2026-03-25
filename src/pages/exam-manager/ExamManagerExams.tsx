@@ -176,7 +176,7 @@ const ExamManagerExams = () => {
   );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 pt-2 pb-6 space-y-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Input placeholder="Tìm kiếm đề thi..." value={search} onChange={e => setSearch(e.target.value)} className="w-64 h-9 text-sm rounded-xl" />

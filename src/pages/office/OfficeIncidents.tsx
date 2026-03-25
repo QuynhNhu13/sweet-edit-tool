@@ -42,20 +42,51 @@ const OfficeIncidents = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* <div>
+        <h1 className="text-2xl font-bold text-foreground">Quản lý sự cố</h1>
+        <p className="text-muted-foreground text-sm">Theo dõi và xử lý các vấn đề phát sinh</p>
+      </div> */}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
-          <div><p className="text-xl font-bold text-foreground">{incidents.filter(i => i.status === "pending").length}</p><p className="text-xs text-muted-foreground">Chờ xử lý</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><SearchIcon className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{incidents.filter(i => i.status === "investigating").length}</p><p className="text-xs text-muted-foreground">Đang điều tra</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{incidents.filter(i => i.status === "resolved").length}</p><p className="text-xs text-muted-foreground">Đã xử lý</p></div>
-        </CardContent></Card>
+        {/* Card 1: Chờ xử lý */}
+        <Card className="border-0 bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{incidents.filter(i => i.status === "pending").length}</p>
+              <p className="text-xs text-white/80 mt-1">Chờ xử lý</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Đang điều tra */}
+        <Card className="border-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{incidents.filter(i => i.status === "investigating").length}</p>
+              <p className="text-xs text-white/80 mt-1">Đang điều tra</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <SearchIcon className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Đã xử lý */}
+        <Card className="border-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{incidents.filter(i => i.status === "resolved").length}</p>
+              <p className="text-xs text-white/80 mt-1">Đã xử lý</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="flex gap-2">

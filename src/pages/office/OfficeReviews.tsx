@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import avatarMale1 from "@/assets/avatar-male-1.jpg";
 import avatarMale2 from "@/assets/avatar-male-2.jpg";
 import avatarFemale2 from "@/assets/avatar-female-2.jpg";
@@ -139,25 +140,65 @@ const OfficeReviews = () => {
   const logReview = reviews.find(r => r.id === showLogDialog);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* <div>
+        <h1 className="text-2xl font-bold text-foreground">Quản lý đánh giá</h1>
+        <p className="text-muted-foreground text-sm">Kiểm duyệt và quản lý đánh giá từ phụ huynh và học sinh</p>
+      </div> */}
+
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-2xl p-5 text-center shadow-soft">
-          <p className="text-3xl font-bold text-foreground">{reviews.filter(r => !r.deleted).length}</p>
-          <p className="text-xs text-muted-foreground mt-1">Tổng đánh giá</p>
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-5 text-center shadow-soft">
-          <p className="text-3xl font-bold text-primary">{avgRating.toFixed(1)}</p>
-          <p className="text-xs text-muted-foreground mt-1">Điểm trung bình</p>
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-5 text-center shadow-soft">
-          <p className="text-3xl font-bold text-foreground">{reviews.filter(r => r.hidden && !r.deleted).length}</p>
-          <p className="text-xs text-muted-foreground mt-1">Đã ẩn</p>
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-5 text-center shadow-soft">
-          <p className="text-3xl font-bold text-foreground">{reviews.filter(r => r.deleted).length}</p>
-          <p className="text-xs text-muted-foreground mt-1">Đã xóa mềm</p>
-        </div>
+        {/* Card 1: Tổng đánh giá */}
+        <Card className="border-0 bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{reviews.filter(r => !r.deleted).length}</p>
+              <p className="text-xs text-white/80 mt-1">Tổng đánh giá</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Star className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Điểm trung bình */}
+        <Card className="border-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{avgRating.toFixed(1)}</p>
+              <p className="text-xs text-white/80 mt-1">Điểm trung bình</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Đã ẩn */}
+        <Card className="border-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{reviews.filter(r => r.hidden && !r.deleted).length}</p>
+              <p className="text-xs text-white/80 mt-1">Đã ẩn</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <EyeOff className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Đã xóa mềm */}
+        <Card className="border-0 bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{reviews.filter(r => r.deleted).length}</p>
+              <p className="text-xs text-white/80 mt-1">Đã xóa mềm</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Trash2 className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}

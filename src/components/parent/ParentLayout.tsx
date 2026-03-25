@@ -26,21 +26,22 @@ import { useState, useRef, useEffect } from "react";
 
 const navItems = [
   { to: "/parent", icon: LayoutDashboard, label: "Tổng quan", end: true },
-  { to: "/parent/chat", icon: MessageSquare, label: "Tin nhắn" },
-  { to: "/parent/children", icon: Users, label: "Con em & Tiến độ" },
+  { to: "/parent/children", icon: Users, label: "Theo dõi học tập" },
   { to: "/parent/reviews", icon: Star, label: "Đánh giá gia sư" },
   { to: "/parent/wallet", icon: Wallet, label: "Thanh toán" },
+    { to: "/parent/chat", icon: MessageSquare, label: "Tin nhắn" },
   { to: "/parent/support", icon: HelpCircle, label: "Hỗ trợ" },
+  
 ];
 
 const pageTitles: Record<string, string> = {
-  "/parent": "TỔNG QUAN",
-  "/parent/chat": "TIN NHẮN",
-  "/parent/children": "CON EM & TIẾN ĐỘ",
-  "/parent/reviews": "ĐÁNH GIÁ GIA SƯ",
-  "/parent/reports": "CON EM & TIẾN ĐỘ",
-  "/parent/wallet": "THANH TOÁN",
-  "/parent/support": "HỖ TRỢ",
+  "/parent": "Tổng Quan",
+  "/parent/chat": "Tin Nhắn",
+  "/parent/children": "Con Em & Tiến Độ Học Tập",
+  "/parent/reviews": "Đánh Giá",
+  "/parent/reports": "Báo cáo",
+  "/parent/wallet": "Thanh Toán",
+  "/parent/support": "Hỗ Trợ",
 };
 
 const notifIcon: Record<string, JSX.Element> = {

@@ -25,20 +25,21 @@ import { useState, useRef, useEffect } from "react";
 
 const navItems = [
   { to: "/finance", icon: LayoutDashboard, label: "Tổng quan", end: true },
+    { to: "/finance/reports", icon: BarChart3, label: "Báo cáo tài chính" },
   { to: "/finance/transactions", icon: ArrowLeftRight, label: "Giao dịch" },
   { to: "/finance/payouts", icon: HandCoins, label: "Chi trả gia sư" },
   { to: "/finance/refunds", icon: RotateCcw, label: "Yêu cầu hoàn tiền" },
   { to: "/finance/reconciliation", icon: Scale, label: "Đối soát" },
-  { to: "/finance/reports", icon: BarChart3, label: "Báo cáo tài chính" },
+
 ];
 
 const pageTitles: Record<string, string> = {
-  "/finance": "TỔNG QUAN TÀI CHÍNH",
-  "/finance/transactions": "GIAO DỊCH",
-  "/finance/payouts": "CHI TRẢ GIA SƯ",
-  "/finance/refunds": "YÊU CẦU HOÀN TIỀN",
-  "/finance/reconciliation": "ĐỐI SOÁT",
-  "/finance/reports": "BÁO CÁO TÀI CHÍNH",
+  "/finance": "Tổng Quan Tài Chính",
+  "/finance/transactions": "Giao Dịch",
+  "/finance/payouts": "Chi Trả Gia Sư",
+  "/finance/refunds": "Yêu Cầu Hoàn Tiền",
+  "/finance/reconciliation": "Đôi Soát Tài Chính",
+  "/finance/reports": "Báo Cao Tài Chính",
 };
 
 const notifIcon: Record<string, JSX.Element> = {

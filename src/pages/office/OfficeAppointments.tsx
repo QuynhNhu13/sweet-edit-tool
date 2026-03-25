@@ -67,24 +67,64 @@ const OfficeAppointments = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* <div>
+        <h1 className="text-2xl font-bold text-foreground">Quản lý lịch hẹn</h1>
+        <p className="text-muted-foreground text-sm">Theo dõi và xử lý các cuộc hẹn với phụ huynh và gia sư</p>
+      </div> */}
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Calendar className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{upcoming}</p><p className="text-xs text-muted-foreground">Sắp tới</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Clock className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{inProgress}</p><p className="text-xs text-muted-foreground">Đang xử lý</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{appointments.filter(a => a.status === "completed").length}</p><p className="text-xs text-muted-foreground">Hoàn tất</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
-          <div><p className="text-xl font-bold text-foreground">{appointments.filter(a => a.type === "complaint" || a.type === "dispute").length}</p><p className="text-xs text-muted-foreground">Khiếu nại/Tranh chấp</p></div>
-        </CardContent></Card>
+        {/* Card 1: Sắp tới */}
+        <Card className="border-0 bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{upcoming}</p>
+              <p className="text-xs text-white/80 mt-1">Sắp tới</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Đang xử lý */}
+        <Card className="border-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{inProgress}</p>
+              <p className="text-xs text-white/80 mt-1">Đang xử lý</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Hoàn tất */}
+        <Card className="border-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{appointments.filter(a => a.status === "completed").length}</p>
+              <p className="text-xs text-white/80 mt-1">Hoàn tất</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Khiếu nại/Tranh chấp */}
+        <Card className="border-0 bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{appointments.filter(a => a.type === "complaint" || a.type === "dispute").length}</p>
+              <p className="text-xs text-white/80 mt-1">Khiếu nại/Tranh chấp</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="flex gap-2 flex-wrap">

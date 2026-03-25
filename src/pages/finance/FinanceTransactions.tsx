@@ -1,22 +1,45 @@
 import { useFinance } from "@/contexts/FinanceContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeftRight, Download, Eye, Search, ArrowUpRight, ArrowDownRight, DollarSign, Calendar } from "lucide-react";
-import { useState } from "react";
+import {
+  ArrowLeftRight,
+  Download,
+  Eye,
+  Search,
+  ArrowUpRight,
+  ArrowDownRight,
+  DollarSign,
+  Calendar,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { cn } from "@/lib/utils";
 
 const typeLabels: Record<string, string> = {
-  tuition: "Học phí", salary: "Lương", withdrawal: "Rút tiền", deposit: "Nạp tiền", "exam-fee": "Phí thi", refund: "Hoàn tiền",
+  tuition: "Học phí",
+  salary: "Lương",
+  withdrawal: "Rút tiền",
+  deposit: "Nạp tiền",
+  "exam-fee": "Phí thi",
+  refund: "Hoàn tiền",
 };
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const statusConfig: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
   completed: { label: "Hoàn thành", variant: "default" },
   pending: { label: "Chờ xử lý", variant: "outline" },
   failed: { label: "Thất bại", variant: "destructive" },
@@ -26,24 +49,42 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 const FinanceTransactions = () => {
   const { transactions } = useFinance();
   const { toast } = useToast();
+
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+
   const pageSize = 10;
 
   const filtered = transactions.filter(t => {
-    const matchSearch = t.description.toLowerCase().includes(search.toLowerCase()) || t.user.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      t.description.toLowerCase().includes(search.toLowerCase()) ||
+      t.user.toLowerCase().includes(search.toLowerCase());
     const matchType = typeFilter === "all" || t.type === typeFilter;
     const matchStatus = statusFilter === "all" || t.status === statusFilter;
     const matchDate = !dateFilter || t.date.includes(dateFilter);
     return matchSearch && matchType && matchStatus && matchDate;
   });
 
-  const totalIn = transactions.filter(t => (t.type === "tuition" || t.type === "deposit" || t.type === "exam-fee") && t.status === "completed").reduce((s, t) => s + t.amount, 0);
-  const totalOut = transactions.filter(t => (t.type === "salary" || t.type === "withdrawal" || t.type === "refund") && t.status === "completed").reduce((s, t) => s + t.amount, 0);
+  const totalIn = transactions
+    .filter(
+      t =>
+        (t.type === "tuition" || t.type === "deposit" || t.type === "exam-fee") &&
+        t.status === "completed"
+    )
+    .reduce((s, t) => s + t.amount, 0);
+
+  const totalOut = transactions
+    .filter(
+      t =>
+        (t.type === "salary" || t.type === "withdrawal" || t.type === "refund") &&
+        t.status === "completed"
+    )
+    .reduce((s, t) => s + t.amount, 0);
+
   const pendingCount = transactions.filter(t => t.status === "pending").length;
 
   const detail = transactions.find(t => t.id === detailId);
@@ -51,166 +92,334 @@ const FinanceTransactions = () => {
   const currentPage = Math.min(page, pageCount);
   const pagedTransactions = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, typeFilter, statusFilter, dateFilter]);
+
   const exportTransactions = (format: string) => {
     toast({ title: `Đã xuất danh sách giao dịch (${format})` });
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><ArrowUpRight className="w-4 h-4 text-primary" /><span className="text-xs text-muted-foreground">Tổng thu</span></div>
-          <p className="text-xl font-bold text-primary">+{totalIn.toLocaleString("vi-VN")}đ</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><ArrowDownRight className="w-4 h-4 text-destructive" /><span className="text-xs text-muted-foreground">Tổng chi</span></div>
-          <p className="text-xl font-bold text-destructive">-{totalOut.toLocaleString("vi-VN")}đ</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><DollarSign className="w-4 h-4 text-foreground" /><span className="text-xs text-muted-foreground">Lợi nhuận</span></div>
-          <p className="text-xl font-bold text-foreground">{(totalIn - totalOut).toLocaleString("vi-VN")}đ</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2"><Calendar className="w-4 h-4 text-muted-foreground" /><span className="text-xs text-muted-foreground">Chờ xử lý</span></div>
-          <p className="text-xl font-bold text-foreground">{pendingCount}</p>
-        </CardContent></Card>
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* HERO */}
+      <div className="relative overflow-hidden rounded-3xl border border-blue-200/40 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 text-white">
+        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-32 w-32 rounded-full bg-cyan-300/10 blur-2xl" />
+
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Quản lý giao dịch</h2>
+            <p className="mt-1 text-sm text-white/80">
+              Theo dõi dòng tiền vào ra, trạng thái xử lý và chi tiết từng giao dịch
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              className="rounded-2xl border-0 bg-white/15 text-white backdrop-blur hover:bg-white/20"
+              onClick={() => exportTransactions("PDF")}
+            >
+              <Download className="mr-1 h-4 w-4" />
+              PDF
+            </Button>
+            <Button
+              variant="secondary"
+              className="rounded-2xl border-0 bg-white/15 text-white backdrop-blur hover:bg-white/20"
+              onClick={() => exportTransactions("Excel")}
+            >
+              <Download className="mr-1 h-4 w-4" />
+              Excel
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Transaction Table */}
-      <Card className="border-border">
-        <CardHeader className="pb-3">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2"><ArrowLeftRight className="w-4 h-4" /> Danh sách giao dịch ({filtered.length})</CardTitle>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="rounded-xl text-xs" onClick={() => exportTransactions("PDF")}>
-                  <Download className="w-3.5 h-3.5 mr-1" /> PDF
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-xl text-xs" onClick={() => exportTransactions("Excel")}>
-                  <Download className="w-3.5 h-3.5 mr-1" /> Excel
-                </Button>
-              </div>
+      {/* SUMMARY */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Tổng thu",
+            value: `+${totalIn.toLocaleString("vi-VN")}đ`,
+            sub: "Giao dịch đầu vào",
+            color: "from-blue-500 to-indigo-500",
+            icon: ArrowUpRight,
+          },
+          {
+            label: "Tổng chi",
+            value: `-${totalOut.toLocaleString("vi-VN")}đ`,
+            sub: "Giao dịch đầu ra",
+            color: "from-rose-500 to-pink-500",
+            icon: ArrowDownRight,
+          },
+          {
+            label: "Lợi nhuận",
+            value: `${(totalIn - totalOut).toLocaleString("vi-VN")}đ`,
+            sub: "Thu - chi hoàn tất",
+            color: "from-emerald-500 to-teal-500",
+            icon: DollarSign,
+          },
+          {
+            label: "Chờ xử lý",
+            value: pendingCount,
+            sub: "Giao dịch đang đợi",
+            color: "from-amber-500 to-orange-500",
+            icon: Calendar,
+          },
+        ].map((s, i) => (
+          <div
+            key={i}
+            className={`group flex items-center gap-4 rounded-2xl bg-gradient-to-r p-5 text-white transition-all hover:shadow-lg ${s.color}`}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+              <s.icon className="h-5 w-5" />
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Tìm theo mô tả, người dùng..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-sm rounded-xl" />
-              </div>
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-32 h-9 text-sm rounded-xl"><SelectValue placeholder="Loại" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả loại</SelectItem>
-                  <SelectItem value="tuition">Học phí</SelectItem>
-                  <SelectItem value="salary">Lương</SelectItem>
-                  <SelectItem value="withdrawal">Rút tiền</SelectItem>
-                  <SelectItem value="deposit">Nạp tiền</SelectItem>
-                  <SelectItem value="exam-fee">Phí thi</SelectItem>
-                  <SelectItem value="refund">Hoàn tiền</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-32 h-9 text-sm rounded-xl"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="completed">Hoàn thành</SelectItem>
-                  <SelectItem value="pending">Chờ xử lý</SelectItem>
-                  <SelectItem value="failed">Thất bại</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input type="text" placeholder="Lọc ngày (VD: 03/03)" value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="w-36 h-9 text-sm rounded-xl" />
+            <div className="min-w-0">
+              <p className="text-xs text-white/80">{s.label}</p>
+              <p className="text-xl font-bold">{s.value}</p>
+              <p className="text-[10px] text-white/80">{s.sub}</p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mô tả</TableHead>
-                  <TableHead>Người dùng</TableHead>
-                  <TableHead>Vai trò</TableHead>
-                  <TableHead>Loại</TableHead>
-                  <TableHead>Số tiền</TableHead>
-                  <TableHead>Ngày</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="w-10"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pagedTransactions.map(t => {
-                  const sCfg = statusConfig[t.status];
-                  const isIncome = t.type === "tuition" || t.type === "deposit" || t.type === "exam-fee";
-                  return (
-                    <TableRow key={t.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setDetailId(t.id)}>
-                      <TableCell className="font-medium text-sm">{t.description}</TableCell>
-                      <TableCell className="text-sm">{t.user}</TableCell>
-                      <TableCell className="text-sm">{t.userRole}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-[10px]">{typeLabels[t.type]}</Badge>
-                      </TableCell>
-                      <TableCell className={`text-sm font-medium ${isIncome ? "text-primary" : "text-destructive"}`}>
-                        {isIncome ? "+" : "-"}{t.amount.toLocaleString("vi-VN")}đ
-                      </TableCell>
-                      <TableCell className="text-sm">{t.date}</TableCell>
-                      <TableCell><Badge variant={sCfg.variant}>{sCfg.label}</Badge></TableCell>
-                      <TableCell>
-                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={e => { e.stopPropagation(); setDetailId(t.id); }}>
-                          <Eye className="w-3.5 h-3.5" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-                {filtered.length === 0 && (
-                  <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Không tìm thấy giao dịch nào</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+        ))}
+      </div>
+
+      {/* LIST */}
+      <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+        <div className="mb-4 flex flex-col gap-3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-semibold">
+              <ArrowLeftRight className="h-4 w-4 text-primary" />
+              Danh sách giao dịch ({filtered.length})
+            </h3>
           </div>
-          {filtered.length > 0 && (
-            <div className="pt-4">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)); }} />
-                  </PaginationItem>
-                  {Array.from({ length: pageCount }).map((_, idx) => (
-                    <PaginationItem key={idx}>
-                      <PaginationLink href="#" isActive={currentPage === idx + 1} onClick={(e) => { e.preventDefault(); setPage(idx + 1); }}>
-                        {idx + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-                  <PaginationItem>
-                    <PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(pageCount, p + 1)); }} />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+
+          <div className="flex flex-wrap gap-2">
+            <div className="relative min-w-[220px] flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Tìm theo mô tả, người dùng..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="h-10 rounded-xl pl-9"
+              />
+            </div>
+
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="h-10 w-[150px] rounded-xl">
+                <SelectValue placeholder="Loại" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả loại</SelectItem>
+                <SelectItem value="tuition">Học phí</SelectItem>
+                <SelectItem value="salary">Lương</SelectItem>
+                <SelectItem value="withdrawal">Rút tiền</SelectItem>
+                <SelectItem value="deposit">Nạp tiền</SelectItem>
+                <SelectItem value="exam-fee">Phí thi</SelectItem>
+                <SelectItem value="refund">Hoàn tiền</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="h-10 w-[150px] rounded-xl">
+                <SelectValue placeholder="Trạng thái" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="completed">Hoàn thành</SelectItem>
+                <SelectItem value="pending">Chờ xử lý</SelectItem>
+                <SelectItem value="failed">Thất bại</SelectItem>
+                <SelectItem value="refunded">Đã hoàn</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Input
+              type="text"
+              placeholder="Lọc ngày (VD: 03/03)"
+              value={dateFilter}
+              onChange={e => setDateFilter(e.target.value)}
+              className="h-10 w-[160px] rounded-xl"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {pagedTransactions.map(t => {
+            const sCfg = statusConfig[t.status];
+            const isIncome =
+              t.type === "tuition" || t.type === "deposit" || t.type === "exam-fee";
+
+            return (
+              <div
+                key={t.id}
+                className="cursor-pointer rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                onClick={() => setDetailId(t.id)}
+              >
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">{t.description}</p>
+                      <Badge variant="outline" className="text-[10px]">
+                        {typeLabels[t.type]}
+                      </Badge>
+                    </div>
+
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                      <span>Người dùng: {t.user}</span>
+                      <span>Vai trò: {t.userRole}</span>
+                      <span>Ngày: {t.date}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p
+                      className={cn(
+                        "text-sm font-bold",
+                        isIncome ? "text-primary" : "text-destructive"
+                      )}
+                    >
+                      {isIncome ? "+" : "-"}
+                      {t.amount.toLocaleString("vi-VN")}đ
+                    </p>
+
+                    <Badge variant={sCfg.variant}>{sCfg.label}</Badge>
+
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 rounded-xl p-0"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setDetailId(t.id);
+                      }}
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {filtered.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+              Không tìm thấy giao dịch nào
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Detail Dialog */}
+        {filtered.length > 0 && (
+          <div className="pt-5">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={e => {
+                      e.preventDefault();
+                      setPage(p => Math.max(1, p - 1));
+                    }}
+                  />
+                </PaginationItem>
+
+                {Array.from({ length: pageCount }).map((_, idx) => (
+                  <PaginationItem key={idx}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === idx + 1}
+                      onClick={e => {
+                        e.preventDefault();
+                        setPage(idx + 1);
+                      }}
+                    >
+                      {idx + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={e => {
+                      e.preventDefault();
+                      setPage(p => Math.min(pageCount, p + 1));
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+      </div>
+
+      {/* DETAIL DIALOG */}
       <Dialog open={!!detailId} onOpenChange={() => setDetailId(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Chi tiết giao dịch</DialogTitle></DialogHeader>
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Chi tiết giao dịch</DialogTitle>
+          </DialogHeader>
+
           {detail && (
             <div className="space-y-4 pt-2">
-              <div className="p-4 bg-muted/50 rounded-xl text-center">
-                <p className={`text-2xl font-bold ${(detail.type === "tuition" || detail.type === "deposit" || detail.type === "exam-fee") ? "text-primary" : "text-destructive"}`}>
-                  {(detail.type === "tuition" || detail.type === "deposit" || detail.type === "exam-fee") ? "+" : "-"}{detail.amount.toLocaleString("vi-VN")}đ
+              <div className="rounded-2xl bg-muted/40 p-4 text-center">
+                <p
+                  className={cn(
+                    "text-2xl font-bold",
+                    detail.type === "tuition" ||
+                      detail.type === "deposit" ||
+                      detail.type === "exam-fee"
+                      ? "text-primary"
+                      : "text-destructive"
+                  )}
+                >
+                  {detail.type === "tuition" ||
+                  detail.type === "deposit" ||
+                  detail.type === "exam-fee"
+                    ? "+"
+                    : "-"}
+                  {detail.amount.toLocaleString("vi-VN")}đ
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">{detail.description}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{detail.description}</p>
               </div>
+
               <div className="grid grid-cols-2 gap-4">
-                <div><Label className="text-xs text-muted-foreground">Mã giao dịch</Label><p className="text-sm font-mono font-medium text-foreground">{detail.id.toUpperCase()}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Loại</Label><div className="mt-1"><Badge variant="outline">{typeLabels[detail.type]}</Badge></div></div>
-                <div><Label className="text-xs text-muted-foreground">Người dùng</Label><p className="text-sm font-medium text-foreground">{detail.user}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Vai trò</Label><p className="text-sm font-medium text-foreground">{detail.userRole}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Ngày giao dịch</Label><p className="text-sm font-medium text-foreground">{detail.date}</p></div>
-                <div><Label className="text-xs text-muted-foreground">Trạng thái</Label><div className="mt-1"><Badge variant={statusConfig[detail.status].variant}>{statusConfig[detail.status].label}</Badge></div></div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Mã giao dịch</Label>
+                  <p className="font-mono text-sm font-medium text-foreground">
+                    {detail.id.toUpperCase()}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-muted-foreground">Loại</Label>
+                  <div className="mt-1">
+                    <Badge variant="outline">{typeLabels[detail.type]}</Badge>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-muted-foreground">Người dùng</Label>
+                  <p className="text-sm font-medium text-foreground">{detail.user}</p>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-muted-foreground">Vai trò</Label>
+                  <p className="text-sm font-medium text-foreground">{detail.userRole}</p>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-muted-foreground">Ngày giao dịch</Label>
+                  <p className="text-sm font-medium text-foreground">{detail.date}</p>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-muted-foreground">Trạng thái</Label>
+                  <div className="mt-1">
+                    <Badge variant={statusConfig[detail.status].variant}>
+                      {statusConfig[detail.status].label}
+                    </Badge>
+                  </div>
+                </div>
               </div>
             </div>
           )}

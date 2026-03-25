@@ -75,10 +75,10 @@ const TutorDashboard = () => {
   };
 
   const stats = [
-    { label: "Lớp đang dạy", value: activeClasses.length, sub: `${completedClasses.length} hoàn thành`, icon: BookOpen, color: "text-primary", bg: "bg-primary/10", link: "/tutor/classes" },
-    { label: "Thu nhập ròng", value: `${(netIncome / 1000000).toFixed(1)}tr`, sub: `Tổng: ${(totalIncome / 1000000).toFixed(1)}tr`, icon: Wallet, color: "text-success", bg: "bg-success/15 dark:bg-emerald-900/20", link: "/tutor/wallet" },
-    { label: "Đánh giá TB", value: profile.rating.toFixed(1), sub: `${profile.totalReviews} đánh giá`, icon: Star, color: "text-warning", bg: "bg-warning/15 dark:bg-amber-900/20", link: "/tutor/reviews" },
-    { label: "Buổi đã dạy", value: totalSessionsCompleted, sub: `/ ${totalSessionsAll} tổng`, icon: CheckCircle2, color: "text-primary", bg: "bg-primary/10", link: "/tutor/schedule" },
+    { label: "Lớp đang dạy", value: activeClasses.length, sub: `${completedClasses.length} hoàn thành`, icon: BookOpen, iconBg: "bg-blue-100", iconColor: "text-blue-600", bg: "from-blue-700 to-blue-900", link: "/tutor/classes" },
+    { label: "Thu nhập ròng", value: `${(netIncome / 1000000).toFixed(1)}tr`, sub: `Tổng: ${(totalIncome / 1000000).toFixed(1)}tr`, icon: Wallet, iconBg: "bg-emerald-100", iconColor: "text-emerald-600", bg: "from-emerald-500 to-teal-500", link: "/tutor/wallet" },
+    { label: "Đánh giá TB", value: profile.rating.toFixed(1), sub: `${profile.totalReviews} đánh giá`, icon: Star, iconBg: "bg-amber-100", iconColor: "text-amber-600", bg: "from-amber-500 to-orange-500", link: "/tutor/reviews" },
+    { label: "Buổi đã dạy", value: totalSessionsCompleted, sub: `/ ${totalSessionsAll} tổng`, icon: CheckCircle2, iconBg: "bg-rose-100", iconColor: "text-rose-600", bg: "from-rose-500 to-pink-500", link: "/tutor/schedule" },
   ];
 
   return (
@@ -86,16 +86,16 @@ const TutorDashboard = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s, i) => (
-          <button key={i} onClick={() => navigate(s.link)} className="bg-card border border-border rounded-2xl p-5 flex items-center gap-4 hover:shadow-elevated transition-all text-left group">
-            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", s.bg)}>
-              <s.icon className={cn("w-6 h-6", s.color)} />
+          <button key={i} onClick={() => navigate(s.link)} className={`rounded-2xl p-5 flex items-center gap-4 hover:shadow-elevated transition-all text-left group bg-gradient-to-r ${s.bg} text-white`}> 
+            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", s.iconBg)}>
+              <s.icon className={cn("w-6 h-6", s.iconColor)} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className="text-xl font-bold text-foreground">{s.value}</p>
-              <p className="text-[10px] text-muted-foreground">{s.sub}</p>
+              <p className="text-xs text-white/80">{s.label}</p>
+              <p className="text-2xl font-bold">{s.value}</p>
+              <p className="text-[10px] text-white/80">{s.sub}</p>
             </div>
-            <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <ArrowUpRight className="w-4 h-4 text-white/90 group-hover:text-white transition-colors" />
           </button>
         ))}
       </div>

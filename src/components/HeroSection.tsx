@@ -25,7 +25,7 @@ const avatars = [tutor1, tutor2, tutor3, tutor4, tutor5];
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden gradient-hero pt-24 pb-20 md:pt-32 md:pb-24">
+    <section className="relative overflow-hidden gradient-hero pt-16 md:pt-20 md:pt-16 md:pb-24">
       <div className="absolute top-0 -right-20 w-[460px] h-[460px] bg-primary/15 blur-[120px] rounded-full" />
       <div className="absolute bottom-0 -left-20 w-[380px] h-[380px] bg-info/15 blur-[100px] rounded-full" />
       <div className="absolute top-24 left-[38%] w-[320px] h-[320px] bg-success/10 blur-[120px] rounded-full" />
@@ -60,9 +60,9 @@ const HeroSection = () => {
               <span className="text-deep-blue">với Học sinh</span>
             </h1>
 
-            <p className="text-muted-foreground text-body-lg mb-8 max-w-lg leading-relaxed">
+            {/* <p className="text-muted-foreground text-body-lg mb-8 max-w-lg leading-relaxed">
               EduConnect giúp phụ huynh tìm gia sư phù hợp, đảm bảo chất lượng giảng dạy thông qua hệ thống kiểm tra năng lực và đánh giá AI.
-            </p>
+            </p> */}
 
             <ul className="space-y-3 mb-10">
               {bullets.map((b, i) => (

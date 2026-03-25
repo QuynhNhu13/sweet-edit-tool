@@ -72,10 +72,11 @@ const OfficeAISchedule = () => {
   }, []);
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <p className="text-muted-foreground text-sm">Sử dụng thuật toán AI để sắp xếp thời khóa biểu tối ưu cho lớp 10-12 dựa trên phòng học, giáo viên và lịch rảnh của học sinh.</p>
-      </div>
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* <div>
+        <h1 className="text-2xl font-bold text-foreground">Xếp lịch AI</h1>
+        <p className="text-muted-foreground text-sm">Sử dụng thuật toán AI để sắp xếp thời khóa biểu tối ưu</p>
+      </div> */}
 
       {isDone && (
         <div className="flex items-center justify-between p-4 bg-success/15 dark:bg-emerald-950/30 border border-success/30 dark:border-success/40 rounded-2xl">

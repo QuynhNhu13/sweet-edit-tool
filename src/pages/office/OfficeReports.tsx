@@ -34,11 +34,11 @@ const classDistribution = [
 ];
 
 const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
+  "#ef4444", // đỏ
+  "#f59e0b", // cam
+  "#3b82f6", // xanh dương
+  "#10b981", // xanh lá
+  "#a855f7", // tím
 ];
 
 const kpiData = [
@@ -71,8 +71,8 @@ const OfficeReports = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Báo cáo tuần này</h1>
           <p className="text-sm text-muted-foreground">Tổng hợp hoạt động văn phòng</p>
@@ -80,20 +80,60 @@ const OfficeReports = () => {
         <Button variant="outline" className="rounded-2xl" onClick={exportReport}>
           <Download className="w-4 h-4 mr-1" /> Xuất báo cáo
         </Button>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {stats.map(k => (
-          <Card key={k.label} className="rounded-2xl shadow-soft border-border">
-            <CardContent className="p-4">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-muted">
-                <k.icon className="w-5 h-5 text-foreground" />
-              </div>
-              <p className="text-2xl font-bold text-foreground">{k.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{k.label}</p>
-            </CardContent>
-          </Card>
-        ))}
+        {/* Card 1: Tổng buổi học tuần */}
+        <Card className="border-0 bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{dailyData.reduce((s, d) => s + d.sessions, 0)}</p>
+              <p className="text-xs text-white/80 mt-1">Tổng buổi học tuần</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Tỷ lệ điểm danh */}
+        <Card className="border-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">94%</p>
+              <p className="text-xs text-white/80 mt-1">Tỷ lệ điểm danh</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Sự cố trong tuần */}
+        <Card className="border-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{dailyData.reduce((s, d) => s + d.issues, 0)}</p>
+              <p className="text-xs text-white/80 mt-1">Sự cố trong tuần</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <BarChart3 className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 4: HS đang học */}
+        <Card className="border-0 bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{classes.filter(c => c.status === "active").length}</p>
+              <p className="text-xs text-white/80 mt-1">HS đang học</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Users className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -108,8 +148,8 @@ const OfficeReports = () => {
                 <XAxis dataKey="day" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip contentStyle={{ borderRadius: "1rem", border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", color: "hsl(var(--foreground))" }} />
-                <Bar dataKey="sessions" name="Buổi học" fill="hsl(var(--chart-1))" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="issues" name="Sự cố" fill="hsl(0, 84%, 60%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="sessions" name="Buổi học" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="issues" name="Sự cố" fill="hsl(var(--destructive))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

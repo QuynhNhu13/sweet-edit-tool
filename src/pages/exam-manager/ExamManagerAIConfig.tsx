@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Settings, ShieldCheck, Sparkles, AlertTriangle, Eye } from "lucide-react";
+import { Settings, ShieldCheck, Sparkles, AlertTriangle, Eye, Users, DollarSign, TrendingUp, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -36,12 +36,33 @@ const ExamManagerAIConfig = () => {
   if (!exam) return <div className="p-6"><p className="text-muted-foreground">Chưa có đề thi nào</p></div>;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 pt-2 pb-6 space-y-4">
       <div className="flex items-center gap-3">
         <Select value={selectedExam} onValueChange={setSelectedExam}>
           <SelectTrigger className="w-80 rounded-xl"><SelectValue /></SelectTrigger>
           <SelectContent>{exams.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
         </Select>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Lượt thi", value: exam.attempts, icon: Users, gradient: "linear-gradient(to right, #2563eb, #3b82f6)" },
+          { label: "Doanh thu", value: `${(exam.revenue / 1000000).toFixed(2)}M`, icon: DollarSign, gradient: "linear-gradient(to right, #10b981, #14b8a6)" },
+          { label: "Hoàn thành", value: `${exam.completionRate}%`, icon: TrendingUp, gradient: "linear-gradient(to right, #f59e0b, #f97316)" },
+          { label: "Đạt TB", value: `${exam.aboveAverageRate}%`, icon: BarChart3, gradient: "linear-gradient(to right, #a855f7, #d946ef)" },
+        ].map((s, i) => (
+          <Card key={i} className="border-0 text-white shadow-lg" style={{ backgroundImage: s.gradient }}>
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xl font-bold">{s.value}</p>
+                <p className="text-xs text-white/80 mt-1">{s.label}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-5 h-5 text-white" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

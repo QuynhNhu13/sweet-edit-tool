@@ -93,12 +93,12 @@ const TutorWallet = () => {
     <div className="p-6 space-y-6">
       {/* Balance Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-emerald-100 via-emerald-50 to-green-50 border border-emerald-200 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-success/15 dark:bg-emerald-900/20 flex items-center justify-center"><Wallet className="w-5 h-5 text-success" /></div>
-            <span className="text-xs text-muted-foreground">Ví khả dụng</span>
+            <div className="w-10 h-10 rounded-full bg-emerald-200 text-emerald-700 flex items-center justify-center"><Wallet className="w-5 h-5" /></div>
+            <span className="text-xs text-emerald-800 font-semibold">Ví khả dụng</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{walletBalance.toLocaleString("vi-VN")}đ</p>
+          <p className="text-2xl font-bold text-emerald-900">{walletBalance.toLocaleString("vi-VN")}đ</p>
           <div className="flex gap-2 mt-3">
             <button onClick={() => setDialogType("withdraw")} className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium flex items-center justify-center gap-1">
               <ArrowUpRight className="w-3.5 h-3.5" /> Rút
@@ -108,27 +108,27 @@ const TutorWallet = () => {
             </button>
           </div>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-blue-100 via-sky-100 to-blue-50 border border-blue-200 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><ShieldCheck className="w-5 h-5 text-primary" /></div>
-            <span className="text-xs text-muted-foreground">Escrow đang giữ</span>
+            <div className="w-10 h-10 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center"><ShieldCheck className="w-5 h-5" /></div>
+            <span className="text-xs text-blue-800 font-semibold">Escrow đang giữ</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{escrowBalance.toLocaleString("vi-VN")}đ</p>
+          <p className="text-2xl font-bold text-blue-900">{escrowBalance.toLocaleString("vi-VN")}đ</p>
           <p className="text-xs text-muted-foreground mt-2">Giải ngân khi hoàn thành buổi</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-indigo-100 via-purple-100 to-indigo-50 border border-indigo-200 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-warning/15 dark:bg-amber-900/20 flex items-center justify-center"><DollarSign className="w-5 h-5 text-warning" /></div>
-            <span className="text-xs text-muted-foreground">Tổng thu nhập</span>
+            <div className="w-10 h-10 rounded-full bg-indigo-200 text-indigo-700 flex items-center justify-center"><DollarSign className="w-5 h-5" /></div>
+            <span className="text-xs text-indigo-800 font-semibold">Tổng thu nhập</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{totalIncome.toLocaleString("vi-VN")}đ</p>
+          <p className="text-2xl font-bold text-indigo-900">{totalIncome.toLocaleString("vi-VN")}đ</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-pink-100 via-rose-100 to-red-50 border border-red-200 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><CreditCard className="w-5 h-5 text-destructive" /></div>
-            <span className="text-xs text-muted-foreground">Phí nền tảng</span>
+            <div className="w-10 h-10 rounded-full bg-red-200 text-red-700 flex items-center justify-center"><CreditCard className="w-5 h-5" /></div>
+            <span className="text-xs text-red-800 font-semibold">Phí nền tảng</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{Math.abs(wallet.filter(w => w.type === "platform_fee").reduce((s, w) => s + w.amount, 0)).toLocaleString("vi-VN")}đ</p>
+          <p className="text-2xl font-bold text-red-900">{Math.abs(wallet.filter(w => w.type === "platform_fee").reduce((s, w) => s + w.amount, 0)).toLocaleString("vi-VN")}đ</p>
         </div>
       </div>
 

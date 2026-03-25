@@ -1,5 +1,16 @@
 import { useParent } from "@/contexts/ParentContext";
-import { Wallet, CreditCard, ArrowDownLeft, ArrowUpRight, Plus, Download, Receipt, Search, ShieldCheck } from "lucide-react";
+import {
+  Wallet,
+  CreditCard,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Plus,
+  Download,
+  Receipt,
+  Search,
+  ShieldCheck,
+  ArrowUpRight as ArrowUpRightIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -33,11 +44,17 @@ const ParentWallet = () => {
   const [search, setSearch] = useState("");
 
   const pendingClasses = children.flatMap(child =>
-    child.classes.filter(c => c.status === "active" && !c.paid).map(c => ({ ...c, childId: child.id, childName: child.name }))
+    child.classes
+      .filter(c => c.status === "active" && !c.paid)
+      .map(c => ({ ...c, childId: child.id, childName: child.name }))
   );
 
   const totalPending = pendingClasses.reduce((s, c) => s + c.fee, 0);
-  const paidThisMonth = Math.abs(transactions.filter(t => t.type === "tuition_payment" && t.date >= "2026-03-01").reduce((s, t) => s + t.amount, 0));
+  const paidThisMonth = Math.abs(
+    transactions
+      .filter(t => t.type === "tuition_payment" && t.date >= "2026-03-01")
+      .reduce((s, t) => s + t.amount, 0)
+  );
 
   const filteredTxns = transactions
     .filter(t => !search || t.description.toLowerCase().includes(search.toLowerCase()))
@@ -77,6 +94,7 @@ const ParentWallet = () => {
     setWithdrawAmt("");
     setSelectedMethod("");
   };
+
   const handleExport = () => {
     toast.success("Đang xuất lịch sử giao dịch...");
     setTimeout(() => {
@@ -85,8 +103,12 @@ const ParentWallet = () => {
         `Ngày xuất: ${new Date().toLocaleDateString("vi-VN")}`,
         `Số dư: ${walletBalance.toLocaleString("vi-VN")}đ`,
         "",
-        ...transactions.map((t, i) => `${i + 1}. ${t.date} | ${t.description} | ${t.amount > 0 ? "+" : ""}${t.amount.toLocaleString("vi-VN")}đ`),
+        ...transactions.map(
+          (t, i) =>
+            `${i + 1}. ${t.date} | ${t.description} | ${t.amount > 0 ? "+" : ""}${t.amount.toLocaleString("vi-VN")}đ`
+        ),
       ].join("\n");
+
       const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -99,162 +121,398 @@ const ParentWallet = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          { icon: Receipt, label: "Cần thanh toán", value: `${totalPending.toLocaleString("vi-VN")}đ` },
-          { icon: ArrowUpRight, label: "Đã thanh toán tháng này", value: `${paidThisMonth.toLocaleString("vi-VN")}đ` },
-          { icon: Wallet, label: "Số dư ví", value: `${walletBalance.toLocaleString("vi-VN")}đ` },
-        ].map((s, i) => (
-          <div key={i} className="bg-card border border-border rounded-2xl p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center"><s.icon className="w-4 h-4 text-foreground" /></div>
-              <span className="text-xs text-muted-foreground">{s.label}</span>
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* HERO */}
+      {/* <div className="relative overflow-hidden rounded-3xl border border-blue-200/40 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 text-white">
+        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-32 w-32 rounded-full bg-cyan-300/10 blur-2xl" />
+
+        <div className="relative flex flex-col lg:flex-row justify-between gap-5">
+          <div>
+            <h2 className="text-2xl font-bold">Ví phụ huynh & học phí</h2>
+            <p className="mt-1 text-sm text-white/80">
+              Quản lý số dư, thanh toán học phí và theo dõi lịch sử giao dịch
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 lg:w-[360px]">
+            <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-xs text-white/80">Số dư ví</p>
+              <p className="text-xl font-bold">{walletBalance.toLocaleString("vi-VN")}đ</p>
             </div>
-            <p className="text-xl font-bold text-foreground">{s.value}</p>
+            <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-xs text-white/80">Cần thanh toán</p>
+              <p className="text-xl font-bold">{totalPending.toLocaleString("vi-VN")}đ</p>
+            </div>
+          </div>
+        </div>
+      </div> */}
+
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Cần thanh toán",
+            value: `${totalPending.toLocaleString("vi-VN")}đ`,
+            sub: `${pendingClasses.length} lớp chưa thanh toán`,
+            color: "from-blue-500 to-indigo-500",
+            icon: Receipt,
+          },
+          {
+            label: "Đã thanh toán",
+            value: `${paidThisMonth.toLocaleString("vi-VN")}đ`,
+            sub: "Trong tháng này",
+            color: "from-amber-500 to-orange-500",
+            icon: ArrowUpRight,
+          },
+          {
+            label: "Số dư ví",
+            value: `${walletBalance.toLocaleString("vi-VN")}đ`,
+            sub: "Khả dụng hiện tại",
+            color: "from-emerald-500 to-teal-500",
+            icon: Wallet,
+          },
+          {
+            label: "Giao dịch",
+            value: transactions.length,
+            sub: "Tổng số lịch sử",
+            color: "from-rose-500 to-pink-500",
+            icon: CreditCard,
+          },
+        ].map((s, i) => (
+          <div
+            key={i}
+            className={cn(
+              "group flex items-center gap-4 rounded-2xl bg-gradient-to-r p-5 text-white transition-all hover:shadow-lg",
+              s.color
+            )}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+              <s.icon className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-white/80">{s.label}</p>
+              <p className="text-xl font-bold">{s.value}</p>
+              <p className="text-[10px] text-white/80">{s.sub}</p>
+            </div>
+            <ArrowUpRightIcon className="ml-auto h-4 w-4 shrink-0" />
           </div>
         ))}
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button onClick={() => setShowDeposit(true)} size="sm" className="rounded-xl gap-1"><Plus className="w-3.5 h-3.5" /> Nạp tiền</Button>
-        <Button onClick={() => setShowWithdraw(true)} variant="outline" size="sm" className="rounded-xl gap-1"><ArrowUpRight className="w-3.5 h-3.5" /> Rút tiền</Button>
-        <Button variant="outline" size="sm" className="rounded-xl gap-1" onClick={handleExport}><Download className="w-3.5 h-3.5" /> Xuất file</Button>
+      {/* ACTIONS */}
+      <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={() => setShowDeposit(true)} size="sm" className="rounded-xl gap-1">
+            <Plus className="h-3.5 w-3.5" />
+            Nạp tiền
+          </Button>
+
+          <Button onClick={() => setShowWithdraw(true)} variant="outline" size="sm" className="rounded-xl gap-1">
+            <ArrowUpRight className="h-3.5 w-3.5" />
+            Rút tiền
+          </Button>
+
+          <Button variant="outline" size="sm" className="rounded-xl gap-1" onClick={handleExport}>
+            <Download className="h-3.5 w-3.5" />
+            Xuất file
+          </Button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 bg-muted rounded-xl p-1 w-fit">
-        {[{ key: "pending", label: "Cần thanh toán" }, { key: "history", label: "Lịch sử" }].map(t => (
-          <button key={t.key} onClick={() => setTab(t.key as any)}
-            className={cn("px-4 py-2 rounded-lg text-sm font-medium transition-colors", tab === t.key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+      {/* TABS */}
+      <div className="flex w-fit gap-1 rounded-2xl bg-muted p-1">
+        {[
+          { key: "pending", label: "Cần thanh toán" },
+          { key: "history", label: "Lịch sử" },
+        ].map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key as "pending" | "history")}
+            className={cn(
+              "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
+              tab === t.key
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
             {t.label}
             {t.key === "pending" && pendingClasses.length > 0 && (
-              <span className="ml-2 min-w-[18px] h-[18px] inline-flex items-center justify-center text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground px-1">{pendingClasses.length}</span>
+              <span className="ml-2 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                {pendingClasses.length}
+              </span>
             )}
           </button>
         ))}
       </div>
 
+      {/* PENDING */}
       {tab === "pending" ? (
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+          <h3 className="mb-4 text-sm font-semibold">Học phí cần thanh toán</h3>
+
           {pendingClasses.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">Không có học phí nào cần thanh toán.</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              Không có học phí nào cần thanh toán.
+            </p>
           ) : (
-            pendingClasses.map(cls => (
-              <div key={cls.id} className="flex items-center gap-3 p-4 border border-border rounded-xl hover:bg-muted/30 transition-colors">
-                <img src={cls.tutorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{cls.name}</p>
-                  <p className="text-xs text-muted-foreground">{cls.tutorName} • {cls.childName}</p>
-                  <p className="text-xs text-muted-foreground">{cls.completedSessions}/{cls.totalSessions} buổi{cls.dueDate ? ` • Hạn: ${cls.dueDate}` : ""}</p>
+            <div className="space-y-3">
+              {pendingClasses.map(cls => (
+                <div
+                  key={cls.id}
+                  className="flex items-center gap-4 rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                >
+                  <img src={cls.tutorAvatar} alt={cls.tutorName} className="h-10 w-10 rounded-full object-cover" />
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-foreground">{cls.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {cls.tutorName} • {cls.childName}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {cls.completedSessions}/{cls.totalSessions} buổi
+                      {cls.dueDate ? ` • Hạn: ${cls.dueDate}` : ""}
+                    </p>
+                  </div>
+
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm font-bold text-foreground">{cls.fee.toLocaleString("vi-VN")}đ</p>
+                    <Button
+                      size="sm"
+                      className="mt-1 rounded-xl text-xs"
+                      disabled={walletBalance < cls.fee}
+                      onClick={() => handlePay(cls)}
+                    >
+                      Thanh toán
+                    </Button>
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-bold text-foreground">{cls.fee.toLocaleString("vi-VN")}đ</p>
-                  <Button size="sm" className="rounded-xl text-xs mt-1" disabled={walletBalance < cls.fee} onClick={() => handlePay(cls)}>Thanh toán</Button>
-                </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       ) : (
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Tìm giao dịch..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 rounded-xl" />
+        /* HISTORY */
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Tìm giao dịch..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="rounded-xl pl-10"
+              />
+            </div>
           </div>
+
           <div className="space-y-2">
             {filteredTxns.map(t => (
-              <div key={t.id} className="flex items-center gap-3 p-3 hover:bg-muted/30 rounded-xl transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                  {t.amount > 0 ? <ArrowDownLeft className="w-4 h-4 text-foreground" /> : <ArrowUpRight className="w-4 h-4 text-muted-foreground" />}
+              <div
+                key={t.id}
+                className="flex items-center gap-3 rounded-2xl p-3 transition-colors hover:bg-muted/30"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                  {t.amount > 0 ? (
+                    <ArrowDownLeft className="h-4 w-4 text-foreground" />
+                  ) : (
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
+
+                <div className="min-w-0 flex-1">
                   <p className="text-sm text-foreground">{t.description}</p>
-                  <p className="text-[11px] text-muted-foreground">{t.date}</p>
+                  <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                    <p className="text-[11px] text-muted-foreground">{t.date}</p>
+                    <Badge variant="outline" className="text-[10px]">
+                      {typeLabels[t.type] || t.type}
+                    </Badge>
+                  </div>
                 </div>
-                <p className={cn("text-sm font-semibold", t.amount > 0 ? "text-foreground" : "text-muted-foreground")}>
-                  {t.amount > 0 ? "+" : ""}{t.amount.toLocaleString("vi-VN")}đ
+
+                <p
+                  className={cn(
+                    "shrink-0 text-sm font-semibold",
+                    t.amount > 0 ? "text-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  {t.amount > 0 ? "+" : ""}
+                  {t.amount.toLocaleString("vi-VN")}đ
                 </p>
-                <Badge variant="outline" className="text-[10px]">{t.status === "completed" ? "Hoàn thành" : "Đang xử lý"}</Badge>
+
+                <Badge variant="outline" className="shrink-0 text-[10px]">
+                  {t.status === "completed" ? "Hoàn thành" : "Đang xử lý"}
+                </Badge>
               </div>
             ))}
           </div>
         </div>
       )}
 
+      {/* FOOTER */}
       <div className="flex items-center justify-center gap-3 py-2">
-        <ShieldCheck className="w-5 h-5 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">Secure Payment • MoMo • VNPay • Ngân hàng</span>
+        <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">
+          Secure Payment • MoMo • VNPay • Ngân hàng
+        </span>
       </div>
 
-      {/* Deposit Dialog with Payment Methods */}
-      <Dialog open={showDeposit} onOpenChange={setShowDeposit}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Nạp tiền vào ví</DialogTitle></DialogHeader>
+      {/* DEPOSIT DIALOG */}
+      <Dialog open={showDeposit} onOpenChange={open => {
+        setShowDeposit(open);
+        if (!open) {
+          setDepositAmt("");
+          setSelectedMethod("");
+        }
+      }}>
+        <DialogContent className="max-w-sm rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Nạp tiền vào ví</DialogTitle>
+          </DialogHeader>
+
           <div className="space-y-4">
             <div>
               <label className="text-xs font-medium text-foreground">Số tiền</label>
-              <Input type="number" value={depositAmt} onChange={e => setDepositAmt(e.target.value)} placeholder="Nhập số tiền" className="mt-1 rounded-xl" />
-              <div className="flex gap-2 mt-2">
+              <Input
+                type="number"
+                value={depositAmt}
+                onChange={e => setDepositAmt(e.target.value)}
+                placeholder="Nhập số tiền"
+                className="mt-1 rounded-xl"
+              />
+              <div className="mt-2 flex gap-2 flex-wrap">
                 {[500000, 1000000, 2000000, 5000000].map(v => (
-                  <button key={v} onClick={() => setDepositAmt(String(v))} className="px-2 py-1 bg-muted text-muted-foreground rounded-lg text-xs hover:bg-primary/10 hover:text-primary transition-colors">{(v / 1000000).toFixed(1)}tr</button>
+                  <button
+                    key={v}
+                    onClick={() => setDepositAmt(String(v))}
+                    className="rounded-lg bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                  >
+                    {(v / 1000000).toFixed(1)}tr
+                  </button>
                 ))}
               </div>
             </div>
+
             <div>
               <label className="text-xs font-medium text-foreground">Phương thức thanh toán</label>
-              <div className="space-y-2 mt-2">
+              <div className="mt-2 space-y-2">
                 {paymentMethods.map(m => (
-                  <button key={m.id} onClick={() => setSelectedMethod(m.id)}
-                    className={cn("w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all",
-                      selectedMethod === m.id ? "border-primary bg-primary/5" : "border-border bg-card hover:border-primary/50")}>
-                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><CreditCard className="w-4 h-4 text-muted-foreground" /></div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{m.name}</p>
-                      <p className="text-xs text-muted-foreground">{m.desc}</p>
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedMethod(m.id)}
+                    className={cn(
+                      "w-full rounded-xl border p-3 text-left transition-all",
+                      selectedMethod === m.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-card hover:border-primary/50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{m.name}</p>
+                        <p className="text-xs text-muted-foreground">{m.desc}</p>
+                      </div>
                     </div>
                   </button>
                 ))}
               </div>
             </div>
-            <Button onClick={handleDeposit} disabled={!depositAmt || parseInt(depositAmt) <= 0 || !selectedMethod} className="w-full rounded-xl">Xác nhận nạp tiền</Button>
+
+            <Button
+              onClick={handleDeposit}
+              disabled={!depositAmt || parseInt(depositAmt) <= 0 || !selectedMethod}
+              className="w-full rounded-xl"
+            >
+              Xác nhận nạp tiền
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Withdraw Dialog */}
-      <Dialog open={showWithdraw} onOpenChange={setShowWithdraw}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Rút tiền từ ví</DialogTitle></DialogHeader>
+      {/* WITHDRAW DIALOG */}
+      <Dialog open={showWithdraw} onOpenChange={open => {
+        setShowWithdraw(open);
+        if (!open) {
+          setWithdrawAmt("");
+          setSelectedMethod("");
+        }
+      }}>
+        <DialogContent className="max-w-sm rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Rút tiền từ ví</DialogTitle>
+          </DialogHeader>
+
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">Số dư khả dụng: <strong className="text-foreground">{walletBalance.toLocaleString("vi-VN")}đ</strong></p>
+            <p className="text-sm text-muted-foreground">
+              Số dư khả dụng:{" "}
+              <strong className="text-foreground">{walletBalance.toLocaleString("vi-VN")}đ</strong>
+            </p>
+
             <div>
               <label className="text-xs font-medium text-foreground">Số tiền</label>
-              <Input type="number" value={withdrawAmt} onChange={e => setWithdrawAmt(e.target.value)} placeholder="Nhập số tiền" className="mt-1 rounded-xl" />
-              <div className="flex gap-2 mt-2">
+              <Input
+                type="number"
+                value={withdrawAmt}
+                onChange={e => setWithdrawAmt(e.target.value)}
+                placeholder="Nhập số tiền"
+                className="mt-1 rounded-xl"
+              />
+              <div className="mt-2 flex gap-2 flex-wrap">
                 {[500000, 1000000, 2000000, 5000000].map(v => (
-                  <button key={v} onClick={() => setWithdrawAmt(String(v))} className="px-2 py-1 bg-muted text-muted-foreground rounded-lg text-xs hover:bg-primary/10 hover:text-primary transition-colors">{(v / 1000000).toFixed(1)}tr</button>
+                  <button
+                    key={v}
+                    onClick={() => setWithdrawAmt(String(v))}
+                    className="rounded-lg bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                  >
+                    {(v / 1000000).toFixed(1)}tr
+                  </button>
                 ))}
               </div>
             </div>
+
             <div>
               <label className="text-xs font-medium text-foreground">Phương thức nhận tiền</label>
-              <div className="space-y-2 mt-2">
+              <div className="mt-2 space-y-2">
                 {paymentMethods.map(m => (
-                  <button key={m.id} onClick={() => setSelectedMethod(m.id)}
-                    className={cn("w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all",
-                      selectedMethod === m.id ? "border-primary bg-primary/5" : "border-border bg-card hover:border-primary/50")}>
-                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><CreditCard className="w-4 h-4 text-muted-foreground" /></div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{m.name}</p>
-                      <p className="text-xs text-muted-foreground">{m.desc}</p>
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedMethod(m.id)}
+                    className={cn(
+                      "w-full rounded-xl border p-3 text-left transition-all",
+                      selectedMethod === m.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-card hover:border-primary/50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{m.name}</p>
+                        <p className="text-xs text-muted-foreground">{m.desc}</p>
+                      </div>
                     </div>
                   </button>
                 ))}
               </div>
             </div>
-            <Button onClick={handleWithdraw} disabled={!withdrawAmt || parseInt(withdrawAmt) <= 0 || !selectedMethod || parseInt(withdrawAmt) > walletBalance} className="w-full rounded-xl">Xác nhận rút tiền</Button>
+
+            <Button
+              onClick={handleWithdraw}
+              disabled={
+                !withdrawAmt ||
+                parseInt(withdrawAmt) <= 0 ||
+                !selectedMethod ||
+                parseInt(withdrawAmt) > walletBalance
+              }
+              className="w-full rounded-xl"
+            >
+              Xác nhận rút tiền
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

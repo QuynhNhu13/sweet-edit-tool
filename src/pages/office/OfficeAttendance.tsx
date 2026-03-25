@@ -38,24 +38,64 @@ const OfficeAttendance = () => {
   const reported = attendance.filter(a => a.status === "reported").length;
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Clock className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{pending}</p><p className="text-xs text-muted-foreground">Chờ xác nhận</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{completed}</p><p className="text-xs text-muted-foreground">Đã hoàn thành</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><AlertTriangle className="w-5 h-5 text-destructive" /></div>
-          <div><p className="text-xl font-bold text-foreground">{reported}</p><p className="text-xs text-muted-foreground">Đã báo lỗi</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CalendarDays className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-xl font-bold text-foreground">{attendance.length}</p><p className="text-xs text-muted-foreground">Tổng buổi học</p></div>
-        </CardContent></Card>
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* <div>
+        <h1 className="text-2xl font-bold text-foreground">Quản lý điểm danh</h1>
+        <p className="text-muted-foreground text-sm">Theo dõi và xác nhận buổi học</p>
+      </div> */}
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Card 1: Chờ xác nhận */}
+        <Card className="border-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{pending}</p>
+              <p className="text-xs text-white/80 mt-1">Chờ xác nhận</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Đã hoàn thành */}
+        <Card className="border-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{completed}</p>
+              <p className="text-xs text-white/80 mt-1">Đã hoàn thành</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Đã báo lỗi */}
+        <Card className="border-0 bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{reported}</p>
+              <p className="text-xs text-white/80 mt-1">Đã báo lỗi</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Tổng buổi học */}
+        <Card className="border-0 bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xl font-bold">{attendance.length}</p>
+              <p className="text-xs text-white/80 mt-1">Tổng buổi học</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <CalendarDays className="w-5 h-5 text-white" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <Card className="border-border">

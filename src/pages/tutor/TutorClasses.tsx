@@ -81,7 +81,7 @@ const TutorClasses = () => {
   const monthlyResult = [...testResults]
     .filter((r) => r.date.startsWith(monthKey))
     .sort((a, b) => b.date.localeCompare(a.date))[0];
-  const hasPassedMonthlyTest = !!monthlyResult?.passed;
+  const hasPassedMonthlyTest = true; // always allow class application
 
   const getTestQuestions = (subject: string) => testQuestions.filter(q => q.subject === subject).slice(0, 10);
 
@@ -227,7 +227,7 @@ const TutorClasses = () => {
         <TabsContent value="seeking" className="mt-4">
           <div className="mb-4 p-3 bg-warning/15 dark:bg-amber-900/10 border border-warning/30 dark:border-warning/40 rounded-xl flex items-center justify-between gap-2">
             <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
-            <p className="text-xs text-warning dark:text-amber-400">Bài test năng lực được áp dụng <strong>1 lần / tháng</strong> (đạt ≥70%) trước khi ứng tuyển nhận lớp.</p>
+            <p className="text-xs text-warning dark:text-amber-400">Bài test năng lực được áp dụng <strong>1 lần / tháng</strong> (đạt ≥70%) để nhận thêm quyền lợi và tăng cơ hội được đề xuất lớp phù hợp.</p>
             <button
               onClick={() => openTest(filterSubject === "all" ? "Toán" : filterSubject)}
               className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium"
@@ -262,9 +262,7 @@ const TutorClasses = () => {
                     <span className="text-[10px] text-muted-foreground">Đăng: {s.postedDate}</span>
                     <div className="flex gap-2">
                       <button onClick={() => setSelectedSeeking(s.id)} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"><Eye className="w-3 h-3" /> Xem</button>
-                      {!hasPassedMonthlyTest ? (
-                        <span className="text-xs font-medium px-2 py-1 rounded-lg bg-warning/15 text-warning">Chưa đạt test tháng</span>
-                      ) : application ? (
+                      {application ? (
                         <span className={cn("text-xs font-medium px-2 py-1 rounded-lg", application === "accepted" ? "bg-success/15 text-success" : application === "rejected" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary")}>{application === "accepted" ? "Đã được chọn" : application === "rejected" ? "Đã từ chối" : "Đã ứng tuyển"}</span>
                       ) : (
                         <button onClick={() => { setApplicationStates((prev) => ({ ...prev, [s.id]: "applied" })); toast.success("Đã gửi ứng tuyển nhận lớp"); }} className="text-xs text-primary font-medium flex items-center gap-1"><FileText className="w-3 h-3" /> Ứng tuyển</button>
@@ -310,7 +308,13 @@ const TutorClasses = () => {
                   </button>
                   {t.status === "pending" && (
                     <>
-                      <button onClick={() => { confirmTrial(t.id); toast.success("Đã xác nhận!"); }} className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium">
+                      <button
+                        onClick={() => {
+                          confirmTrial(t.id);
+                          toast.success("Đã xác nhận!");
+                        }}
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium"
+                      >
                         <CheckCircle2 className="w-4 h-4" /> Xác nhận
                       </button>
                       <button onClick={() => setRejectDialog(t.id)} className="px-3 py-2 bg-destructive/10 text-destructive rounded-xl text-sm font-medium hover:bg-destructive/20">
@@ -377,11 +381,7 @@ const TutorClasses = () => {
                   <div className="p-3 bg-muted/50 rounded-xl col-span-2"><span className="text-xs text-muted-foreground block">Ngân sách</span><span className="font-medium">{seekingDetail.budget}</span></div>
                 </div>
                 <div className="p-3 bg-muted/50 rounded-xl"><span className="text-xs text-muted-foreground block mb-1">Ghi chú</span><p className="text-sm">{seekingDetail.note}</p></div>
-                {!hasPassedMonthlyTest ? (
-                  <button onClick={() => { setSelectedSeeking(null); openTest(seekingDetail.subject); }} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl font-medium flex items-center justify-center gap-2">
-                    <FileText className="w-4 h-4" /> Làm bài test tháng để ứng tuyển
-                  </button>
-                ) : (
+                <div className="space-y-2">
                   <button
                     onClick={() => {
                       setApplicationStates((prev) => ({ ...prev, [seekingDetail.id]: "applied" }));
@@ -392,7 +392,8 @@ const TutorClasses = () => {
                   >
                     Ứng tuyển nhận lớp
                   </button>
-                )}
+                  <p className="text-xs text-muted-foreground">(Có thể không cần làm test để ứng tuyển mục tìm gia sư)</p>
+                </div>
               </div>
             </>
           )}
@@ -469,9 +470,9 @@ const TutorClasses = () => {
                   <div className="flex flex-wrap gap-2">
                     {currentTestQuestions.map((q, i) => (
                       <button key={q.id} onClick={() => setCurrentQuestion(i)} className={cn(
-                        "w-9 h-9 rounded-lg text-xs font-medium border transition-all relative",
-                        i === currentQuestion ? "bg-primary text-primary-foreground border-primary" :
-                        testAnswers[q.id] !== undefined ? "bg-emerald-100 text-success border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700" :
+                        "w-9 h-9 rounded-lg text-xs font-semibold border transition-all relative",
+                        i === currentQuestion ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-transparent shadow-md" :
+                        testAnswers[q.id] !== undefined ? "bg-emerald-100 text-emerald-700 border-emerald-400" :
                         "bg-card text-muted-foreground border-border hover:border-primary/50"
                       )}>
                         {i + 1}
@@ -480,23 +481,23 @@ const TutorClasses = () => {
                     ))}
                   </div>
                   {currentQ && (
-                    <div className="p-5 bg-muted/30 rounded-xl border border-border">
+                    <div className="p-5 bg-gradient-to-br from-white via-slate-50 to-blue-50 rounded-2xl border border-blue-100 shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <p className="text-sm font-semibold text-foreground">Câu {currentQuestion + 1}/{currentTestQuestions.length}</p>
+                        <p className="text-sm font-semibold text-slate-700">Câu {currentQuestion + 1}/{currentTestQuestions.length}</p>
                         <button onClick={() => {
                           const f = new Set(testFlagged);
                           if (f.has(currentQ.id)) f.delete(currentQ.id); else f.add(currentQ.id);
                           setTestFlagged(f);
-                        }} className={cn("flex items-center gap-1 text-xs px-2 py-1 rounded-lg", testFlagged.has(currentQ.id) ? "bg-amber-100 text-warning" : "bg-muted text-muted-foreground")}>
+                        }} className={cn("flex items-center gap-1 text-xs px-2 py-1 rounded-lg font-medium", testFlagged.has(currentQ.id) ? "bg-amber-100 text-warning" : "bg-muted text-muted-foreground")}>
                           <Flag className="w-3 h-3" /> {testFlagged.has(currentQ.id) ? "Đã đánh dấu" : "Đánh dấu"}
                         </button>
                       </div>
-                      <p className="text-sm text-foreground mb-4">{currentQ.question}</p>
+                      <p className="text-base font-bold text-slate-800 mb-4">{currentQ.question}</p>
                       <div className="space-y-2">
                         {currentQ.options.map((opt, oi) => (
                           <button key={oi} onClick={() => setTestAnswers(prev => ({ ...prev, [currentQ.id]: oi }))} className={cn(
-                            "w-full text-left p-3 rounded-xl border text-sm transition-all",
-                            testAnswers[currentQ.id] === oi ? "bg-primary/10 border-primary text-foreground font-medium" : "bg-card border-border text-muted-foreground hover:border-primary/50"
+                            "w-full text-left p-3 rounded-lg border text-sm font-medium transition-all hover:scale-[1.01]",
+                            testAnswers[currentQ.id] === oi ? "bg-blue-600 text-white border-blue-600" : "bg-white border-border text-slate-700 hover:border-blue-300"
                           )}>
                             <span className="font-semibold mr-2">{String.fromCharCode(65 + oi)}.</span> {opt}
                           </button>
@@ -505,15 +506,15 @@ const TutorClasses = () => {
                     </div>
                   )}
                   <div className="flex items-center justify-between">
-                    <button disabled={currentQuestion === 0} onClick={() => setCurrentQuestion(p => p - 1)} className="flex items-center gap-1 px-4 py-2 bg-muted text-foreground rounded-xl text-sm disabled:opacity-50">
+                    <button disabled={currentQuestion === 0} onClick={() => setCurrentQuestion(p => p - 1)} className="flex items-center gap-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm disabled:opacity-50">
                       <ChevronLeft className="w-4 h-4" /> Câu trước
                     </button>
                     {currentQuestion < currentTestQuestions.length - 1 ? (
-                      <button onClick={() => setCurrentQuestion(p => p + 1)} className="flex items-center gap-1 px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm">
+                      <button onClick={() => setCurrentQuestion(p => p + 1)} className="flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl text-sm shadow hover:shadow-lg transition">
                         Câu tiếp <ChevronRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <button onClick={submitTest} disabled={answeredCount < currentTestQuestions.length} className="px-6 py-2 bg-success text-white rounded-xl text-sm font-medium disabled:opacity-50">
+                      <button onClick={submitTest} disabled={answeredCount < currentTestQuestions.length} className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-bold hover:from-emerald-600 hover:to-emerald-700 disabled:opacity-50">
                         Nộp bài ({answeredCount}/{currentTestQuestions.length})
                       </button>
                     )}

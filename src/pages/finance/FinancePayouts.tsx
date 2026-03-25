@@ -1,5 +1,4 @@
 import { useFinance } from "@/contexts/FinanceContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -7,12 +6,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Banknote, CheckCircle2, XCircle, Clock, Eye, Search, Shield, Wallet, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Eye,
+  Search,
+  Shield,
+  Wallet,
+  AlertTriangle,
+  ArrowUpRight,
+  Banknote,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const statusConfig: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
   pending: { label: "Chờ duyệt", variant: "outline" },
   approved: { label: "Đã duyệt", variant: "default" },
   rejected: { label: "Từ chối", variant: "destructive" },
@@ -21,6 +41,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 const FinancePayouts = () => {
   const { withdrawals, approveWithdrawal, rejectWithdrawal } = useFinance();
   const { toast } = useToast();
+
   const [rejectDialog, setRejectDialog] = useState<string | null>(null);
   const [rejectNote, setRejectNote] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -28,6 +49,7 @@ const FinancePayouts = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [pendingPage, setPendingPage] = useState(1);
   const [processedPage, setProcessedPage] = useState(1);
+
   const pageSize = 10;
 
   const allFiltered = withdrawals.filter(w => {
@@ -38,201 +60,492 @@ const FinancePayouts = () => {
 
   const pending = allFiltered.filter(w => w.status === "pending");
   const processed = allFiltered.filter(w => w.status !== "pending");
+
   const pendingPageCount = Math.max(1, Math.ceil(pending.length / pageSize));
   const processedPageCount = Math.max(1, Math.ceil(processed.length / pageSize));
-  const pagedPending = pending.slice((Math.min(pendingPage, pendingPageCount) - 1) * pageSize, Math.min(pendingPage, pendingPageCount) * pageSize);
-  const pagedProcessed = processed.slice((Math.min(processedPage, processedPageCount) - 1) * pageSize, Math.min(processedPage, processedPageCount) * pageSize);
+
+  const safePendingPage = Math.min(pendingPage, pendingPageCount);
+  const safeProcessedPage = Math.min(processedPage, processedPageCount);
+
+  const pagedPending = pending.slice(
+    (safePendingPage - 1) * pageSize,
+    safePendingPage * pageSize
+  );
+
+  const pagedProcessed = processed.slice(
+    (safeProcessedPage - 1) * pageSize,
+    safeProcessedPage * pageSize
+  );
+
   const detail = withdrawals.find(w => w.id === detailId);
 
   const totalEscrow = withdrawals.reduce((s, w) => s + (w.totalEarned - w.totalWithdrawn), 0);
-  const totalPending = withdrawals.filter(w => w.status === "pending").reduce((s, w) => s + w.amount, 0);
-  const totalApproved = withdrawals.filter(w => w.status === "approved").reduce((s, w) => s + w.amount, 0);
+  const totalPending = withdrawals
+    .filter(w => w.status === "pending")
+    .reduce((s, w) => s + w.amount, 0);
+  const totalApproved = withdrawals
+    .filter(w => w.status === "approved")
+    .reduce((s, w) => s + w.amount, 0);
+  const totalRejected = withdrawals.filter(w => w.status === "rejected").length;
+
+  useEffect(() => {
+    setPendingPage(1);
+    setProcessedPage(1);
+  }, [search, statusFilter]);
 
   const handleReject = () => {
     if (rejectDialog && rejectNote.trim()) {
       rejectWithdrawal(rejectDialog, rejectNote);
-      toast({ title: "Đã từ chối yêu cầu", variant: "destructive" });
+      toast({
+        title: "Đã từ chối yêu cầu",
+        variant: "destructive",
+      });
       setRejectDialog(null);
       setRejectNote("");
     }
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Shield className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-lg font-bold text-foreground">{totalEscrow.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Escrow Balance</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Clock className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-lg font-bold text-foreground">{pending.length}</p><p className="text-[10px] text-muted-foreground">Chờ duyệt</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Wallet className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-lg font-bold text-foreground">{totalPending.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Tổng chờ duyệt</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><CheckCircle2 className="w-5 h-5 text-foreground" /></div>
-          <div><p className="text-lg font-bold text-primary">{totalApproved.toLocaleString("vi-VN")}đ</p><p className="text-[10px] text-muted-foreground">Đã giải ngân</p></div>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center"><XCircle className="w-5 h-5 text-destructive" /></div>
-          <div><p className="text-lg font-bold text-foreground">{withdrawals.filter(w => w.status === "rejected").length}</p><p className="text-[10px] text-muted-foreground">Từ chối</p></div>
-        </CardContent></Card>
-      </div>
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* HERO */}
+      {/* <div className="relative overflow-hidden rounded-3xl border border-blue-200/40 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 text-white">
+        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-32 w-32 rounded-full bg-cyan-300/10 blur-2xl" />
 
-      {/* Search & Filter */}
-      <div className="flex gap-2 flex-wrap">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Tìm theo tên gia sư..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-sm rounded-xl" />
+        <div className="relative flex flex-col justify-between gap-5 lg:flex-row">
+          <div>
+            <h2 className="text-2xl font-bold">Giải ngân gia sư</h2>
+            <p className="mt-1 text-sm text-white/80">
+              Quản lý yêu cầu rút tiền, số dư escrow và lịch sử xử lý giải ngân
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 lg:w-[360px]">
+            <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-xs text-white/80">Chờ duyệt</p>
+              <p className="text-xl font-bold">{pending.length}</p>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+              <p className="text-xs text-white/80">Escrow</p>
+              <p className="text-xl font-bold">{totalEscrow.toLocaleString("vi-VN")}đ</p>
+            </div>
+          </div>
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-36 h-9 text-sm rounded-xl"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tất cả</SelectItem>
-            <SelectItem value="pending">Chờ duyệt</SelectItem>
-            <SelectItem value="approved">Đã duyệt</SelectItem>
-            <SelectItem value="rejected">Từ chối</SelectItem>
-          </SelectContent>
-        </Select>
+      </div> */}
+
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        {[
+          {
+            label: "Escrow Balance",
+            value: `${totalEscrow.toLocaleString("vi-VN")}đ`,
+            sub: "Số dư tạm giữ",
+            color: "from-blue-500 to-indigo-500",
+            icon: Shield,
+          },
+          {
+            label: "Chờ duyệt",
+            value: pending.length,
+            sub: "Yêu cầu đang chờ",
+            color: "from-amber-500 to-orange-500",
+            icon: Clock,
+          },
+          {
+            label: "Tổng chờ duyệt",
+            value: `${totalPending.toLocaleString("vi-VN")}đ`,
+            sub: "Số tiền cần xử lý",
+            color: "from-emerald-500 to-teal-500",
+            icon: Wallet,
+          },
+          {
+            label: "Đã giải ngân",
+            value: `${totalApproved.toLocaleString("vi-VN")}đ`,
+            sub: "Yêu cầu đã duyệt",
+            color: "from-violet-500 to-fuchsia-500",
+            icon: CheckCircle2,
+          },
+          {
+            label: "Từ chối",
+            value: totalRejected,
+            sub: "Yêu cầu không hợp lệ",
+            color: "from-rose-500 to-pink-500",
+            icon: XCircle,
+          },
+        ].map((s, i) => (
+          <div
+            key={i}
+            className={`group flex items-center gap-4 rounded-2xl bg-gradient-to-r p-5 text-white transition-all hover:shadow-lg ${s.color}`}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+              <s.icon className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-white/80">{s.label}</p>
+              <p className="text-xl font-bold">{s.value}</p>
+              <p className="text-[10px] text-white/80">{s.sub}</p>
+            </div>
+            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0" />
+          </div>
+        ))}
       </div>
 
-      {/* Pending */}
+      {/* FILTER */}
+      <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+        <div className="flex flex-wrap gap-2">
+          <div className="relative min-w-[220px] flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Tìm theo tên gia sư..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="h-10 rounded-xl pl-9"
+            />
+          </div>
+
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="h-10 w-[160px] rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả</SelectItem>
+              <SelectItem value="pending">Chờ duyệt</SelectItem>
+              <SelectItem value="approved">Đã duyệt</SelectItem>
+              <SelectItem value="rejected">Từ chối</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* PENDING */}
       {pending.length > 0 && (
-        <Card className="border-border border-l-4 border-l-primary">
-          <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-muted-foreground" /> Yêu cầu chờ duyệt ({pending.length})</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+          <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold">
+            <AlertTriangle className="h-4 w-4 text-primary" />
+            Yêu cầu chờ duyệt ({pending.length})
+          </h3>
+
+          <div className="space-y-4">
             {pagedPending.map(w => (
-              <div key={w.id} className="p-4 bg-muted/50 rounded-xl border border-border">
-                <div className="flex items-center justify-between mb-3">
+              <div
+                key={w.id}
+                className="rounded-2xl border border-primary/20 bg-primary/5 p-4"
+              >
+                <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-center gap-3">
-                    <img src={w.tutorAvatar} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-border" />
+                    <img
+                      src={w.tutorAvatar}
+                      alt={w.tutorName}
+                      className="h-10 w-10 rounded-full object-cover ring-2 ring-border"
+                    />
                     <div>
                       <p className="text-sm font-semibold text-foreground">{w.tutorName}</p>
                       <p className="text-xs text-muted-foreground">Yêu cầu ngày {w.requestDate}</p>
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-foreground">{w.amount.toLocaleString("vi-VN")}đ</p>
+
+                  <p className="text-lg font-bold text-foreground">
+                    {w.amount.toLocaleString("vi-VN")}đ
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 text-xs">
-                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Ngân hàng</span><span className="font-medium text-foreground">{w.bankName}</span></div>
-                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">STK</span><span className="font-medium text-foreground">{w.bankAccount}</span></div>
-                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Tổng thu nhập</span><span className="font-medium text-primary">{w.totalEarned.toLocaleString("vi-VN")}đ</span></div>
-                  <div className="p-2 bg-background rounded-lg"><span className="text-muted-foreground block">Số dư khả dụng</span><span className="font-medium text-foreground">{(w.totalEarned - w.totalWithdrawn).toLocaleString("vi-VN")}đ</span></div>
+
+                <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <div className="rounded-xl border border-border bg-card p-3">
+                    <span className="block text-[10px] text-muted-foreground">Ngân hàng</span>
+                    <span className="text-sm font-medium text-foreground">{w.bankName}</span>
+                  </div>
+                  <div className="rounded-xl border border-border bg-card p-3">
+                    <span className="block text-[10px] text-muted-foreground">STK</span>
+                    <span className="text-sm font-medium text-foreground">{w.bankAccount}</span>
+                  </div>
+                  <div className="rounded-xl border border-border bg-card p-3">
+                    <span className="block text-[10px] text-muted-foreground">Tổng thu nhập</span>
+                    <span className="text-sm font-medium text-primary">
+                      {w.totalEarned.toLocaleString("vi-VN")}đ
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-border bg-card p-3">
+                    <span className="block text-[10px] text-muted-foreground">Số dư khả dụng</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {(w.totalEarned - w.totalWithdrawn).toLocaleString("vi-VN")}đ
+                    </span>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="rounded-xl" onClick={() => setDetailId(w.id)}><Eye className="w-3.5 h-3.5 mr-1" /> Chi tiết</Button>
-                  <Button size="sm" className="rounded-xl" onClick={() => { approveWithdrawal(w.id); toast({ title: "Đã duyệt yêu cầu rút tiền" }); }}><CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Duyệt</Button>
-                  <Button size="sm" variant="destructive" className="rounded-xl" onClick={() => setRejectDialog(w.id)}><XCircle className="w-3.5 h-3.5 mr-1" /> Từ chối</Button>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-xl"
+                    onClick={() => setDetailId(w.id)}
+                  >
+                    <Eye className="mr-1 h-3.5 w-3.5" />
+                    Chi tiết
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className="rounded-xl"
+                    onClick={() => {
+                      approveWithdrawal(w.id);
+                      toast({ title: "Đã duyệt yêu cầu rút tiền" });
+                    }}
+                  >
+                    <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+                    Duyệt
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="rounded-xl"
+                    onClick={() => setRejectDialog(w.id)}
+                  >
+                    <XCircle className="mr-1 h-3.5 w-3.5" />
+                    Từ chối
+                  </Button>
                 </div>
               </div>
             ))}
+
             {pending.length > 0 && (
               <Pagination>
                 <PaginationContent>
-                  <PaginationItem><PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPendingPage((p) => Math.max(1, p - 1)); }} /></PaginationItem>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        setPendingPage(p => Math.max(1, p - 1));
+                      }}
+                    />
+                  </PaginationItem>
+
                   {Array.from({ length: pendingPageCount }).map((_, idx) => (
-                    <PaginationItem key={idx}><PaginationLink href="#" isActive={Math.min(pendingPage, pendingPageCount) === idx + 1} onClick={(e) => { e.preventDefault(); setPendingPage(idx + 1); }}>{idx + 1}</PaginationLink></PaginationItem>
+                    <PaginationItem key={idx}>
+                      <PaginationLink
+                        href="#"
+                        isActive={safePendingPage === idx + 1}
+                        onClick={e => {
+                          e.preventDefault();
+                          setPendingPage(idx + 1);
+                        }}
+                      >
+                        {idx + 1}
+                      </PaginationLink>
+                    </PaginationItem>
                   ))}
-                  <PaginationItem><PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPendingPage((p) => Math.min(pendingPageCount, p + 1)); }} /></PaginationItem>
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        setPendingPage(p => Math.min(pendingPageCount, p + 1));
+                      }}
+                    />
+                  </PaginationItem>
                 </PaginationContent>
               </Pagination>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      {/* Processed */}
+      {/* PROCESSED */}
       {processed.length > 0 && (
-        <Card className="border-border">
-          <CardHeader className="pb-3"><CardTitle className="text-base">Đã xử lý ({processed.length})</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+          <h3 className="mb-4 text-sm font-semibold">Đã xử lý ({processed.length})</h3>
+
+          <div className="space-y-3">
             {pagedProcessed.map(w => {
               const cfg = statusConfig[w.status];
+
               return (
-                <div key={w.id} className="p-4 bg-muted/30 rounded-xl border border-border">
-                  <div className="flex items-center justify-between">
+                <div
+                  key={w.id}
+                  className="rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/40"
+                >
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-center gap-3">
-                      <img src={w.tutorAvatar} alt="" className="w-9 h-9 rounded-full object-cover" />
+                      <img
+                        src={w.tutorAvatar}
+                        alt={w.tutorName}
+                        className="h-9 w-9 rounded-full object-cover"
+                      />
                       <div>
                         <p className="text-sm font-medium text-foreground">{w.tutorName}</p>
-                        <p className="text-xs text-muted-foreground">{w.requestDate} · {w.bankName} {w.bankAccount}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {w.requestDate} • {w.bankName} {w.bankAccount}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <p className="text-sm font-bold text-foreground">{w.amount.toLocaleString("vi-VN")}đ</p>
+
+                    <div className="flex flex-wrap items-center gap-2 lg:gap-3">
+                      <p className="text-sm font-bold text-foreground">
+                        {w.amount.toLocaleString("vi-VN")}đ
+                      </p>
                       <Badge variant={cfg.variant}>{cfg.label}</Badge>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setDetailId(w.id)}><Eye className="w-3.5 h-3.5" /></Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 rounded-xl p-0"
+                        onClick={() => setDetailId(w.id)}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   </div>
+
                   {w.note && w.status === "rejected" && (
-                    <div className="mt-3 flex items-start gap-2 p-3 bg-destructive/5 border border-destructive/20 rounded-xl">
-                      <XCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3">
+                      <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
                       <div>
                         <p className="text-xs font-semibold text-destructive">Lý do từ chối</p>
-                        <p className="text-xs text-destructive/80 mt-0.5">{w.note}</p>
+                        <p className="mt-0.5 text-xs text-destructive/80">{w.note}</p>
                       </div>
                     </div>
                   )}
                 </div>
               );
             })}
+
             {processed.length > 0 && (
               <Pagination>
                 <PaginationContent>
-                  <PaginationItem><PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setProcessedPage((p) => Math.max(1, p - 1)); }} /></PaginationItem>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        setProcessedPage(p => Math.max(1, p - 1));
+                      }}
+                    />
+                  </PaginationItem>
+
                   {Array.from({ length: processedPageCount }).map((_, idx) => (
-                    <PaginationItem key={idx}><PaginationLink href="#" isActive={Math.min(processedPage, processedPageCount) === idx + 1} onClick={(e) => { e.preventDefault(); setProcessedPage(idx + 1); }}>{idx + 1}</PaginationLink></PaginationItem>
+                    <PaginationItem key={idx}>
+                      <PaginationLink
+                        href="#"
+                        isActive={safeProcessedPage === idx + 1}
+                        onClick={e => {
+                          e.preventDefault();
+                          setProcessedPage(idx + 1);
+                        }}
+                      >
+                        {idx + 1}
+                      </PaginationLink>
+                    </PaginationItem>
                   ))}
-                  <PaginationItem><PaginationNext href="#" onClick={(e) => { e.preventDefault(); setProcessedPage((p) => Math.min(processedPageCount, p + 1)); }} /></PaginationItem>
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        setProcessedPage(p => Math.min(processedPageCount, p + 1));
+                      }}
+                    />
+                  </PaginationItem>
                 </PaginationContent>
               </Pagination>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      {/* Detail Dialog */}
+      {/* EMPTY */}
+      {allFiltered.length === 0 && (
+        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-sm">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted">
+            <Banknote className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium text-foreground">Không có yêu cầu phù hợp</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc trạng thái.
+          </p>
+        </div>
+      )}
+
+      {/* DETAIL DIALOG */}
       <Dialog open={!!detailId} onOpenChange={() => setDetailId(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Chi tiết yêu cầu rút tiền</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-md rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Chi tiết yêu cầu rút tiền</DialogTitle>
+          </DialogHeader>
+
           {detail && (
             <div className="space-y-4 pt-2">
-              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl">
-                <img src={detail.tutorAvatar} alt="" className="w-14 h-14 rounded-full object-cover" />
-                <div>
-                  <p className="text-base font-semibold text-foreground">{detail.tutorName}</p>
-                  <p className="text-xs text-muted-foreground">Yêu cầu ngày {detail.requestDate}</p>
-                  <Badge variant={statusConfig[detail.status].variant} className="mt-1">{statusConfig[detail.status].label}</Badge>
+              <div className="rounded-2xl bg-muted/40 p-4">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={detail.tutorAvatar}
+                    alt={detail.tutorName}
+                    className="h-14 w-14 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-base font-semibold text-foreground">{detail.tutorName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Yêu cầu ngày {detail.requestDate}
+                    </p>
+                    <Badge
+                      variant={statusConfig[detail.status].variant}
+                      className="mt-1"
+                    >
+                      {statusConfig[detail.status].label}
+                    </Badge>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl text-center">
-                <p className="text-xs text-muted-foreground mb-1">Số tiền yêu cầu rút</p>
-                <p className="text-2xl font-bold text-foreground">{detail.amount.toLocaleString("vi-VN")}đ</p>
+              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-center">
+                <p className="mb-1 text-xs text-muted-foreground">Số tiền yêu cầu rút</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {detail.amount.toLocaleString("vi-VN")}đ
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Ngân hàng</Label><p className="text-sm font-medium text-foreground">{detail.bankName}</p></div>
-                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Số tài khoản</Label><p className="text-sm font-medium text-foreground">{detail.bankAccount}</p></div>
-                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Tổng thu nhập</Label><p className="text-sm font-medium text-primary">{detail.totalEarned.toLocaleString("vi-VN")}đ</p></div>
-                <div className="p-3 bg-muted/50 rounded-xl"><Label className="text-[10px] text-muted-foreground">Đã rút</Label><p className="text-sm font-medium text-foreground">{detail.totalWithdrawn.toLocaleString("vi-VN")}đ</p></div>
+                <div className="rounded-xl bg-muted/40 p-3">
+                  <Label className="text-[10px] text-muted-foreground">Ngân hàng</Label>
+                  <p className="text-sm font-medium text-foreground">{detail.bankName}</p>
+                </div>
+
+                <div className="rounded-xl bg-muted/40 p-3">
+                  <Label className="text-[10px] text-muted-foreground">Số tài khoản</Label>
+                  <p className="text-sm font-medium text-foreground">{detail.bankAccount}</p>
+                </div>
+
+                <div className="rounded-xl bg-muted/40 p-3">
+                  <Label className="text-[10px] text-muted-foreground">Tổng thu nhập</Label>
+                  <p className="text-sm font-medium text-primary">
+                    {detail.totalEarned.toLocaleString("vi-VN")}đ
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-muted/40 p-3">
+                  <Label className="text-[10px] text-muted-foreground">Đã rút</Label>
+                  <p className="text-sm font-medium text-foreground">
+                    {detail.totalWithdrawn.toLocaleString("vi-VN")}đ
+                  </p>
+                </div>
               </div>
 
-              <div className="p-3 bg-muted/50 border border-border rounded-xl flex items-center justify-between">
-                <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-foreground" /><span className="text-sm text-muted-foreground">Escrow khả dụng</span></div>
-                <p className="text-sm font-bold text-primary">{(detail.totalEarned - detail.totalWithdrawn).toLocaleString("vi-VN")}đ</p>
+              <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-3">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-foreground" />
+                  <span className="text-sm text-muted-foreground">Escrow khả dụng</span>
+                </div>
+                <p className="text-sm font-bold text-primary">
+                  {(detail.totalEarned - detail.totalWithdrawn).toLocaleString("vi-VN")}đ
+                </p>
               </div>
 
               {detail.note && (
-                <div className="flex items-start gap-2 p-3 bg-destructive/5 border border-destructive/20 rounded-xl">
-                  <XCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                <div className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3">
+                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
                   <div>
                     <p className="text-xs font-semibold text-destructive">Lý do từ chối</p>
-                    <p className="text-xs text-destructive/80 mt-0.5">{detail.note}</p>
+                    <p className="mt-0.5 text-xs text-destructive/80">{detail.note}</p>
                   </div>
                 </div>
               )}
@@ -241,14 +554,43 @@ const FinancePayouts = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Reject Dialog */}
-      <Dialog open={!!rejectDialog} onOpenChange={() => { setRejectDialog(null); setRejectNote(""); }}>
-        <DialogContent>
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><XCircle className="w-5 h-5 text-destructive" /> Từ chối yêu cầu rút tiền</DialogTitle></DialogHeader>
+      {/* REJECT DIALOG */}
+      <Dialog
+        open={!!rejectDialog}
+        onOpenChange={() => {
+          setRejectDialog(null);
+          setRejectNote("");
+        }}
+      >
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-destructive" />
+              Từ chối yêu cầu rút tiền
+            </DialogTitle>
+          </DialogHeader>
+
           <div className="space-y-4 pt-2">
-            <p className="text-sm text-muted-foreground">Vui lòng nhập lý do từ chối để thông báo cho gia sư:</p>
-            <Textarea value={rejectNote} onChange={e => setRejectNote(e.target.value)} placeholder="VD: Số dư khả dụng không đủ, cần hoàn thành thêm buổi dạy..." className="rounded-xl" rows={3} />
-            <Button onClick={handleReject} variant="destructive" className="w-full rounded-xl" disabled={!rejectNote.trim()}>Xác nhận từ chối</Button>
+            <p className="text-sm text-muted-foreground">
+              Vui lòng nhập lý do từ chối để thông báo cho gia sư:
+            </p>
+
+            <Textarea
+              value={rejectNote}
+              onChange={e => setRejectNote(e.target.value)}
+              placeholder="VD: Số dư khả dụng không đủ, cần hoàn thành thêm buổi dạy..."
+              className="rounded-xl"
+              rows={3}
+            />
+
+            <Button
+              onClick={handleReject}
+              variant="destructive"
+              className="w-full rounded-xl"
+              disabled={!rejectNote.trim()}
+            >
+              Xác nhận từ chối
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -32,34 +32,60 @@ const FinanceDashboard = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
+    <div className="px-6 pt-2 pb-6 space-y-4">
+      {/* <div>
         <h1 className="text-2xl font-bold text-foreground">Tổng quan tài chính</h1>
         <p className="text-muted-foreground text-sm">Kế toán · Hôm nay, 03/03/2026</p>
-      </div>
+      </div> */}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><DollarSign className="w-5 h-5 text-foreground" /></div>
-          <p className="text-xl font-bold text-foreground">{totalRevenue.toLocaleString("vi-VN")}đ</p>
-          <p className="text-xs text-muted-foreground mt-1">Doanh thu tháng</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><ArrowLeftRight className="w-5 h-5 text-foreground" /></div>
-          <p className="text-xl font-bold text-foreground">{todayTx}</p>
-          <p className="text-xs text-muted-foreground mt-1">Giao dịch hôm nay</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><Clock className="w-5 h-5 text-foreground" /></div>
-          <p className="text-xl font-bold text-foreground">{pendingPayouts.toLocaleString("vi-VN")}đ</p>
-          <p className="text-xs text-muted-foreground mt-1">Chờ thanh toán</p>
-        </CardContent></Card>
-        <Card className="border-border"><CardContent className="p-4">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3"><TrendingUp className="w-5 h-5 text-foreground" /></div>
-          <p className="text-xl font-bold text-foreground flex items-center gap-1">+{growth}% <ArrowUpRight className="w-4 h-4 text-primary" /></p>
-          <p className="text-xs text-muted-foreground mt-1">Tăng trưởng</p>
-        </CardContent></Card>
+     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  {/* Card 1 */}
+  <Card className="border-0 bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg">
+    <CardContent className="p-4">
+      <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+        <DollarSign className="w-5 h-5 text-white" />
       </div>
+      <p className="text-xl font-bold">{totalRevenue.toLocaleString("vi-VN")}đ</p>
+      <p className="text-xs text-white/80 mt-1">Doanh thu tháng</p>
+    </CardContent>
+  </Card>
+
+  {/* Card 2 */}
+  <Card className="border-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
+    <CardContent className="p-4">
+      <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+        <ArrowLeftRight className="w-5 h-5 text-white" />
+      </div>
+      <p className="text-xl font-bold">{todayTx}</p>
+      <p className="text-xs text-white/80 mt-1">Giao dịch hôm nay</p>
+    </CardContent>
+  </Card>
+
+  {/* Card 3 */}
+  <Card className="border-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg">
+    <CardContent className="p-4">
+      <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+        <Clock className="w-5 h-5 text-white" />
+      </div>
+      <p className="text-xl font-bold">{pendingPayouts.toLocaleString("vi-VN")}đ</p>
+      <p className="text-xs text-white/80 mt-1">Chờ thanh toán</p>
+    </CardContent>
+  </Card>
+
+  {/* Card 4 */}
+  <Card className="border-0 bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg">
+    <CardContent className="p-4">
+      <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+        <TrendingUp className="w-5 h-5 text-white" />
+      </div>
+      <p className="text-xl font-bold flex items-center gap-1">
+        +{growth}% <ArrowUpRight className="w-4 h-4 text-white" />
+      </p>
+      <p className="text-xs text-white/80 mt-1">Tăng trưởng</p>
+    </CardContent>
+  </Card>
+</div>
+      
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 border-border">

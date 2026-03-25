@@ -1,6 +1,7 @@
 import { useExamManager } from "@/contexts/ExamManagerContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, DollarSign, TrendingUp, Users } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, Legend } from "recharts";
 import { useState } from "react";
 
@@ -26,7 +27,7 @@ const ExamManagerStats = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 pt-2 pb-6 space-y-4">
       <div className="flex items-center gap-3">
         <Select value={selectedSubject} onValueChange={setSelectedSubject}>
           <SelectTrigger className="w-48 rounded-xl"><SelectValue /></SelectTrigger>
@@ -36,15 +37,22 @@ const ExamManagerStats = () => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Tổng lượt thi", value: filteredExams.reduce((s, e) => s + e.attempts, 0).toLocaleString("vi-VN") },
-          { label: "Doanh thu", value: `${(filteredExams.reduce((s, e) => s + e.revenue, 0) / 1000000).toFixed(1)}M` },
-          { label: "TB hoàn thành", value: `${(filteredExams.filter(e => e.attempts > 0).reduce((s, e) => s + e.completionRate, 0) / (filteredExams.filter(e => e.attempts > 0).length || 1)).toFixed(0)}%` },
-          { label: "TB trên TB", value: `${(filteredExams.filter(e => e.attempts > 0).reduce((s, e) => s + e.aboveAverageRate, 0) / (filteredExams.filter(e => e.attempts > 0).length || 1)).toFixed(0)}%` },
-        ].map(s => (
-          <Card key={s.label} className="border-border"><CardContent className="p-4">
-            <p className="text-xs text-muted-foreground">{s.label}</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{s.value}</p>
-          </CardContent></Card>
+          { label: "Tổng lượt thi", value: filteredExams.reduce((s, e) => s + e.attempts, 0).toLocaleString("vi-VN"), icon: FileText },
+          { label: "Doanh thu", value: `${(filteredExams.reduce((s, e) => s + e.revenue, 0) / 1000000).toFixed(1)}M`, icon: DollarSign },
+          { label: "TB hoàn thành", value: `${(filteredExams.filter(e => e.attempts > 0).reduce((s, e) => s + e.completionRate, 0) / (filteredExams.filter(e => e.attempts > 0).length || 1)).toFixed(0)}%`, icon: TrendingUp },
+          { label: "TB trên TB", value: `${(filteredExams.filter(e => e.attempts > 0).reduce((s, e) => s + e.aboveAverageRate, 0) / (filteredExams.filter(e => e.attempts > 0).length || 1)).toFixed(0)}%`, icon: Users },
+        ].map((s, i) => (
+          <Card key={s.label} className="border-0 text-white shadow-lg" style={{ backgroundImage: ["linear-gradient(to right, #2563eb, #3b82f6)", "linear-gradient(to right, #10b981, #14b8a6)", "linear-gradient(to right, #f59e0b, #f97316)", "linear-gradient(to right, #a855f7, #d946ef)"][i % 4] }}>
+            <CardContent className="p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xl font-bold">{s.value}</p>
+                <p className="text-xs text-white/80 mt-1">{s.label}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-5 h-5 text-white" />
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 

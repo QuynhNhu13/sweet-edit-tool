@@ -48,25 +48,25 @@ const TutorStudents = () => {
     <div className="p-6 space-y-6">
       {/* Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-2xl p-5 text-center">
-          <Users className="w-6 h-6 text-primary mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{totalStudents}</p>
-          <p className="text-xs text-muted-foreground">Tổng học sinh</p>
+        <div className="rounded-2xl p-5 text-center bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-soft border border-blue-300/30">
+          <Users className="w-6 h-6 mx-auto mb-2 text-white/90" />
+          <p className="text-2xl font-bold">{totalStudents}</p>
+          <p className="text-xs text-white/80">Tổng học sinh</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5 text-center">
-          <BookOpen className="w-6 h-6 text-success mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{activeStudents}</p>
-          <p className="text-xs text-muted-foreground">Đang học</p>
+        <div className="rounded-2xl p-5 text-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-soft border border-emerald-300/30">
+          <BookOpen className="w-6 h-6 mx-auto mb-2 text-white/90" />
+          <p className="text-2xl font-bold">{activeStudents}</p>
+          <p className="text-xs text-white/80">Đang học</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5 text-center">
-          <CheckCircle2 className="w-6 h-6 text-primary mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{avgAttendance.toFixed(0)}%</p>
-          <p className="text-xs text-muted-foreground">Chuyên cần TB</p>
+        <div className="rounded-2xl p-5 text-center bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-soft border border-violet-300/30">
+          <CheckCircle2 className="w-6 h-6 mx-auto mb-2 text-white/90" />
+          <p className="text-2xl font-bold">{avgAttendance.toFixed(0)}%</p>
+          <p className="text-xs text-white/80">Chuyên cần TB</p>
         </div>
-        <div className="bg-card border border-border rounded-2xl p-5 text-center">
-          <BarChart3 className="w-6 h-6 text-warning mx-auto mb-2" />
-          <p className="text-2xl font-bold text-foreground">{avgScore.toFixed(1)}</p>
-          <p className="text-xs text-muted-foreground">Điểm TB</p>
+        <div className="rounded-2xl p-5 text-center bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-soft border border-rose-300/30">
+          <BarChart3 className="w-6 h-6 mx-auto mb-2 text-white/90" />
+          <p className="text-2xl font-bold">{avgScore.toFixed(1)}</p>
+          <p className="text-xs text-white/80">Điểm TB</p>
         </div>
       </div>
 
@@ -92,15 +92,15 @@ const TutorStudents = () => {
       {/* Student List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {pagedStudents.map(s => (
-          <button key={s.studentId + s.classId} onClick={() => setSelected(s.studentId + s.classId)} className="bg-card border border-border rounded-2xl p-5 text-left hover:shadow-elevated transition-all">
+          <button key={s.studentId + s.classId} onClick={() => setSelected(s.studentId + s.classId)} className="bg-white border border-blue-100 rounded-2xl p-5 text-left hover:shadow-2xl transition-all">
             <div className="flex items-center gap-4 mb-4">
-              <img src={s.studentAvatar} alt="" className="w-12 h-12 rounded-full object-cover" />
+              <img src={s.studentAvatar} alt="" className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100" />
               <div className="flex-1 min-w-0">
-                <p className="text-base font-semibold text-foreground">{s.studentName}</p>
-                <p className="text-xs text-muted-foreground">{s.className} • {s.subject} • {s.studentGrade}</p>
+                <p className="text-base font-semibold text-slate-900">{s.studentName}</p>
+                <p className="text-xs text-slate-500">{s.className} • {s.subject} • {s.studentGrade}</p>
               </div>
-              {s.goalCompletion === 100 && <span className="text-[10px] font-medium bg-emerald-100 text-success dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-lg">Hoàn thành</span>}
-              {s.completedSessions === 0 && <span className="text-[10px] font-medium bg-muted text-muted-foreground px-2 py-0.5 rounded-lg">Chưa học</span>}
+              {s.goalCompletion === 100 && <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg">Hoàn thành</span>}
+              {s.completedSessions === 0 && <span className="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">Chưa học</span>}
             </div>
             <div className="grid grid-cols-5 gap-2">
               <div className="p-2 bg-muted/50 rounded-lg text-center">
@@ -152,15 +152,15 @@ const TutorStudents = () => {
 
       {/* Student Detail Dialog */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-blue-100 shadow-soft">
           {sp && (
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-3">
-                  <img src={sp.studentAvatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                  <img src={sp.studentAvatar} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-200" />
                   <div>
-                    <span>{sp.studentName}</span>
-                    <p className="text-xs text-muted-foreground font-normal">{sp.className} • {sp.studentGrade}</p>
+                    <span className="text-lg font-bold text-slate-900">{sp.studentName}</span>
+                    <p className="text-xs text-slate-500 font-normal">{sp.className} • {sp.studentGrade}</p>
                   </div>
                 </DialogTitle>
               </DialogHeader>
